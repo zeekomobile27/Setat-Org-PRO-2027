@@ -12,7 +12,7 @@ android {
         minSdk 24
         targetSdk 35
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0"
 
         // دعم C++
         externalNativeBuild {
@@ -44,7 +44,7 @@ android {
 
 dependencies {
     // ==========================================
-    // 1. مكتبات الأندرويد الأساسية (محدثة)
+    // 1. مكتبات الأندرويد الأساسية (محدثة لآخر إصدار مستقر)
     // ==========================================
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
@@ -64,15 +64,16 @@ dependencies {
     // ==========================================
     // 2. إعلانات جوجل AdMob وموافقات المستخدمين (UMP) 🚀
     // ==========================================
-    // أحدث إصدار من AdMob
-    implementation 'com.google.android.gms:play-services-ads:23.6.0'
-    // مكتبة UMP الإلزامية من جوجل لجمع موافقات المستخدمين (GDPR)
+    // الإصدار الأحدث والأقوى من AdMob (الذي طلبته)
+    implementation 'com.google.android.gms:play-services-ads:25.5.0'
+    // مكتبة UMP الإلزامية من جوجل لجمع موافقات المستخدمين (GDPR) - الأحدث
     implementation 'com.google.android.ump:user-messaging-platform:3.1.0'
 
     // ==========================================
     // 3. التحليلات وإشعارات فايربيس (جوجل فقط)
     // ==========================================
-    implementation platform('com.google.firebase:firebase-bom:33.7.0') 
+    // تم التحديث لأحدث إصدار من منصة Firebase BOM لعام 2026
+    implementation platform('com.google.firebase:firebase-bom:34.19.0') 
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-auth'
@@ -84,7 +85,8 @@ dependencies {
     // ==========================================
     // 4. ExoPlayer (Media3) لتشغيل الفيديو والصوت
     // ==========================================
-    def media3_version = "1.5.0"
+    // التحديث لأحدث إصدار مستقر من Media3
+    def media3_version = "1.11.1"
     implementation "androidx.media3:media3-exoplayer:$media3_version" 
     implementation "androidx.media3:media3-datasource:$media3_version" 
     implementation "androidx.media3:media3-database:$media3_version" 
