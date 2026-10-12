@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- جسم النوتة الموسيقية الذهبي اللامع -->
+    <path
+        android:pathData="M12,3 v10.55 c-0.59,-0.34 -1.27,-0.55 -2,-0.55 c-2.21,0 -4,1.79 -4,4 s1.79,4 4,4 s4,-1.79 4,-4 V7 h4 V3 h-6 z"
+        android:fillColor="#FFD700" />
+    
+    <!-- النجمة الساطعة الأولى (أعلى اليمين) -->
+    <path
+        android:pathData="M19,2 l1.26,2.74 L23,6 l-2.74,1.26 L19,10 l-1.26,-2.74 L15,6 l2.74,-1.26 L19,2 z"
+        android:fillColor="#FFF8DC" />
+        
+    <!-- النجمة الساطعة الثانية (أسفل اليسار) -->
+    <path
+        android:pathData="M4.5,4.5 l0.88,1.93 L7.5,7.31 l-2.12,0.88 L4.5,10.31 l-0.88,-2.12 L1.5,7.31 l2.12,-0.88 L4.5,4.5 z"
+        android:fillColor="#FFF8DC" />
+</vector>

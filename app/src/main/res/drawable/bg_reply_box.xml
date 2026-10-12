@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- الخلفية الداكنة جداً -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#0D0D0D" />
+            <corners android:radius="6dp" />
+        </shape>
+    </item>
+    
+    <!-- الخط الأبيض - يظهر فقط على اليسار -->
+    <item
+        android:left="0dp"
+        android:top="2dp"
+        android:right="0dp"
+        android:bottom="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" />
+            <corners
+                android:topLeftRadius="6dp"
+                android:bottomLeftRadius="6dp" />
+        </shape>
+    </item>
+    
+    <!-- حشوة تمنع تمدد الخط الأبيض -->
+    <item
+        android:left="3dp"
+        android:right="0dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#0D0D0D" />
+            <corners
+                android:topRightRadius="6dp"
+                android:bottomRightRadius="6dp" />
+        </shape>
+    </item>
+</layer-list>

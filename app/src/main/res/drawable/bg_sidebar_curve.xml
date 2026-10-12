@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="280dp"
+    android:height="800dp"
+    android:viewportWidth="280"
+    android:viewportHeight="800"
+    android:autoMirrored="true">
+    
+    <path
+        android:fillColor="#0F1722"
+        android:strokeColor="#C5A059"
+        android:strokeWidth="3"
+        android:pathData="M 0,0 L 280,0 L 280,150 C 280,300 160,400 160,550 C 160,700 280,750 280,800 L 0,800 Z" />
+</vector>
+
