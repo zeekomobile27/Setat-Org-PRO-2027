@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Setat Org Pro</string>
+    <string name="google_app_id">1:651145105055:android:d446052a780e6a54eddcaa</string>
+    <string name="google_api_key">AIzaSyByoy092_ARZvwBDEXJpxNqOsMK55qNa28</string>
+    <string name="project_id">setat-org-pro</string>
+    <string name="channel_name">إشعارات التطبيق</string>
+    <string name="channel_description">قناة الإشعارات الافتراضية</string>
+</resources>
