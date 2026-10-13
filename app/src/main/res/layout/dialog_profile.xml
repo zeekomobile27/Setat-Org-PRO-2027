@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialogRootView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="locale">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/vntrocreen"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurDialogRoot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:blurOverlayColor="#25FFFFFF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/dialogInnerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                android:paddingHorizontal="16dp"
+                android:gravity="center_horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="20dp">
+
+                    <eightbitlab.com.blurview.BlurView
+                        android:id="@+id/dialogBtnBack"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:background="@drawable/bg_glass_circle_border"
+                        android:clipToOutline="true"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:blurOverlayColor="#0DFFFFFF">
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_close"
+                                app:tint="#FFFFFF" />
+                        </FrameLayout>
+                    </eightbitlab.com.blurview.BlurView>
+
+                    <TextView
+                        android:id="@+id/dialogTvTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="الملف الشخصي"
+                        android:textColor="#FFFFFF"
+                        android:shadowColor="#FF000000"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="4"
+                        android:textSize="19sp"
+                        android:textStyle="bold"
+                        android:layout_marginEnd="35dp"/> 
+                </LinearLayout>
+
+                <!-- تم تكبير حاوية الصورة إلى 100dp كما طلبت -->
+                <FrameLayout
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginBottom="12dp">
+
+                    <ImageView
+                        android:id="@+id/dialogProfileImage"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_avatar_circle_golden"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:scaleType="centerCrop" />
+
+                    <!-- تم تكبير أيقونة الكاميرا لتتناسب مع حجم الحاوية الجديد -->
+                    <ImageView
+                        android:id="@+id/dialogCameraIcon"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@drawable/bg_edit_circle"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_camera"
+                        app:tint="#FFFFFF" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:id="@+id/dialogEditNameTrigger"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:layout_marginBottom="10dp">
+
+                    <!-- تم تكبير خط اسم المستخدم إلى 21sp -->
+                    <TextView
+                        android:id="@+id/dialogProfileName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="مستخدم"
+                        android:textColor="#FFFFFF"
+                        android:shadowColor="#FF000000"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="4"
+                        android:textSize="21sp"
+                        android:textStyle="bold" />
+
+                    <!-- تم تكبير أيقونة القلم قليلاً -->
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_edit_pen"
+                        app:tint="#FFFFFF"
+                        android:layout_marginStart="8dp" />
+                </LinearLayout>
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/dialogEditNameContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    android:visibility="gone"
+                    app:blurOverlayColor="#0DFFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="12dp">
+
+                        <EditText
+                            android:id="@+id/dialogEtName"
+                            android:layout_width="match_parent"
+                            android:layout_height="35dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@android:color/transparent"
+                            android:gravity="center"
+                            android:hint="أدخل اسمك"
+                            android:inputType="text"
+                            android:singleLine="true"
+                            android:textColor="#FFFFFF"
+                            android:textColorHint="#90FFFFFF"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3"
+                            android:textSize="14sp"
+                            android:paddingHorizontal="10dp" />
+                            
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#40FFFFFF"
+                            android:layout_marginBottom="10dp"/>
+
+                        <Button
+                            android:id="@+id/dialogBtnSaveName"
+                            android:layout_width="140dp"
+                            android:layout_height="32dp"
+                            android:background="@drawable/bg_glass_border"
+                            android:text="حفظ الاسم"
+                            android:textColor="#FFFFFF"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <!-- تم حذف حاوية نظام المستويات والمكافآت (dialogLevelContainer) من هنا -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="4"
+                    android:gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="20dp">
+
+                    <LinearLayout
+                        android:id="@+id/dialogBtnSupport"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <eightbitlab.com.blurview.BlurView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:clipToOutline="true"
+                            app:blurOverlayColor="#0DFFFFFF">
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_menu_support"
+                                    app:tint="#FFFFFF" />
+                            </FrameLayout>
+                        </eightbitlab.com.blurview.BlurView>
+                        <TextView
+                            android:id="@+id/dialogTvSupport"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="الدعم"
+                            android:textColor="#FFFFFF"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="6dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/dialogBtnWebsite"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <eightbitlab.com.blurview.BlurView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:clipToOutline="true"
+                            app:blurOverlayColor="#0DFFFFFF">
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/icon_website"
+                                    app:tint="#FFFFFF" />
+                            </FrameLayout>
+                        </eightbitlab.com.blurview.BlurView>
+                        <TextView
+                            android:id="@+id/dialogTvWebsite"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="الموقع"
+                            android:textColor="#FFFFFF"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="6dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/dialogBtnPrivacy"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <eightbitlab.com.blurview.BlurView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:clipToOutline="true"
+                            app:blurOverlayColor="#0DFFFFFF">
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/icon_privacy"
+                                    app:tint="#FFFFFF" />
+                            </FrameLayout>
+                        </eightbitlab.com.blurview.BlurView>
+                        <TextView
+                            android:id="@+id/dialogTvPrivacy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="الخصوصية"
+                            android:textColor="#FFFFFF"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="6dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/dialogBtnAbout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <eightbitlab.com.blurview.BlurView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:clipToOutline="true"
+                            app:blurOverlayColor="#0DFFFFFF">
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/icon_about"
+                                    app:tint="#FFFFFF" />
+                            </FrameLayout>
+                        </eightbitlab.com.blurview.BlurView>
+                        <TextView
+                            android:id="@+id/dialogTvAbout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="حول التطبيق"
+                            android:textColor="#FFFFFF"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="6dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <eightbitlab.com.blurview.BlurView
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#0DFF4444">
+                    <LinearLayout
+                        android:id="@+id/dialogBtnLogout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_logout"
+                            app:tint="#FFFFFF"
+                            android:layout_marginEnd="8dp"/>
+                        <TextView
+                            android:id="@+id/dialogTvLogout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="تسجيل الخروج"
+                            android:textColor="#FFFFFF"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3"
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <eightbitlab.com.blurview.BlurView
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#0DFF4444">
+                    <LinearLayout
+                        android:id="@+id/dialogBtnDeleteAccount"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_delete"
+                            app:tint="#FFFFFF"
+                            android:layout_marginEnd="8dp"/>
+                        <TextView
+                            android:id="@+id/dialogTvDeleteAccount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="حذف الحساب نهائياً"
+                            android:textColor="#FFFFFF"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3"
+                            android:textSize="14sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <View
+                    android:layout_width="200dp"
+                    android:layout_height="1dp"
+                    android:background="#40FFFFFF"
+                    android:layout_marginBottom="12dp"/>
+
+                <!-- تم تكبير هذا النص درجتين (من 12sp إلى 14sp) -->
+                <TextView
+                    android:id="@+id/dialogTvDev"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="تطوير : ZEEKO ORG"
+                    android:textColor="#FFFFFF"
+                    android:shadowColor="#FF000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="3"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp" />
+
+                <!-- تم تكبير هذا النص درجتين (من 10sp إلى 12sp) -->
+                <TextView
+                    android:id="@+id/dialogTvRights"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="جميع الحقوق محفوظة © 2026"
+                    android:textColor="#FFFFFF"
+                    android:shadowColor="#FF000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="3"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp"/>
+
+                <!-- تم تكبير هذا النص درجتين (من 10sp إلى 12sp) -->
+                <TextView
+                    android:id="@+id/dialogTvVersion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="رقم الإصدار: "
+                    android:textColor="#E0E0E0"
+                    android:shadowColor="#FF000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="3"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </ScrollView>
+    </eightbitlab.com.blurview.BlurView>
+</androidx.constraintlayout.widget.ConstraintLayout>

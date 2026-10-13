@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="locale">
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurWelcomeDialog"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_glass_border"
+        android:clipToOutline="true"
+        app:blurOverlayColor="#1AFFFFFF">
+
+        <com.zeekoltd.setat.pro.MovingBorderView
+            android:id="@+id/movingBorderWelcome"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="30dp"
+            android:paddingBottom="20dp"
+            android:paddingHorizontal="20dp">
+
+            <!-- أيقونات احتفالية -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎉✨🎊"
+                android:textSize="35sp"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- نص الترحيب الذهبي -->
+            <TextView
+                android:id="@+id/tvWelcomeName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="مرحباً بك يا..."
+                android:textColor="#FFD700"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:shadowColor="#FF8C00"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="15"
+                android:layout_marginBottom="15dp"/>
+
+            <!-- رسالة التحديث -->
+            <TextView
+                android:id="@+id/tvWelcomeMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="في منتدى العازفين المحترفين!\n\nيوجد ميزات وإضافات خرافية في التطبيق، استكشفها الآن واستمتع التجربة الجديدة كلياً 🚀"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:lineSpacingExtra="6dp"
+                android:gravity="center"
+                android:layout_marginBottom="25dp"/>
+
+            <!-- زر الاستكشاف / الإغلاق -->
+            <TextView
+                android:id="@+id/btnExploreNow"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@drawable/bg_glass_capsule"
+                android:text="هيا بنا 🔥"
+                android:textColor="#00FFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"/>
+
+        </LinearLayout>
+    </eightbitlab.com.blurview.BlurView>
+
+    <!-- نظام القصاصات الورقية الاحتفالية (طبقة تغطي الشاشة بالكامل) -->
+    <nl.dionsegijn.konfetti.xml.KonfettiView
+        android:id="@+id/konfettiView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="100dp" />
+
+</RelativeLayout>
