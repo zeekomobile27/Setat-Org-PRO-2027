@@ -1,4 +1,4 @@
-package com.zeeko.setat.org2026;
+package com.zeekoltd.setat.pro;
 
 import android.app.Activity;
 import android.app.Dialog;
