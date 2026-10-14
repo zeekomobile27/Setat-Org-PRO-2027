@@ -1,12 +1,17 @@
 name: Build Setat Org PRO 2027
 
-# البناء يدوي عبر تبويب Actions
+# البناء يدوياً فقط عبر تبويب Actions
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
+
+# إسكات تحذير Node.js 20
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -21,34 +26,84 @@ jobs:
       - name: Grant Execute Permission for Gradle
         run: chmod +x gradlew
 
+      # بناء APK و AAB
       - name: Build Release APK and AAB
-        # تم دمج أمر بناء APK (assembleRelease) و AAB (bundleRelease) في سطر واحد لتوفير الوقت
         run: ./gradlew assembleRelease bundleRelease --no-daemon
 
-      - name: Decode Keystore and Sign Apps (APK & AAB)
-        run: |
-          echo "1. فك تشفير مفتاح التوقيع (Keystore)..."
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
-          
-          echo "2. البحث عن مسارات ملفات APK و AAB..."
-          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
-          AAB_PATH=$(find app/build/outputs/bundle/release -name "*.aab" | head -n 1)
-          
-          echo "3. توقيع ملف APK باستخدام apksigner..."
-          APKSIGNER=$(find $ANDROID_HOME/build-tools -name "apksigner" | sort -r | head -n 1)
-          $APKSIGNER sign --ks keystore.jks --ks-key-alias "${{ secrets.KEY_ALIAS }}" --ks-pass pass:"${{ secrets.KEYSTORE_PASSWORD }}" --key-pass pass:"${{ secrets.KEY_PASSWORD }}" "$APK_PATH"
-          
-          echo "4. توقيع ملف AAB لجوجل بلاي باستخدام jarsigner..."
-          jarsigner -keystore keystore.jks -storepass "${{ secrets.KEYSTORE_PASSWORD }}" -keypass "${{ secrets.KEY_PASSWORD }}" "$AAB_PATH" "${{ secrets.KEY_ALIAS }}"
+      # التوقيع التلقائي للملفين
+      - name: Decode Keystore and Sign APK & AAB
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Upload Release APK (للتجربة على الهاتف)
+        run: |
+          set -e
+
+          echo "1. فك تشفير شهادة التوقيع..."
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/keystore.jks"
+
+          echo "2. البحث عن ملف APK..."
+          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" -print -quit)
+
+          if [ -z "$APK_PATH" ]; then
+            echo "خطأ: لم يتم العثور على APK."
+            exit 1
+          fi
+
+          echo "3. البحث عن ملف AAB..."
+          AAB_PATH=$(find app/build/outputs/bundle/release -name "*.aab" -print -quit)
+
+          if [ -z "$AAB_PATH" ]; then
+            echo "خطأ: لم يتم العثور على AAB."
+            exit 1
+          fi
+
+          echo "4. البحث عن أداة apksigner..."
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)
+
+          if [ -z "$APKSIGNER" ]; then
+            echo "خطأ: لم يتم العثور على apksigner."
+            exit 1
+          fi
+
+          echo "5. توقيع APK..."
+          "$APKSIGNER" sign \
+            --ks "$RUNNER_TEMP/keystore.jks" \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass env:KEYSTORE_PASSWORD \
+            --key-pass env:KEY_PASSWORD \
+            "$APK_PATH"
+
+          echo "6. التحقق من توقيع APK..."
+          "$APKSIGNER" verify --verbose "$APK_PATH"
+
+          echo "7. توقيع AAB..."
+          jarsigner \
+            -keystore "$RUNNER_TEMP/keystore.jks" \
+            -storepass:env KEYSTORE_PASSWORD \
+            -keypass:env KEY_PASSWORD \
+            "$AAB_PATH" \
+            "$KEY_ALIAS"
+
+          echo "8. التحقق من توقيع AAB..."
+          jarsigner -verify -verbose -certs "$AAB_PATH"
+
+          echo "نجح توقيع APK و AAB والتحقق منهما."
+
+      # رفع APK الموقّع
+      - name: Upload Signed Release APK
         uses: actions/upload-artifact@v4
         with:
           name: Setat-Org-PRO-2027-APK
           path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
 
-      - name: Upload Release AAB (للرفع على جوجل بلاي)
+      # رفع AAB الموقّع
+      - name: Upload Signed Release AAB
         uses: actions/upload-artifact@v4
         with:
           name: Setat-Org-PRO-2027-AAB
           path: app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
