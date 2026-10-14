@@ -26,6 +26,9 @@ jobs:
       - name: Grant Execute Permission for Gradle
         run: chmod +x gradlew
 
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper
+
       # بناء APK و AAB
       - name: Build Release APK and AAB
         run: ./gradlew assembleRelease bundleRelease --no-daemon
