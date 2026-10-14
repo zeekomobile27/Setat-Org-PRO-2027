@@ -40,19 +40,7 @@ public class MyApplication extends Application {
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityResumed(@NonNull Activity activity) {
-                String activityName = activity.getClass().getName();
-                
-                // استثناء الشاشات التي لا نريد ظهور نافذة التحديث فيها
-                if (activityName.contains("UCropActivity") ||
-                    activityName.contains("SplashsctivityActivity") ||
-                    activityName.contains("LanguageActivity") ||
-                    activityName.contains("MainactivityActivity")) {
-                    return; 
-                }
-
-                // جلب اللغة الحالية وفحص التحديثات في الشاشات المسموح بها فقط
-                String currentLang = getSharedPreferences("app_prefs", Context.MODE_PRIVATE).getString("app_language", "ar");
-                new UpdateManager(activity, currentLang).checkForUpdates();
+                // تم إزالة فحص التحديثات للامتثال لسياسات جوجل 2026
             }
 
             @Override public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
