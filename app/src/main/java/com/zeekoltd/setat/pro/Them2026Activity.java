@@ -69,7 +69,7 @@ public class Them2026Activity extends AppCompatActivity {
 
     private DatabaseReference setsRef;
     private FirebaseAuth mAuth;
-    private static final String DEV_UID = "sHIadaIos5cPW5rQoidBGZsqDHO2";
+    private static final String DEV_UID = "GrWIoyYfgCVU3BJjZzfu2T0PYdo2";
 
     private ViewPager2 viewPagerSets;
     private ThemePagerAdapter adapter;
