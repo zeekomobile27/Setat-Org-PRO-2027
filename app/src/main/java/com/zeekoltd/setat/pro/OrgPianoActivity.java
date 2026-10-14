@@ -1029,7 +1029,7 @@ public class OrgPianoActivity extends AppCompatActivity {
                     devClickCount = 0;
                     // 🚀 التحقق الصامت من هوية المطور للوصول السريع
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    if (user != null && "sHIadaIos5cPW5rQoidBGZsqDHO2".equals(user.getUid())) {
+                    if (user != null && "GrWIoyYfgCVU3BJjZzfu2T0PYdo2".equals(user.getUid())) {
                         OrgDialogs.showDeveloperPanel(OrgPianoActivity.this);
                     }
                 }
