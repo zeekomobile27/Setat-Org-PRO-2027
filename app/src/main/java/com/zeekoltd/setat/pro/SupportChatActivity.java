@@ -63,7 +63,7 @@ public class SupportChatActivity extends AppCompatActivity {
     private EmojiPopup emojiPopup;
     private boolean isEmojiShowing = false;
     private boolean isKeyboardShowing = false;
-    private static final String DEV_UID = "sHIadaIos5cPW5rQoidBGZsqDHO2";
+    private static final String DEV_UID = "GrWIoyYfgCVU3BJjZzfu2T0PYdo2";
     private String roomUid;
     private boolean isAdmin;
     private String chatPartnerName;
