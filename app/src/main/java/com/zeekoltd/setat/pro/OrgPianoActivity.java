@@ -178,8 +178,7 @@ public class OrgPianoActivity extends AppCompatActivity {
                 FrameLayout bannerContainer = findViewById(R.id.adBannerContainer);
                 if (bannerContainer != null && bannerContainer.getChildCount() > 0) {
                     ImageView placeholder = (ImageView) bannerContainer.getChildAt(0);
-                    boolean isBannerEnabled = com.google.firebase.remoteconfig.FirebaseRemoteConfig.getInstance().getBoolean("isBannerEnabled");
-                    adMobAdsHelper.loadBannerAd(bannerContainer, placeholder, isBannerEnabled);
+                    adMobAdsHelper.loadBannerAd(bannerContainer, placeholder, true);
                 }
             });
         });
