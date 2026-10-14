@@ -86,7 +86,7 @@ dependencies {
     // 4. ExoPlayer (Media3) لتشغيل الفيديو والصوت
     // ==========================================
     // التحديث لأحدث إصدار مستقر من Media3
-    def media3_version = "1.11.1"
+    def media3_version = "1.9.4"
     implementation "androidx.media3:media3-exoplayer:$media3_version" 
     implementation "androidx.media3:media3-datasource:$media3_version" 
     implementation "androidx.media3:media3-database:$media3_version" 
