@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int RC_SIGN_IN = 9001;
     private ImageView imgProfilePic;
     private String lastMessageKey = null;
-    public static final String DEV_UID = "sHIadaIos5cPW5rQoidBGZsqDHO2"; 
+    public static final String DEV_UID = "GrWIoyYfgCVU3BJjZzfu2T0PYdo2"; 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public ActivityResultLauncher<String> pickImageLauncher; 
