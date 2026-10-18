@@ -309,7 +309,7 @@ public class LanguageActivity extends AppCompatActivity {
                 tvReadText.setText(tr("قراءة السياسة", "Read Policy"));
             }
             btnReadView.setOnClickListener(v -> {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.zeekoorg.com/p/privacy-policy-setat.html"));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.zeekoltd.com/privacy.html"));
                 startActivity(browserIntent);
             });
             LinearLayout.LayoutParams btnReadParams = new LinearLayout.LayoutParams(
