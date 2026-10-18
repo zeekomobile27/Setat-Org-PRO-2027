@@ -173,8 +173,8 @@ public class DialogHelper {
         scroll.setLayoutParams(scrollParams);
         
         TextView content = new TextView(activity);
-        content.setText(tr(lang, "تطبيق سيتات اورج 2026\n\nأفخم السيتات الحصرية والإحترافية\nالمقدمة من العازف والمطور ZEEKO ORG\n\nأفخم الثيمات الحصرية المتوفرة فقط\nفى صفحاتنا الرسمية\nجميع نسخ الأورج المحدثة مثل\nالأورج الذهبي 2025، والأورج الملكي 2026\n\nتنويه هام‼️\nتجنب تحميل محتوياتنا من مواقع أخرى\nغير المواقع الظاهرة في الشريط الجانبي.", 
-                                 "Orgue Setats 2026 App\n\nThe most luxurious exclusive and professional sets\nProvided by the musician and developer ZEEKO ORG\n\nThe most luxurious exclusive themes available only\non our official pages\nAll updated Orgue versions like\nGolden Orgue 2025, and Royal Orgue 2026\n\nImportant Notice ‼️\nAvoid downloading our content from other websites\nother than the sites shown in the sidebar."));
+        content.setText(tr(lang, "تطبيق سيتات اورج PRO 2027\n\nالمكتبة الموسيقية الأضخم والأكثر احترافية للإيقاعات والسيتات الحصرية.\nتم تطوير وإدارة هذا التطبيق رسمياً بواسطة شركة ZEEKO ORG APPS LTD.\n\nنلتزم بتقديم محتوى صوتي عالي الجودة وحصري لدعم صناع الموسيقى والعازفين حول العالم.\n\nجميع حقوق الطبع والنشر والملكية الفكرية محفوظة © 2026.", 
+                                 "Setat ORG PRO 2027 App\n\nThe largest and most professional musical library for exclusive rhythms and sets.\nOfficially developed and managed by ZEEKO ORG APPS LTD.\n\nWe are committed to delivering high-quality, exclusive audio content to support music creators and players worldwide.\n\nAll copyrights and intellectual property rights are reserved © 2026."));
         content.setTextColor(Color.WHITE);
         content.setTextSize(14);
         content.setTypeface(null, Typeface.BOLD);
