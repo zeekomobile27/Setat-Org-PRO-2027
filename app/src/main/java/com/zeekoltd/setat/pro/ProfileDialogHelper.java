@@ -215,12 +215,12 @@ public class ProfileDialogHelper {
 
         if (btnWebsite != null) {
             btnWebsite.setOnClickListener(v -> {
-                activity.openUrlInBrowser("https://www.zeekoorg.com");
+                activity.openUrlInBrowser("https://www.zeekoltd.com");
             });
         }
 
         btnPrivacy.setOnClickListener(v -> {
-            activity.openUrlInBrowser("https://www.zeekoorg.com/p/privacy-policy-setat.html");
+            activity.openUrlInBrowser("https://www.zeekoltd.com/privacy.html");
         });
 
         btnAbout.setOnClickListener(v -> {
