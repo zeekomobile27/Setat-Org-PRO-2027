@@ -115,7 +115,7 @@ public class SplashsctivityActivity extends AppCompatActivity {
                 blurSkipBtn.setAlpha(0f);
                 blurSkipBtn.animate().alpha(1f).setDuration(300).start();
             }
-        }, 5000);
+        }, 3000);
 
         // الانتقال التلقائي بعد 9 ثوانٍ
         handler.postDelayed(transitionRunnable, 9000);
