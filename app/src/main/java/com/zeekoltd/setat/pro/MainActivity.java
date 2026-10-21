@@ -800,7 +800,7 @@ public class MainActivity extends AppCompatActivity {
         if (tvProfileTopTitle != null) tvProfileTopTitle.setText(tr("الحساب", "Profile"));
 
         TextView tvOrgVipBtnText = findViewById(R.id.tvOrgVipBtnText);
-        if (tvOrgVipBtnText != null) tvOrgVipBtnText.setText(tr("أورج زيكو VIP 27", "ORG ZEEKO VIP 27"));
+        if (tvOrgVipBtnText != null) tvOrgVipBtnText.setText(tr("أورج الملكي2027", "ORG Royal 2027"));
 
         TextView tvOrgVipTopTitle = findViewById(R.id.tvOrgVipTopTitle);
         if (tvOrgVipTopTitle != null) tvOrgVipTopTitle.setText(tr("إبدأ العزف الآن", "Start Playing Now"));
@@ -900,7 +900,7 @@ public class MainActivity extends AppCompatActivity {
         
         findViewById(R.id.btnOrgVipClick).setOnClickListener(v -> {
             v.setEnabled(false); 
-            pianoLoadingDialog = DialogHelper.showLoadingDialog(this, currentLang, tr("جاري تجهيز الأورج الذهبي...", "Preparing Golden ORG..."));
+            pianoLoadingDialog = DialogHelper.showLoadingDialog(this, currentLang, tr("جاري تجهيز الأورج الملكي...", "Preparing Royal ORG..."));
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 navigateWithoutAd(OrgPianoActivity.class);
                 if (pianoLoadingDialog != null) pianoLoadingDialog.dismiss();
