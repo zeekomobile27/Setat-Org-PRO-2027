@@ -118,7 +118,7 @@ public class SplashsctivityActivity extends AppCompatActivity {
         }, 3000);
 
         // الانتقال التلقائي بعد 9 ثوانٍ
-        handler.postDelayed(transitionRunnable, 9000);
+        handler.postDelayed(transitionRunnable, 8000);
 
         // برمجة النقر على زر التخطي الزجاجي
         if (blurSkipBtn != null) {
