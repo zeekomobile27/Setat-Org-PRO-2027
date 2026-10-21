@@ -626,7 +626,7 @@ public class OrgPianoActivity extends AppCompatActivity {
         if (tvLabelFX2 != null) tvLabelFX2.setText(tr("المؤثرات", "Effects"));
 
         TextView tvJoystickTitle = findViewById(R.id.tvJoystickTitle);
-        if (tvJoystickTitle != null) tvJoystickTitle.setText(tr("اورج زيكو VIP", "ORG ZEEKO VIP"));
+        if (tvJoystickTitle != null) tvJoystickTitle.setText(tr("اورج الملكي2027", "ORG Royal 27"));
 
         TextView tvCenterLoadingText = findViewById(R.id.tvCenterLoadingText);
         if (tvCenterLoadingText != null) tvCenterLoadingText.setText(tr("يرجى الانتظار...", "Please Wait..."));
