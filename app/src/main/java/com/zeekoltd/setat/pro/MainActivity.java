@@ -935,7 +935,7 @@ public class MainActivity extends AppCompatActivity {
         View btnHowToAddClick = findViewById(R.id.btnHowToAddClick);
         if (btnHowToAddClick != null) {
             btnHowToAddClick.setOnClickListener(v -> {
-                openUrlInBrowser("https://youtu.be/zzMtxeyvoT0");
+                openUrlInBrowser("https://youtu.be/esckr4PCDiw");
             });
         }
 
