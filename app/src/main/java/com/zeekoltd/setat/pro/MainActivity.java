@@ -928,7 +928,7 @@ public class MainActivity extends AppCompatActivity {
         View btnHowToDownloadClick = findViewById(R.id.btnHowToDownloadClick);
         if (btnHowToDownloadClick != null) {
             btnHowToDownloadClick.setOnClickListener(v -> {
-                openUrlInBrowser("https://youtube.com/shorts/HhbkHfp3Rjw?feature=share");
+                openUrlInBrowser("https://youtube.com/shorts/VErvTNSe6CU?feature=share");
             });
         }
         
