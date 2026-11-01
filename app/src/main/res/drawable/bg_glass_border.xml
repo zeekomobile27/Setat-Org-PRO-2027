@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- الطبقة السفلية: الإطار المتوهج (أبيض من الأعلى وذهبي من الأسفل) -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="22dp" />
+            <gradient
+                android:angle="90"
+                android:startColor="#FFFFB300" 
+                android:centerColor="#4DFFFFFF" 
+                android:endColor="#FFFFFFFF" 
+                android:type="linear" />
+        </shape>
+    </item>
+    
+    <!-- الطبقة العلوية: الزجاج الداخلي الداكن (مع مسافة بادئة 1.5dp لترك الإطار يلمع) -->
+    <item android:bottom="1.5dp" android:top="1.5dp" android:left="1dp" android:right="1dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="21dp" />
+            <gradient
+                android:angle="270"
+                android:startColor="#991B2436" 
+                android:endColor="#B30B111A" />
+        </shape>
+    </item>
+</layer-list>
