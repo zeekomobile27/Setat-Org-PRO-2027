@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- إطار فضي مع لمسة ذهبية رفيعة في الأسفل -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="100dp" />
+            <gradient
+                android:type="linear"
+                android:angle="90"
+                android:startColor="#FFFFD36A"
+                android:centerColor="#D9E8F4FF"
+                android:endColor="#FFFFFFFF" />
+        </shape>
+    </item>
+
+    <!-- طبقة داخلية جليدية شبه شفافة: تغطي التدرج السابق ولا تترك الذهب يملأ الداخل -->
+    <item
+        android:left="1.4dp"
+        android:top="1.4dp"
+        android:right="1.4dp"
+        android:bottom="1.4dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="100dp" />
+            <solid android:color="#557F9BB8" />
+            <stroke
+                android:width="0.5dp"
+                android:color="#66FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- انعكاس أبيض ناعم في الجزء العلوي -->
+    <item
+        android:left="2dp"
+        android:top="2dp"
+        android:right="2dp"
+        android:bottom="2dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="100dp" />
+            <gradient
+                android:type="linear"
+                android:angle="270"
+                android:startColor="#42FFFFFF"
+                android:centerColor="#12FFFFFF"
+                android:endColor="#00FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- خط ذهبي داخلي رفيع أسفل الزر، وليس مساحة ذهبية كاملة -->
+    <item
+        android:gravity="bottom"
+        android:left="18dp"
+        android:right="18dp"
+        android:bottom="1dp"
+        android:height="1.5dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="2dp" />
+            <solid android:color="#CCFFD36A" />
+        </shape>
+    </item>
+
+</layer-list>
