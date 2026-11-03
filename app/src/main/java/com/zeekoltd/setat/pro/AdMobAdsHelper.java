@@ -82,7 +82,7 @@ public class AdMobAdsHelper {
     // لا يتم جلبها من فايربيس نهائياً حسب طلبك
     // ============================================================
     public static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712";
-    public static final String REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917";
+    public static final String REWARDED_AD_UNIT_ID = "ca-app-pub-6135301066898637/4703016895";
     public static final String BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"; 
 
     // ============================================================
