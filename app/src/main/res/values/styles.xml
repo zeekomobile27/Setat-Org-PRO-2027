@@ -11,14 +11,12 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
-
-        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">shortEdges</item>
         
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
-
-        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="vanilla_ice_cream">true</item>
+        
+        <!-- تم إزالة سطر shortEdges وسطر OptOutEdgeToEdge من الثيم الأساسي لإرضاء سياسات أندرويد 15 -->
     </style>
 
     <style name="CategoryButtonStyle" parent="Widget.AppCompat.Button">
@@ -42,6 +40,7 @@
         
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">default</item>
         
+        <!-- هذا السطر يبقى هنا فقط لحماية أزرار مكتبة القص من التداخل -->
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="vanilla_ice_cream">true</item>
     </style>
 
