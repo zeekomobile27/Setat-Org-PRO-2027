@@ -1012,7 +1012,7 @@ public class MainActivity extends AppCompatActivity {
         View btnPopularClick = findViewById(R.id.btnPopularClick);
         if (btnPopularClick != null) {
             btnPopularClick.setOnTouchListener(getTouchListener());
-            btnPopularClick.setOnClickListener(v -> navigateWithAd(NewActivity.class));
+            btnPopularClick.setOnClickListener(v -> navigateWithAd(PopularActivity.class));
         }
 
         View btnHowToDownloadClick = findViewById(R.id.btnHowToDownloadClick);
