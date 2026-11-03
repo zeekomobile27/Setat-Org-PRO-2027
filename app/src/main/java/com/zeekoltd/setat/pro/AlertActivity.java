@@ -32,6 +32,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.view.WindowCompat;
 
 import java.util.Locale;
 
@@ -73,6 +74,8 @@ public class AlertActivity extends AppCompatActivity {
     protected void onCreate(Bundle _savedInstanceState) {
         super.onCreate(_savedInstanceState);
         applyLanguage();
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
         setContentView(R.layout.alert);
         initializeLogic();
         
@@ -86,8 +89,6 @@ public class AlertActivity extends AppCompatActivity {
     }
 
     private void initializeLogic() {
-        getWindow().setStatusBarColor(Color.parseColor("#121620"));
-        
         mainContentView = findViewById(R.id.mainContentView);
         contentLayout = findViewById(R.id.contentLayout);
         bannerContainer = findViewById(R.id.bannerContainer);

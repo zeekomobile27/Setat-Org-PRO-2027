@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.*;
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.*;
@@ -34,14 +35,14 @@ public class AdminChatsListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_chats);
         applyLanguage();
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        setContentView(R.layout.activity_admin_chats);
         initializeAdmin();
     }
 
     private void initializeAdmin() {
-        getWindow().setStatusBarColor(Color.parseColor("#121620"));
-
         metadataRef = FirebaseDatabase.getInstance().getReference("support_metadata");
         timeFormat = new SimpleDateFormat("hh:mm a", new Locale(currentLang));
 

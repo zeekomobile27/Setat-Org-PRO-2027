@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 
 // استيرادات سياسات جوجل (UMP) ومحرك الإعلانات
 import com.google.android.gms.ads.MobileAds;
@@ -66,6 +67,9 @@ public class LanguageActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
         editor = prefs.edit();
@@ -128,7 +132,6 @@ public class LanguageActivity extends AppCompatActivity {
         }
 
         setContentView(mainLayout);
-        getWindow().setStatusBarColor(Color.parseColor("#121620"));
     }
 
     private void checkInitialStates() {

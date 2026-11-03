@@ -19,6 +19,7 @@ import android.widget.VideoView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 
 import java.util.Locale;
 
@@ -64,10 +65,8 @@ public class SplashsctivityActivity extends AppCompatActivity {
         
         applyLanguage();
         
-        // إعادة لون شريط الحالة للون الداكن ومنع المحتوى من التخطي خلفه
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(Color.parseColor("#121620"));
-        }
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
         
         setContentView(R.layout.splashsctivity);
         

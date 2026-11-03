@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
 
 import com.google.firebase.FirebaseApp;
 
@@ -73,9 +74,9 @@ public class MainactivityActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
         
         applyLanguage();
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
         setContentView(R.layout.mainactivity);
-        
-        getWindow().setStatusBarColor(Color.parseColor("#121620"));
 
         mainContentView = findViewById(R.id.mainContentView);
         
