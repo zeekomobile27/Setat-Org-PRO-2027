@@ -121,7 +121,7 @@
         <!-- معرف حساب إعلانات جوجل AdMob التجريبي -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-6135301066898637~2191182433" />
 
         <!-- مزود الملفات الآمن لمشاركة الملفات محلياً -->
         <provider
