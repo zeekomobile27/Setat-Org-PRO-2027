@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.*;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -77,9 +78,11 @@ public class SupportChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        applyLanguage();
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
         setContentView(R.layout.activity_support_chat);
         EmojiManager.install(new GoogleEmojiProvider());
-        applyLanguage();
         
         roomUid = getIntent().getStringExtra("room_uid");
         isAdmin = getIntent().getBooleanExtra("is_admin", false);
@@ -90,8 +93,6 @@ public class SupportChatActivity extends AppCompatActivity {
     }
 
     private void initializeChat() {
-        getWindow().setStatusBarColor(Color.parseColor("#121620"));
-
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         
