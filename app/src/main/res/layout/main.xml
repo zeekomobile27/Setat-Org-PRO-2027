@@ -1,0 +1,1626 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainContentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:layoutDirection="locale">
+
+    <FrameLayout
+        android:id="@+id/brightBackgroundTarget"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/imgMainBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/zeeko40" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#33000000" />
+    </FrameLayout>
+
+    <eightbitlab.com.blurview.BlurView android:id="@+id/blurTopBar" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone"/>
+    <eightbitlab.com.blurview.BlurView android:id="@+id/blurBottomBar" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/topBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="28dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="6dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <eightbitlab.com.blurview.BlurView
+            android:id="@+id/blurLangBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_glass_capsule"
+            android:clipToOutline="true"
+            app:blurOverlayColor="#00000000">
+
+            <LinearLayout
+                android:id="@+id/btnLangTopBar"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:paddingHorizontal="14dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_language"
+                    app:tint="#FFD700" />
+
+                <TextView
+                    android:id="@+id/tvLangTopTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:shadowColor="#FF000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2" />
+            </LinearLayout>
+        </eightbitlab.com.blurview.BlurView>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <eightbitlab.com.blurview.BlurView
+            android:id="@+id/blurProfileBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_glass_capsule"
+            android:clipToOutline="true"
+            app:blurOverlayColor="#00000000">
+
+            <LinearLayout
+                android:id="@+id/btnProfileClick"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="6dp"
+                android:paddingEnd="14dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#26FFFFFF">
+                    <ImageView
+                        android:id="@+id/imgProfilePic"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_default_user"
+                        android:scaleType="centerCrop" />
+                </androidx.cardview.widget.CardView>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="10dp"
+                    android:gravity="start">
+
+                    <TextView
+                        android:id="@+id/tvProfileTopTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:shadowColor="#FF000000"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="2" />
+
+                    <TextView
+                        android:id="@+id/tvProfileSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="مرحباً 👋🏻"
+                        android:textColor="#FFD700"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </eightbitlab.com.blurview.BlurView>
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scrollViewButtons"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@id/topBarContainer"
+        app:layout_constraintBottom_toTopOf="@id/blurBottomNavBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp">
+
+            <eightbitlab.com.blurview.BlurView
+                android:id="@+id/blurOrgVipBtn"
+                android:layout_width="match_parent"
+                android:layout_height="135dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_glass_border"
+                android:clipToOutline="true"
+                app:blurOverlayColor="#00000000">
+
+                <FrameLayout
+                    android:id="@+id/btnOrgVipClick"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/imgOrgHeroBg"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:alpha="0.9"
+                        android:src="@drawable/zeeko18" />
+
+                    <com.zeekoltd.setat.pro.MovingBorderView
+                        android:id="@+id/orgVipMovingBorder"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="start|center_vertical"
+                        android:orientation="vertical"
+                        android:gravity="center_vertical|start"
+                        android:paddingHorizontal="18dp"
+                        android:paddingVertical="12dp"
+                        android:elevation="6dp">
+
+                        <TextView
+                            android:id="@+id/tvOrgVipBtnText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#FFD700"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="2"
+                            android:shadowRadius="4" />
+
+                        <TextView
+                            android:id="@+id/tvOrgVipSubText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="#E0E0E0"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="2" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="34dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/bg_glass_capsule"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="16dp">
+
+                            <ImageView
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:src="@drawable/ic_play_glow"
+                                app:tint="#FFD700" />
+
+                            <TextView
+                                android:id="@+id/tvOrgVipTopTitle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:textColor="#FFFFFF"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </FrameLayout>
+            </eightbitlab.com.blurview.BlurView>
+
+            <eightbitlab.com.blurview.BlurView
+                android:id="@+id/blurSearchBar"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_glass_capsule"
+                android:clipToOutline="true"
+                app:blurOverlayColor="#00000000">
+
+                <LinearLayout
+                    android:id="@+id/btnGlobalSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="#FFFFFF"/>
+
+                    <TextView
+                        android:id="@+id/tvSearchHint"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="10dp"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="13sp"
+                        android:gravity="start"/>
+
+                    <FrameLayout
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/bg_glass_circle_border">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_search_filter"
+                            app:tint="#FFD700"/>
+                    </FrameLayout>
+                </LinearLayout>
+            </eightbitlab.com.blurview.BlurView>
+
+            <eightbitlab.com.blurview.BlurView
+                android:id="@+id/blurSmartBanner"
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_glass_capsule"
+                android:clipToOutline="true"
+                app:blurOverlayColor="#00000000"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:id="@+id/btnSmartBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingHorizontal="12dp"
+                    android:clickable="false"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:id="@+id/tvSmartBannerText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:scrollHorizontally="true"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:shadowColor="#FF000000"
+                        android:shadowDx="1"
+                        android:shadowDy="1"
+                        android:shadowRadius="3"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" 📢"
+                        android:textSize="13sp"
+                        android:layout_marginStart="4dp"/>
+                </LinearLayout>
+            </eightbitlab.com.blurview.BlurView>
+
+            <!-- عنوان قسم مجموعات السيتات (بدون أي أزرار أو أحداث نقر) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:paddingHorizontal="4dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_music"
+                    app:tint="#FFD700" />
+
+                <TextView
+                    android:id="@+id/tvSectionSetsTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:gravity="start" />
+            </LinearLayout>
+
+            <eightbitlab.com.blurview.BlurView
+                android:id="@+id/blurNewSetExclusive"
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_glass_border"
+                android:clipToOutline="true"
+                app:blurOverlayColor="#00000000">
+
+                <FrameLayout
+                    android:id="@+id/btnNewSetExclusive"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/imgBgExclusive"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:alpha="0.85"
+                        android:src="@drawable/zeeko19"/>
+
+                    <!-- إضافة elevation لمنع اختفاء النصوص تحت الصورة -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|start"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginBottom="14dp"
+                        android:orientation="vertical"
+                        android:gravity="start"
+                        android:elevation="5dp">
+
+                        <TextView
+                            android:id="@+id/tvExclusiveSetTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#FFFFFF"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="4" />
+
+                        <TextView
+                            android:id="@+id/tvCountExclusive"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:textColor="#FFD700"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginEnd="14dp"
+                        android:layout_marginBottom="14dp"
+                        android:background="@drawable/bg_glass_circle_border"
+                        android:elevation="5dp">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_arrow_card" />
+                    </FrameLayout>
+                </FrameLayout>
+            </eightbitlab.com.blurview.BlurView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="10dp">
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat2"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko25"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat3"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko27"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="10dp">
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat5"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat5"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko27"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat6"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat6"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat6"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko20"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat6"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat6"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="10dp">
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat7"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat7"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat7"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko21"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat7"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat7"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat8"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat8"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat8"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko27"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat8"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat8"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="10dp">
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat9"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat9"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat9"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko22"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat9"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat9"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat10"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat10"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat10"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko23"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat10"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat10"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="14dp">
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat11"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat11"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat11"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko24"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat11"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat11"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurSetat12"
+                    android:layout_width="0dp"
+                    android:layout_height="96dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnSetat12"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:id="@+id/imgBgSetat12"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:alpha="0.85"
+                            android:src="@drawable/zeeko26"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="42dp"
+                            android:layout_marginBottom="10dp"
+                            android:orientation="vertical"
+                            android:gravity="start"
+                            android:elevation="3dp">
+                            <TextView
+                                android:id="@+id/tvSetat12"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:singleLine="true"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="3"/>
+                            <TextView
+                                android:id="@+id/tvCountSetat12"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="#FFD700"
+                                android:textSize="11sp"
+                                android:textStyle="bold"
+                                android:shadowColor="#FF000000"
+                                android:shadowDx="1"
+                                android:shadowDy="1"
+                                android:shadowRadius="2"/>
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_glass_circle_border"
+                            android:elevation="3dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_arrow_card" />
+                        </FrameLayout>
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+            </LinearLayout>
+
+            <!-- ==================== و. قسم الأكثر شعبية والشروحات (بدون أي أزرار أو أحداث نقر) ==================== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp"
+                android:paddingHorizontal="4dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/icon_star"
+                    app:tint="#FFD700" />
+
+                <TextView
+                    android:id="@+id/tvSectionPopularTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:gravity="start" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/newFeaturesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:gravity="center">
+
+                <!-- 1. زر إضافة السيت -->
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurHowToAddBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnHowToAddClick"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/icon_heart"
+                            app:tint="#FFD700" />
+
+                        <TextView
+                            android:id="@+id/tvHowToAddText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:gravity="start"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="2" />
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <!-- 2. زر تحميل السيتات -->
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurHowToDownloadBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="4dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnHowToDownloadClick"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/icon_star"
+                            app:tint="#FFD700" />
+
+                        <TextView
+                            android:id="@+id/tvHowToDownloadText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:gravity="start"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="2" />
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+
+                <!-- 3. زر الأكثر انتشاراً (رائج) -->
+                <eightbitlab.com.blurview.BlurView
+                    android:id="@+id/blurPopularBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
+                    <FrameLayout
+                        android:id="@+id/btnPopularClick"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="8dp"
+                            android:src="@drawable/icon_fire"
+                            app:tint="#FFD700" />
+
+                        <TextView
+                            android:id="@+id/tvPopularText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|start"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:gravity="start"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="2" />
+                    </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ==================== 3. الشريط السفلي الثابت (عائم) ==================== -->
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurBottomNavBar"
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_glass_capsule"
+        android:clipToOutline="true"
+        app:blurOverlayColor="#00000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/bottomBarContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="4"
+            android:paddingHorizontal="8dp"
+            android:gravity="center_vertical">
+
+            <!-- المشاركة -->
+            <LinearLayout
+                android:id="@+id/btnShareClick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/icon_share_round"
+                    app:tint="#FFD700" />
+                <TextView
+                    android:id="@+id/tvShareTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:shadowColor="#FF000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="32dp"
+                android:background="#33FFFFFF"
+                android:layout_gravity="center_vertical"/>
+
+            <!-- المفضلة -->
+            <LinearLayout
+                android:id="@+id/btnFavoritesClick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/icon_star"
+                    app:tint="#FFFFFF" />
+                <TextView
+                    android:id="@+id/tvFavoritesText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:shadowColor="#FF000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="32dp"
+                android:background="#33FFFFFF"
+                android:layout_gravity="center_vertical"/>
+
+            <!-- الإشعارات -->
+            <LinearLayout
+                android:id="@+id/btnNotificationsClick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/icon_circle_notifications_round"
+                    app:tint="#FFFFFF" />
+                <TextView
+                    android:id="@+id/tvNotifTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:shadowColor="#FF000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="32dp"
+                android:background="#33FFFFFF"
+                android:layout_gravity="center_vertical"/>
+
+            <!-- الدعم -->
+            <LinearLayout
+                android:id="@+id/btnChatClick"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_chat"
+                    app:tint="#FFFFFF" />
+                <TextView
+                    android:id="@+id/tvChatTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:shadowColor="#FF000000"
+                    android:shadowDx="1"
+                    android:shadowDy="1"
+                    android:shadowRadius="2" />
+            </LinearLayout>
+        </LinearLayout>
+    </eightbitlab.com.blurview.BlurView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
