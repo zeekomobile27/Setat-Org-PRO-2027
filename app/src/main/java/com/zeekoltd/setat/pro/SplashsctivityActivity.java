@@ -19,7 +19,8 @@ import android.widget.VideoView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import java.util.Locale;
 
@@ -65,8 +66,7 @@ public class SplashsctivityActivity extends AppCompatActivity {
         
         applyLanguage();
         
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        EdgeToEdgeHelper.enable(getWindow());
         
         setContentView(R.layout.splashsctivity);
         
@@ -76,6 +76,24 @@ public class SplashsctivityActivity extends AppCompatActivity {
         // إعداد وتفعيل تأثير الزجاج لزر التخطي
         blurSkipBtn = findViewById(R.id.blurSkipBtn);
         ViewGroup root = findViewById(R.id.mainContentView);
+        if (root != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+                View skipButton = findViewById(R.id.blurSkipBtn);
+                if (skipButton != null) {
+                    int safeInsetType = WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout();
+                    androidx.core.graphics.Insets safeInsets = insets.getInsets(safeInsetType);
+                    float density = getResources().getDisplayMetrics().density;
+                    ViewGroup.MarginLayoutParams params =
+                            (ViewGroup.MarginLayoutParams) skipButton.getLayoutParams();
+                    params.topMargin = safeInsets.top + (int) (25 * density);
+                    params.leftMargin = safeInsets.left + (int) (25 * density);
+                    skipButton.setLayoutParams(params);
+                }
+                return insets;
+            });
+            ViewCompat.requestApplyInsets(root);
+        }
         if (blurSkipBtn != null && root != null) {
             blurSkipBtn.setupWith(root, new RenderScriptBlur(this))
                        .setBlurRadius(15f)

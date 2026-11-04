@@ -22,7 +22,8 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.FirebaseApp;
 
@@ -74,26 +75,25 @@ public class MainactivityActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
         
         applyLanguage();
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        EdgeToEdgeHelper.enable(getWindow());
         setContentView(R.layout.mainactivity);
 
         mainContentView = findViewById(R.id.mainContentView);
         
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            mainContentView.setOnApplyWindowInsetsListener((v, insets) -> {
+            ViewCompat.setOnApplyWindowInsetsListener(mainContentView, (v, insets) -> {
                 View connectionLayout = findViewById(R.id.connectionLayout);
                 float d = getResources().getDisplayMetrics().density;
                 
                 if (connectionLayout != null) {
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) connectionLayout.getLayoutParams();
-                    params.topMargin = insets.getSystemWindowInsetTop() + (int)(15 * d);
-                    params.bottomMargin = insets.getSystemWindowInsetBottom() + (int)(15 * d);
+                    params.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()).top + (int)(15 * d);
+                    params.bottomMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout() | WindowInsetsCompat.Type.ime()).bottom + (int)(15 * d);
                     connectionLayout.setLayoutParams(params);
                 }
                 return insets;
             });
-            mainContentView.requestApplyInsets();
+            ViewCompat.requestApplyInsets(mainContentView);
         }
 
         connectionLayout = findViewById(R.id.connectionLayout);

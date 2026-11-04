@@ -18,8 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.*;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -79,8 +80,7 @@ public class SupportChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyLanguage();
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        EdgeToEdgeHelper.enable(getWindow());
         setContentView(R.layout.activity_support_chat);
         EmojiManager.install(new GoogleEmojiProvider());
         
@@ -128,24 +128,24 @@ public class SupportChatActivity extends AppCompatActivity {
         
         // 🌟 حماية الواجهة لكي لا تتداخل مع شريط إشعارات الهاتف والأزرار السفلية 🌟
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            appRootView.setOnApplyWindowInsetsListener((v, insets) -> {
+            ViewCompat.setOnApplyWindowInsetsListener(appRootView, (v, insets) -> {
                 View blurTopBar = findViewById(R.id.blurTopBar);
                 View blurBottomBar = findViewById(R.id.blurBottomBar);
                 float d = getResources().getDisplayMetrics().density;
                 
                 if (blurTopBar != null) {
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) blurTopBar.getLayoutParams();
-                    params.topMargin = insets.getSystemWindowInsetTop() + (int)(15 * d);
+                    params.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()).top + (int)(15 * d);
                     blurTopBar.setLayoutParams(params);
                 }
                 if (blurBottomBar != null) {
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) blurBottomBar.getLayoutParams();
-                    params.bottomMargin = insets.getSystemWindowInsetBottom() + (int)(15 * d);
+                    params.bottomMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout() | WindowInsetsCompat.Type.ime()).bottom + (int)(15 * d);
                     blurBottomBar.setLayoutParams(params);
                 }
                 return insets;
             });
-            appRootView.requestApplyInsets();
+            ViewCompat.requestApplyInsets(appRootView);
         }
 
         recyclerChat = findViewById(R.id.recyclerChat);

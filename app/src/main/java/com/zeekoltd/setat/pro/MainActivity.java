@@ -34,9 +34,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.WindowCompat;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -110,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         }
         
         applyLanguage();
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        EdgeToEdgeHelper.enable(getWindow());
         setContentView(R.layout.main);
         
         initActivityResultLaunchers();
@@ -958,27 +959,30 @@ public class MainActivity extends AppCompatActivity {
         mainContentView = findViewById(R.id.mainContentView);
         
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            mainContentView.setOnApplyWindowInsetsListener(new View.OnApplyWindowInsetsListener() {
-                @Override
-                public android.view.WindowInsets onApplyWindowInsets(View v, android.view.WindowInsets insets) {
-                    View topBar = findViewById(R.id.topBarContainer);
-                    View bottomNavBar = findViewById(R.id.blurBottomNavBar);
-                    float d = getResources().getDisplayMetrics().density;
-                    
-                    if (topBar != null) {
-                        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) topBar.getLayoutParams();
-                        params.topMargin = insets.getSystemWindowInsetTop() + (int)(6 * d);
-                        topBar.setLayoutParams(params);
-                    }
-                    if (bottomNavBar != null) {
-                        ViewGroup.MarginLayoutParams bottomParams = (ViewGroup.MarginLayoutParams) bottomNavBar.getLayoutParams();
-                        bottomParams.bottomMargin = insets.getSystemWindowInsetBottom() + (int)(12 * d);
-                        bottomNavBar.setLayoutParams(bottomParams);
-                    }
-                    return insets;
+            ViewCompat.setOnApplyWindowInsetsListener(mainContentView, (v, insets) -> {
+                View topBar = findViewById(R.id.topBarContainer);
+                View bottomNavBar = findViewById(R.id.blurBottomNavBar);
+                float d = getResources().getDisplayMetrics().density;
+
+                int topInset = insets.getInsets(
+                        WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()).top;
+                int bottomInset = insets.getInsets(
+                        WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()
+                                | WindowInsetsCompat.Type.ime()).bottom;
+
+                if (topBar != null) {
+                    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) topBar.getLayoutParams();
+                    params.topMargin = topInset + (int) (6 * d);
+                    topBar.setLayoutParams(params);
                 }
+                if (bottomNavBar != null) {
+                    ViewGroup.MarginLayoutParams bottomParams = (ViewGroup.MarginLayoutParams) bottomNavBar.getLayoutParams();
+                    bottomParams.bottomMargin = bottomInset + (int) (12 * d);
+                    bottomNavBar.setLayoutParams(bottomParams);
+                }
+                return insets;
             });
-            mainContentView.requestApplyInsets();
+            ViewCompat.requestApplyInsets(mainContentView);
         }
 
         TextView tvLangTopTitle = findViewById(R.id.tvLangTopTitle);

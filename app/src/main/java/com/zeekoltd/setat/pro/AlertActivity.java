@@ -31,8 +31,9 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.core.view.WindowCompat;
 
 import java.util.Locale;
 
@@ -74,8 +75,7 @@ public class AlertActivity extends AppCompatActivity {
     protected void onCreate(Bundle _savedInstanceState) {
         super.onCreate(_savedInstanceState);
         applyLanguage();
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        EdgeToEdgeHelper.enable(getWindow());
         setContentView(R.layout.alert);
         initializeLogic();
         
@@ -95,18 +95,18 @@ public class AlertActivity extends AppCompatActivity {
         
         // 🌟 حماية الواجهة لكي لا تتداخل مع شريط إشعارات الهاتف 🌟
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            mainContentView.setOnApplyWindowInsetsListener((v, insets) -> {
+            ViewCompat.setOnApplyWindowInsetsListener(mainContentView, (v, insets) -> {
                 View blurTopBarAlert = findViewById(R.id.blurTopBarAlert);
                 float d = getResources().getDisplayMetrics().density;
                 
                 if (blurTopBarAlert != null) {
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) blurTopBarAlert.getLayoutParams();
-                    params.topMargin = insets.getSystemWindowInsetTop() + (int)(15 * d);
+                    params.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()).top + (int)(15 * d);
                     blurTopBarAlert.setLayoutParams(params);
                 }
                 return insets;
             });
-            mainContentView.requestApplyInsets();
+            ViewCompat.requestApplyInsets(mainContentView);
         }
         
         setupBlurViews();

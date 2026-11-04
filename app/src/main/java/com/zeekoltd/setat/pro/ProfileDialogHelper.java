@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,7 +50,7 @@ public class ProfileDialogHelper {
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            WindowCompat.setDecorFitsSystemWindows(window, false);
+            EdgeToEdgeHelper.enable(window);
         }
 
         dialog.setContentView(R.layout.dialog_profile);

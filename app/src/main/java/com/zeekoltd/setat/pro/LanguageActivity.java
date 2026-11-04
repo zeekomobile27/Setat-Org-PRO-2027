@@ -31,7 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
+import androidx.core.view.ViewCompat;
 
 // استيرادات سياسات جوجل (UMP) ومحرك الإعلانات
 import com.google.android.gms.ads.MobileAds;
@@ -68,8 +68,7 @@ public class LanguageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        EdgeToEdgeHelper.enable(getWindow());
 
         prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
         editor = prefs.edit();
@@ -127,8 +126,8 @@ public class LanguageActivity extends AppCompatActivity {
 
         // 3. حماية الـ Insets
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            mainLayout.setOnApplyWindowInsetsListener((v, insets) -> insets);
-            mainLayout.requestApplyInsets();
+            ViewCompat.setOnApplyWindowInsetsListener(mainLayout, (v, insets) -> insets);
+            ViewCompat.requestApplyInsets(mainLayout);
         }
 
         setContentView(mainLayout);

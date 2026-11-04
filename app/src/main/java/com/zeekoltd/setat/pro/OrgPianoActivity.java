@@ -1,5 +1,7 @@
 package com.zeekoltd.setat.pro;
 
+import androidx.core.view.WindowInsetsCompat;
+
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
@@ -154,9 +156,8 @@ public class OrgPianoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyLanguage();
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        applyPianoOrientationForCurrentWindow();
+        EdgeToEdgeHelper.enable(getWindow());
         
         setContentView(R.layout.activity_org_piano);
 
@@ -199,6 +200,30 @@ public class OrgPianoActivity extends AppCompatActivity {
         initNativeAudioEngine(); 
         setupPianoView();
         hideSystemUI(); 
+    }
+
+
+    /**
+     * Preserve the original landscape piano experience on handsets while allowing
+     * tablets and large foldable displays to use the orientation chosen by the user.
+     */
+    private void applyPianoOrientationForCurrentWindow() {
+        int smallestWidthDp = getResources().getConfiguration().smallestScreenWidthDp;
+        int requested = smallestWidthDp >= 600
+                ? ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        if (getRequestedOrientation() != requested) {
+            setRequestedOrientation(requested);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        applyPianoOrientationForCurrentWindow();
+        View content = findViewById(android.R.id.content);
+        if (content != null) content.requestLayout();
+        if (pianoView != null) pianoView.requestLayout();
     }
 
     @Override

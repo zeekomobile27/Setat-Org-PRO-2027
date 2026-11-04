@@ -25,7 +25,8 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -121,8 +122,7 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyLanguage();
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        EdgeToEdgeHelper.enable(getWindow());
         setContentView(R.layout.activity_search);
 
         mAuth = FirebaseAuth.getInstance();
@@ -145,22 +145,22 @@ public class SearchActivity extends AppCompatActivity {
 
     private void initializeLogic() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            appRootView.setOnApplyWindowInsetsListener((v, insets) -> {
+            ViewCompat.setOnApplyWindowInsetsListener(appRootView, (v, insets) -> {
                 float d = getResources().getDisplayMetrics().density;
                 View blurTopBarNew = findViewById(R.id.blurTopBarNew);
                 if (blurTopBarNew != null) {
                     ViewGroup.MarginLayoutParams paramsTop = (ViewGroup.MarginLayoutParams) blurTopBarNew.getLayoutParams();
-                    paramsTop.topMargin = insets.getSystemWindowInsetTop() + (int)(15*d);
+                    paramsTop.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()).top + (int)(15*d);
                     blurTopBarNew.setLayoutParams(paramsTop);
                 }
                 if (viewPagerSets != null) {
                     ViewGroup.MarginLayoutParams paramsBottom = (ViewGroup.MarginLayoutParams) viewPagerSets.getLayoutParams();
-                    paramsBottom.bottomMargin = insets.getSystemWindowInsetBottom();
+                    paramsBottom.bottomMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout() | WindowInsetsCompat.Type.ime()).bottom;
                     viewPagerSets.setLayoutParams(paramsBottom);
                 }
                 return insets;
             });
-            appRootView.requestApplyInsets();
+            ViewCompat.requestApplyInsets(appRootView);
         }
 
         adMobAdsHelper = AdMobAdsHelper.getInstance(this);

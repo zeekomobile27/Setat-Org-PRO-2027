@@ -10,7 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.*;
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.*;
@@ -36,8 +37,7 @@ public class AdminChatsListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyLanguage();
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        EdgeToEdgeHelper.enable(getWindow());
         setContentView(R.layout.activity_admin_chats);
         initializeAdmin();
     }
@@ -50,18 +50,18 @@ public class AdminChatsListActivity extends AppCompatActivity {
         
         // 🌟 حماية الواجهة لكي لا تتداخل مع شريط إشعارات الهاتف 🌟
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            appRootView.setOnApplyWindowInsetsListener((v, insets) -> {
+            ViewCompat.setOnApplyWindowInsetsListener(appRootView, (v, insets) -> {
                 View blurTopBarAdmin = findViewById(R.id.blurTopBarAdmin);
                 float d = getResources().getDisplayMetrics().density;
                 
                 if (blurTopBarAdmin != null) {
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) blurTopBarAdmin.getLayoutParams();
-                    params.topMargin = insets.getSystemWindowInsetTop() + (int)(15 * d);
+                    params.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()).top + (int)(15 * d);
                     blurTopBarAdmin.setLayoutParams(params);
                 }
                 return insets;
             });
-            appRootView.requestApplyInsets();
+            ViewCompat.requestApplyInsets(appRootView);
         }
 
         recyclerAdminChats = findViewById(R.id.recyclerAdminChats);

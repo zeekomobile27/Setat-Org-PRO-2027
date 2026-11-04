@@ -34,7 +34,8 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -132,8 +133,7 @@ public class SetategeptActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         applyLanguage();
-        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        EdgeToEdgeHelper.enable(getWindow());
         setContentView(R.layout.setategept);
 
         titleClickHandler = new Handler(Looper.getMainLooper());
@@ -281,17 +281,17 @@ public class SetategeptActivity extends AppCompatActivity {
 
     private void initializeLogic() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            appRootView.setOnApplyWindowInsetsListener((v, insets) -> {
+            ViewCompat.setOnApplyWindowInsetsListener(appRootView, (v, insets) -> {
                 View blurTopBarNew = findViewById(R.id.blurTopBarNew);
                 if (blurTopBarNew != null) {
                     float d = getResources().getDisplayMetrics().density;
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) blurTopBarNew.getLayoutParams();
-                    params.topMargin = insets.getSystemWindowInsetTop() + (int)(15*d);
+                    params.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout()).top + (int)(15*d);
                     blurTopBarNew.setLayoutParams(params);
                 }
                 return insets;
             });
-            appRootView.requestApplyInsets();
+            ViewCompat.requestApplyInsets(appRootView);
         }
 
         adMobAdsHelper = AdMobAdsHelper.getInstance(this);
