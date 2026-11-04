@@ -1,11 +1,23 @@
 cmake_minimum_required(VERSION 3.22.1)
+
 project("goldenorg")
 
-# استدعاء مكتبة Oboe
+# Oboe
 find_package(oboe REQUIRED CONFIG)
 
-# إنشاء المحرك الصوتي الخاص بنا
-add_library(goldenorg SHARED AudioEngine.cpp)
+# Audio Engine
+add_library(goldenorg SHARED
+    AudioEngine.cpp
+)
 
-# ربط المحرك مع Oboe ونظام الأندرويد
-target_link_libraries(goldenorg oboe::oboe log)
+# C++17
+target_compile_features(goldenorg PRIVATE
+    cxx_std_17
+)
+
+# Link libraries
+target_link_libraries(goldenorg
+    PRIVATE
+    oboe::oboe
+    log
+)
