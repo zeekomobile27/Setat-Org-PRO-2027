@@ -40,7 +40,7 @@
         android:hardwareAccelerated="true"
         android:usesCleartextTraffic="false" 
         android:largeHeap="true"
-        tools:targetApi="35">
+        tools:targetApi="36">
 
         <!-- شاشة البداية (الوحيدة المسموح لها بالتصدير) -->
         <activity
@@ -83,18 +83,16 @@
         <activity android:name=".FavoritesActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".SearchActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
 
-        <!-- شاشة العزف الأفقية (تبقى أفقية للحفاظ على استقرار محرك الصوت والعزف) -->
+        <!-- شاشة العزف: الاتجاه الأفقي على الهواتف، مع السماح بالتكيّف على الشاشات الكبيرة -->
         <activity
             android:name=".OrgPianoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:hardwareAccelerated="true"
-            android:screenOrientation="sensorLandscape"
             android:exported="false" />
 
-        <!-- UCrop Activity (تطبيق القص يتطلب أن يكون Portrait ليعمل بدون أخطاء) -->
+        <!-- UCrop 2.2.11 يدعم Edge-to-Edge؛ لا نفرض اتجاهاً ثابتاً على الشاشات الكبيرة -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.UCrop"
             android:exported="false" />
 
