@@ -18,12 +18,8 @@ android {
 
         minSdk 24
         targetSdk 36
-
-        // استخدم 5 إذا كان 4 آخر versionCode مستخدم
-        versionCode 6
-
+        versionCode 7
         versionName "2027"
-
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++17"
