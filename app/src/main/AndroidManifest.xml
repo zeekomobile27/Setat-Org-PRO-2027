@@ -23,8 +23,10 @@
     <!-- 5. إبقاء الشاشة مضاءة أثناء العزف -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <!-- 6. إخبار النظام بأن التطبيق يعتمد على اللمس المتعدد (للعزف) -->
-    <uses-feature android:name="android.hardware.touchscreen.multitouch.jazzhand" android:required="true" />
+    <!-- 6. إخبار النظام بأن التطبيق يعتمد على اللمس المتعدد (للعزف) ولكن بشكل غير إلزامي لدعم الأجهزة الضعيفة -->
+    <uses-feature android:name="android.hardware.touchscreen.multitouch" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen.multitouch.distinct" android:required="false" />
+    <uses-feature android:name="android.hardware.touchscreen.multitouch.jazzhand" android:required="false" />
 
     <application
         android:name=".MyApplication"
