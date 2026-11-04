@@ -4,31 +4,43 @@ plugins {
 }
 
 android {
+
     namespace 'com.zeekoltd.setat.pro'
+
     compileSdk 36
 
+    // NDK المتوافق مع صفحات الذاكرة 16KB
+    ndkVersion "28.2.13676358"
+
     defaultConfig {
+
         applicationId "com.zeekoltd.setat.pro"
+
         minSdk 24
         targetSdk 36
-        versionCode 4
+
+        // استخدم 5 إذا كان 4 آخر versionCode مستخدم
+        versionCode 5
+
         versionName "2027"
 
-        // دعم C++ مع حل مشكلة معمارية 16KB المطلوبة من جوجل بلاي
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++17"
-                arguments "-DANDROID_STL=c++_shared", "-DANDROID_LINKER_FLAGS=-Wl,-z,max-page-size=16384"
+
+                arguments "-DANDROID_STL=c++_shared"
             }
         }
     }
 
-    // هنا تم إضافة إعدادات التشفير لنسخة الإصدار (Release)
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            proguardFiles getDefaultProguardFile(
+                'proguard-android-optimize.txt'
+            ), 'proguard-rules.pro'
         }
     }
 
@@ -37,7 +49,6 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    // مسار ملف CMake الخاص بمحرك الصوت
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
@@ -45,59 +56,55 @@ android {
         }
     }
 
-    // تفعيل Prefab لقراءة مكتبة Oboe
     buildFeatures {
         prefab true
     }
 }
 
 dependencies {
-    // ==========================================
-    // 1. مكتبات الأندرويد الأساسية 
-    // ==========================================
+
+    // AndroidX
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
     implementation 'androidx.asynclayoutinflater:asynclayoutinflater:1.0.0'
     implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.browser:browser:1.8.0' 
-    
-    // مكتبات الواجهة وتعديل الصور
+    implementation 'androidx.browser:browser:1.8.0'
+
+    // UI Libraries
     implementation 'com.github.yalantis:ucrop:2.2.8'
+
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
+
     implementation 'com.vanniktech:emoji-google:0.20.0'
     implementation 'com.github.Dimezis:BlurView:version-2.0.6'
     implementation 'nl.dionsegijn:konfetti-xml:2.0.2'
 
-    // ==========================================
-    // 2. إعلانات جوجل AdMob وموافقات المستخدمين (UMP)
-    // ==========================================
+    // Google AdMob and UMP
     implementation 'com.google.android.gms:play-services-ads:25.5.0'
     implementation 'com.google.android.ump:user-messaging-platform:3.1.0'
 
-    // ==========================================
-    // 3. التحليلات وإشعارات فايربيس
-    // ==========================================
-    implementation platform('com.google.firebase:firebase-bom:34.19.0') 
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:34.19.0')
+
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-config'
+
     implementation 'com.google.android.gms:play-services-auth:21.3.0'
+
     implementation 'com.firebaseui:firebase-ui-database:8.0.2'
 
-    // ==========================================
-    // 4. ExoPlayer (Media3) لتشغيل الفيديو والصوت
-    // ==========================================
+    // Media3
     def media3_version = "1.9.4"
-    implementation "androidx.media3:media3-exoplayer:$media3_version" 
-    implementation "androidx.media3:media3-datasource:$media3_version" 
-    implementation "androidx.media3:media3-database:$media3_version" 
 
-    // ==========================================
-    // 5. مكتبة Oboe لدعم محرك C++ الصوتي
-    // ==========================================
-    implementation 'com.google.oboe:oboe:1.9.0'
+    implementation "androidx.media3:media3-exoplayer:$media3_version"
+    implementation "androidx.media3:media3-datasource:$media3_version"
+    implementation "androidx.media3:media3-database:$media3_version"
+
+    // Oboe - Updated for 16KB page size support
+    implementation 'com.google.oboe:oboe:1.11.0'
 }
