@@ -7,7 +7,7 @@ android {
 
     namespace 'com.zeekoltd.setat.pro'
 
-    compileSdk 36
+    compileSdk 37
 
     // NDK المتوافق مع صفحات الذاكرة 16KB
     ndkVersion "28.2.13676358"
@@ -17,8 +17,8 @@ android {
         applicationId "com.zeekoltd.setat.pro"
 
         minSdk 24
-        targetSdk 36
-        versionCode 7
+        targetSdk 37
+        versionCode 8
         versionName "2027"
         externalNativeBuild {
             cmake {
@@ -60,12 +60,12 @@ android {
 dependencies {
 
     // AndroidX
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
-    implementation 'androidx.asynclayoutinflater:asynclayoutinflater:1.0.0'
-    implementation 'androidx.core:core:1.17.0'
-    implementation 'androidx.browser:browser:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'com.google.android.material:material:1.13.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
+    implementation 'androidx.asynclayoutinflater:asynclayoutinflater:1.1.0'
+    implementation 'androidx.core:core:1.19.1'
+    implementation 'androidx.browser:browser:1.9.0'
 
     // UI Libraries
     implementation 'com.github.yalantis:ucrop:2.2.11'
@@ -79,7 +79,7 @@ dependencies {
 
     // Google AdMob and UMP
     implementation 'com.google.android.gms:play-services-ads:25.5.0'
-    implementation 'com.google.android.ump:user-messaging-platform:3.1.0'
+    implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:34.19.0')
@@ -90,12 +90,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-config'
 
-    implementation 'com.google.android.gms:play-services-auth:21.3.0'
+    implementation 'com.google.android.gms:play-services-auth:21.6.0'
 
     implementation 'com.firebaseui:firebase-ui-database:8.0.2'
 
     // Media3
-    def media3_version = "1.9.4"
+    def media3_version = "1.11.1"
 
     implementation "androidx.media3:media3-exoplayer:$media3_version"
     implementation "androidx.media3:media3-datasource:$media3_version"
