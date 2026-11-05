@@ -812,15 +812,13 @@ public class MainActivity extends AppCompatActivity {
                     "Sign-in is not ready. Please reopen the app."), Toast.LENGTH_LONG).show();
             return;
         }
+        // Do not keep a full-screen translucent/blur dialog open while Google Play
+        // services displays its account picker. The dialog can dim or cover the
+        // external account UI on some devices. Show progress only after a token returns.
         dismissGoogleLoadingDialog();
-        googleSignInLoadingDialog = DialogHelper.showLoadingDialog(this, currentLang,
-                tr("جاري الاتصال بجوجل...", "Connecting to Google..."));
         try {
-            // Wait for sign-out to complete before opening the chooser; do not dismiss the
-            // loading state on a fixed timer while the external Google UI is still running.
             mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
                 if (isFinishing() || isDestroyed()) {
-                    dismissGoogleLoadingDialog();
                     return;
                 }
                 try {
@@ -952,6 +950,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, tr("رمز تسجيل الدخول من جوجل غير صالح", "Google ID token is missing"), Toast.LENGTH_LONG).show();
             return;
         }
+        googleSignInLoadingDialog = DialogHelper.showLoadingDialog(this, currentLang,
+                tr("جاري المصادقة مع جوجل...", "Authenticating with Google..."));
         mAuth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null))
             .addOnCompleteListener(this, task -> {
                 dismissGoogleLoadingDialog();

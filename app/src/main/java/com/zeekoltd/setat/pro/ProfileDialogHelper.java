@@ -224,27 +224,19 @@ public class ProfileDialogHelper {
             });
         }
 
-        btnPrivacy.setOnClickListener(v -> new AlertDialog.Builder(activity)
-                .setTitle(activity.tr("خيارات الخصوصية", "Privacy options"))
-                .setItems(new String[]{
-                        activity.tr("سياسة خصوصية التطبيق", "App privacy policy"),
-                        activity.tr("خيارات خصوصية إعلانات Google", "Google ads privacy choices")
-                }, (choiceDialog, which) -> {
-                    if (which == 0) {
-                        activity.openUrlInBrowser("https://www.zeekoltd.com/privacy.html");
-                    } else if (which == 1) {
-                        AdMobConsentManager.showPrivacyOptionsForm(activity, (shown, errorMessage) -> {
-                            if (!shown) {
-                                String message = errorMessage != null && !errorMessage.isEmpty()
-                                        ? activity.tr("تعذر فتح خيارات إعلانات Google: ", "Could not open Google ads privacy choices: ") + errorMessage
-                                        : activity.tr("لا تتطلب إعدادات الإعلانات الحالية نموذج خيارات إضافياً.",
-                                                "No additional ad privacy form is currently required.");
-                                Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
-                            }
-                        });
+        btnPrivacy.setOnClickListener(v -> DialogHelper.showPrivacyOptionsDialog(
+                activity,
+                currentLang,
+                () -> activity.openUrlInBrowser("https://www.zeekoltd.com/privacy.html"),
+                () -> AdMobConsentManager.showPrivacyOptionsForm(activity, (shown, errorMessage) -> {
+                    if (!shown) {
+                        String message = errorMessage != null && !errorMessage.isEmpty()
+                                ? activity.tr("تعذر فتح خيارات إعلانات Google: ", "Could not open Google ads privacy choices: ") + errorMessage
+                                : activity.tr("لا تتطلب إعدادات الإعلانات الحالية نموذج خيارات إضافياً.",
+                                        "No additional ad privacy form is currently required.");
+                        Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
                     }
-                })
-                .show());
+                })));
 
         btnAbout.setOnClickListener(v -> {
             DialogHelper.showAboutDialog(activity, currentLang);

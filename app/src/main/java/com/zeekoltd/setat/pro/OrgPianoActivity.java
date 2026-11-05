@@ -476,13 +476,55 @@ public class OrgPianoActivity extends AppCompatActivity {
     
     public void updateDashboardVolume() {}
 
+    private String resolveExternalSamplePrefix(String metadataKey, String suffix, int bankIndex, String fallback) {
+        // Some sets store sample prefixes in info.json; others store display labels.
+        // Use metadata as a filename prefix only when the matching file exists.
+        String metadataValue = getDisplayNameFromJson(metadataKey, "");
+        if (metadataValue != null && !metadataValue.trim().isEmpty()
+                && hasExternalSamplePrefix(metadataValue.trim(), suffix)) {
+            return metadataValue.trim();
+        }
+
+        java.util.ArrayList<String> prefixes = findExternalSamplePrefixes(suffix);
+        if (bankIndex >= 0 && bankIndex < prefixes.size()) {
+            return prefixes.get(bankIndex);
+        }
+        if (!prefixes.isEmpty()) {
+            return prefixes.get(0);
+        }
+        return fallback;
+    }
+
+    private boolean hasExternalSamplePrefix(String prefix, String suffix) {
+        if (setsFolderPath == null || prefix == null || prefix.isEmpty()) return false;
+        File file = new File(setsFolderPath, prefix + suffix);
+        return file.isFile() && file.canRead();
+    }
+
+    private java.util.ArrayList<String> findExternalSamplePrefixes(String suffix) {
+        java.util.ArrayList<String> prefixes = new java.util.ArrayList<>();
+        if (setsFolderPath == null) return prefixes;
+        File[] files = new File(setsFolderPath).listFiles();
+        if (files == null) return prefixes;
+        java.util.Arrays.sort(files, (a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+        for (File file : files) {
+            if (!file.isFile()) continue;
+            String name = file.getName();
+            if (name.toLowerCase(java.util.Locale.ROOT).endsWith(suffix.toLowerCase(java.util.Locale.ROOT))) {
+                String prefix = name.substring(0, name.length() - suffix.length());
+                if (!prefixes.contains(prefix)) prefixes.add(prefix);
+            }
+        }
+        return prefixes;
+    }
+
     private void loadSetIntoMemory() {
         // The built-in samples have fixed resource prefixes. The info.json values are
         // display labels and must never decide which packaged audio resources are loaded.
-        String s1 = activeSetIsDefault ? "string" : getDisplayNameFromJson("sound1", externalSoundFallback());
-        String s2 = activeSetIsDefault ? "saz" : getDisplayNameFromJson("sound2", externalSoundFallback());
-        String r1 = activeSetIsDefault ? "dj27" : getDisplayNameFromJson("rhythm1", externalRhythmFallback());
-        String r2 = activeSetIsDefault ? "salo" : getDisplayNameFromJson("rhythm2", externalRhythmFallback());
+        String s1 = activeSetIsDefault ? "string" : resolveExternalSamplePrefix("sound1", "_01.ogg", 0, externalSoundFallback());
+        String s2 = activeSetIsDefault ? "saz" : resolveExternalSamplePrefix("sound2", "_01.ogg", 1, externalSoundFallback());
+        String r1 = activeSetIsDefault ? "dj27" : resolveExternalSamplePrefix("rhythm1", "_a.ogg", 0, externalRhythmFallback());
+        String r2 = activeSetIsDefault ? "salo" : resolveExternalSamplePrefix("rhythm2", "_a.ogg", 1, externalRhythmFallback());
         
         showLoading(tr("جاري قراءة الأصوات وتركيب السيت...", "Reading sounds and installing set..."));
         audioEngine.loadFullSetAsync(this, s1, s2, r1, r2, activeSetIsDefault, () -> {

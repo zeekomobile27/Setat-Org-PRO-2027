@@ -164,6 +164,50 @@ public class DialogHelper {
         dialog.show();
     }
 
+    public static void showPrivacyOptionsDialog(final MainActivity activity, final String lang,
+                                                final Runnable onPolicySelected,
+                                                final Runnable onGooglePrivacySelected) {
+        View policyButton = LayoutInflater.from(activity).inflate(R.layout.item_dialog_button, null);
+        TextView policyText = policyButton.findViewById(R.id.tvButtonText);
+        if (policyText != null) {
+            policyText.setText(tr(lang, "سياسة خصوصية التطبيق", "App privacy policy"));
+        }
+
+        View googleButton = LayoutInflater.from(activity).inflate(R.layout.item_dialog_button, null);
+        TextView googleText = googleButton.findViewById(R.id.tvButtonText);
+        if (googleText != null) {
+            googleText.setText(tr(lang, "خيارات خصوصية إعلانات Google", "Google ads privacy choices"));
+        }
+
+        View closeButton = LayoutInflater.from(activity).inflate(R.layout.item_dialog_button, null);
+        TextView closeText = closeButton.findViewById(R.id.tvButtonText);
+        if (closeText != null) {
+            closeText.setText(tr(lang, "إغلاق", "Close"));
+        }
+
+        LinearLayout container = new LinearLayout(activity);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setGravity(Gravity.CENTER_HORIZONTAL);
+        container.addView(policyButton);
+        container.addView(googleButton);
+        container.addView(closeButton);
+
+        final Dialog dialog = createBaseGlassDialog(
+                activity, container,
+                tr(lang, "خيارات الخصوصية", "Privacy options"), null);
+
+        policyButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (onPolicySelected != null) onPolicySelected.run();
+        });
+        googleButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            if (onGooglePrivacySelected != null) onGooglePrivacySelected.run();
+        });
+        closeButton.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
+    }
+
     public static void showAboutDialog(final MainActivity activity, final String lang) {
         float d = activity.getResources().getDisplayMetrics().density;
 

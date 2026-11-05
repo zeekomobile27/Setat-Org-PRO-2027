@@ -118,8 +118,9 @@ public class NativeAudioEngine {
         final AtomicInteger loadedCount = new AtomicInteger(0);
         final AtomicInteger successfulSamples = new AtomicInteger(0);
         final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
-        // Limit simultaneous MediaCodec decoders to reduce peak memory use on phones.
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        // Decode samples in parallel on a bounded worker pool, following the working
+        // reference org's loading approach while retaining per-sample error handling.
+        ExecutorService executor = Executors.newFixedThreadPool(8);
 
         // Two sound banks, 24 samples per bank.
         for (int bank = 0; bank < 2; bank++) {
