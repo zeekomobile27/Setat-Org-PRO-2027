@@ -41,10 +41,10 @@ public class ProfileDialogHelper {
     private static Dialog currentDialog;
     private static ImageView currentProfileImage;
     private static TextView currentProfileName;
+    private static View currentLogoutButton;
+    private static View currentDeleteButton;
 
     public static void showProfileDialog(MainActivity activity, String currentLang) {
-        // Warm the in-app browser before the user taps the privacy-policy link.
-        activity.warmUpCustomTabs();
         final Dialog dialog = new Dialog(activity, android.R.style.Theme_Translucent_NoTitleBar);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         
@@ -117,6 +117,8 @@ public class ProfileDialogHelper {
         View btnLogout = dialog.findViewById(R.id.dialogBtnLogout);
         TextView tvLogout = dialog.findViewById(R.id.dialogTvLogout);
         View btnDeleteAccount = dialog.findViewById(R.id.dialogBtnDeleteAccount);
+        currentLogoutButton = btnLogout;
+        currentDeleteButton = btnDeleteAccount;
         TextView tvDeleteAccount = dialog.findViewById(R.id.dialogTvDeleteAccount);
         
         TextView tvDev = dialog.findViewById(R.id.dialogTvDev);
@@ -190,10 +192,7 @@ public class ProfileDialogHelper {
                 DialogHelper.showLogoutConfirmDialog(activity, currentLang, () -> {
                     FirebaseAuth.getInstance().signOut();
                     activity.clearGoogleCredentialState();
-                    // Update the avatar and display name synchronously instead of waiting for another Activity resume.
-                    activity.loadProfileImage();
-                    activity.loadUserHeaderInfo();
-                    refreshDialogDataIfOpen(activity);
+                    activity.refreshAccountUi();
                     Toast.makeText(activity, activity.tr("تم تسجيل الخروج", "Logged out"), Toast.LENGTH_SHORT).show();
                 });
             });
@@ -254,6 +253,40 @@ public class ProfileDialogHelper {
     public static void updateProfileImageInDialog(MainActivity activity, String uid) {
         if (currentDialog != null && currentDialog.isShowing() && currentProfileImage != null) {
             DialogHelper.loadProfileImageIntoView(activity, currentProfileImage, uid);
+        }
+    }
+
+    /** Updates the visible profile dialog without dismissing/recreating it. */
+    public static void refreshAccountUi(MainActivity activity) {
+        if (currentDialog == null || !currentDialog.isShowing()) return;
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            if (currentProfileImage != null) {
+                currentProfileImage.setImageResource(R.drawable.ic_default_user);
+                currentProfileImage.setOnClickListener(v -> {
+                    if (currentDialog != null && currentDialog.isShowing()) currentDialog.dismiss();
+                    String lang = activity.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                            .getString("app_language", "ar");
+                    DialogHelper.showLoginDialog(activity, lang);
+                });
+            }
+            if (currentProfileName != null) {
+                currentProfileName.setText(activity.tr("مستخدم", "User"));
+            }
+            if (currentLogoutButton != null) currentLogoutButton.setVisibility(View.GONE);
+            if (currentDeleteButton != null) currentDeleteButton.setVisibility(View.GONE);
+        } else {
+            if (currentProfileImage != null) {
+                DialogHelper.loadProfileImageIntoView(activity, currentProfileImage, user.getUid());
+            }
+            if (currentProfileName != null) {
+                String name = user.getDisplayName();
+                currentProfileName.setText(name == null || name.trim().isEmpty()
+                        ? activity.tr("مستخدم", "User") : name.trim());
+            }
+            if (currentLogoutButton != null) currentLogoutButton.setVisibility(View.VISIBLE);
+            if (currentDeleteButton != null) currentDeleteButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -351,13 +384,13 @@ public class ProfileDialogHelper {
             if (task.isSuccessful()) {
                 FirebaseAuth.getInstance().signOut();
                 activity.clearGoogleCredentialState();
-                activity.loadProfileImage(); 
+                activity.refreshAccountUi();
                 Toast.makeText(activity, activity.tr("تم حذف الحساب نهائياً", "Account deleted permanently"), Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(activity, activity.tr("الرجاء تسجيل الخروج والدخول مجدداً ثم المحاولة", "Please re-login and try again"), Toast.LENGTH_LONG).show();
                 FirebaseAuth.getInstance().signOut();
                 activity.clearGoogleCredentialState();
-                activity.loadProfileImage(); 
+                activity.refreshAccountUi();
             }
         });
     }

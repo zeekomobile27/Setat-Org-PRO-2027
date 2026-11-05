@@ -36,7 +36,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.cardview.widget.CardView;
@@ -96,15 +95,10 @@ public class MainActivity extends AppCompatActivity {
     public FirebaseAuth mAuth; 
     private DatabaseReference usersRef;
     private CredentialManager credentialManager;
-    private View googleSignInOverlay;
-    private boolean googleSignInInProgress = false;
-    private FirebaseAuth.AuthStateListener authStateListener;
-    private boolean authStateInitialized = false;
-    private String lastAuthUid = null;
-    private DatabaseReference smartBannerDatabaseRef;
-    private ValueEventListener smartBannerValueListener;
-    private boolean customTabsWarmupRequested = false;
     private ImageView imgProfilePic;
+    private View googleAuthBlocker;
+    private boolean blurViewsConfigured = false;
+    private FirebaseAuth.AuthStateListener authStateListener;
     public static final String DEV_UID = "GrWIoyYfgCVU3BJjZzfu2T0PYdo2"; 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -458,23 +452,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeLogic() {
         mAuth = FirebaseAuth.getInstance();
-        authStateListener = firebaseAuth -> {
-            if (isFinishing() || isDestroyed()) return;
-            FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-            String currentUid = currentUser != null ? currentUser.getUid() : null;
-            if (!authStateInitialized || !java.util.Objects.equals(lastAuthUid, currentUid)) {
-                authStateInitialized = true;
-                lastAuthUid = currentUid;
-                // Reflect sign-in/sign-out immediately in both the avatar and account heading.
-                loadProfileImage();
-                loadUserHeaderInfo();
-                ProfileDialogHelper.refreshDialogDataIfOpen(this);
-            }
-        };
-        mAuth.addAuthStateListener(authStateListener);
         updateFcmToken();
         usersRef = FirebaseDatabase.getInstance().getReference("users");
         credentialManager = CredentialManager.create(getApplicationContext());
+
+        // Keep every account-related view synchronized with Firebase's actual auth state.
+        authStateListener = firebaseAuth -> {
+            if (isFinishing() || isDestroyed()) return;
+            refreshAccountUi();
+            FirebaseUser activeUser = firebaseAuth.getCurrentUser();
+            if (activeUser != null) {
+                FirebaseMessaging.getInstance().subscribeToTopic("logged_in_users");
+            } else {
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("logged_in_users");
+            }
+        };
         
         adMobAdsHelper = AdMobAdsHelper.getInstance(this);
         adMobAdsHelper.setCurrentLanguage(currentLang);
@@ -482,12 +474,11 @@ public class MainActivity extends AppCompatActivity {
         
         setupUI();
         setupFirebaseAndNetwork();
+        loadProfileImage();
+        loadUserHeaderInfo();
         loadDynamicSetsCounts();
         setupBlurViews();
         setupSmartBanner();
-        if (mainContentView != null) {
-            mainContentView.postDelayed(this::warmUpCustomTabs, 1200L);
-        }
         
         new Handler(Looper.getMainLooper()).postDelayed(this::checkAndRequestNotifications, 2000);
         if (mAuth.getCurrentUser() != null) FirebaseMessaging.getInstance().subscribeToTopic("logged_in_users");
@@ -499,33 +490,76 @@ public class MainActivity extends AppCompatActivity {
         if (tvProfileSubtitle != null) {
             tvProfileSubtitle.setText(tr("مرحباً 👋🏻", "Welcome 👋🏻"));
         }
-        if (tvProfileTopTitle == null) return;
+        if (tvProfileTopTitle == null || mAuth == null) return;
 
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            String fallbackName = user.getDisplayName();
-            if (fallbackName != null && !fallbackName.trim().isEmpty()) {
-                tvProfileTopTitle.setText(fallbackName + " 👑");
-            } else {
-                tvProfileTopTitle.setText(tr("ZEEKO ORG LTD 👑", "ZEEKO ORG LTD 👑"));
-            }
+        if (user == null) {
+            tvProfileTopTitle.setText(tr("تسجيل الدخول 👑", "Login 👑"));
+            return;
+        }
 
-            FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("displayName")
+        final String uid = user.getUid();
+        String displayName = user.getDisplayName();
+        if (displayName != null && !displayName.trim().isEmpty()) {
+            tvProfileTopTitle.setText(displayName.trim() + " 👑");
+            return; // Firebase Auth already has the current name; avoid an unnecessary DB round-trip.
+        }
+
+        tvProfileTopTitle.setText(tr("ZEEKO ORG LTD 👑", "ZEEKO ORG LTD 👑"));
+        FirebaseDatabase.getInstance().getReference("users").child(uid).child("displayName")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (isDestroyed() || isFinishing()) return;
-                        if (snapshot.exists()) {
-                            String dbName = snapshot.getValue(String.class);
-                            if (dbName != null && !dbName.trim().isEmpty()) {
-                                tvProfileTopTitle.setText(dbName + " 👑");
-                            }
+                        FirebaseUser current = mAuth.getCurrentUser();
+                        if (current == null || !uid.equals(current.getUid())) return;
+                        String dbName = snapshot.getValue(String.class);
+                        if (dbName != null && !dbName.trim().isEmpty()) {
+                            tvProfileTopTitle.setText(dbName.trim() + " 👑");
                         }
                     }
                     @Override public void onCancelled(@NonNull DatabaseError error) {}
                 });
-        } else {
-            tvProfileTopTitle.setText(tr("تسجيل الدخول 👑", "Login 👑"));
+    }
+
+    /** Refreshes the avatar and account name immediately after sign-in/sign-out. */
+    public void refreshAccountUi() {
+        if (isFinishing() || isDestroyed() || mAuth == null) return;
+        loadUserHeaderInfo();
+        loadProfileImage();
+        ProfileDialogHelper.refreshAccountUi(this);
+    }
+
+    private void showGoogleAuthBlocker() {
+        if (isFinishing() || isDestroyed()) return;
+        ViewGroup content = findViewById(android.R.id.content);
+        if (content == null) return;
+        if (googleAuthBlocker != null && googleAuthBlocker.getParent() != null) {
+            googleAuthBlocker.bringToFront();
+            return;
+        }
+
+        View blocker = new View(this);
+        blocker.setBackgroundColor(Color.parseColor("#66000000"));
+        blocker.setClickable(true);
+        blocker.setFocusable(true);
+        blocker.setOnTouchListener((v, event) -> true);
+        blocker.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        blocker.setAlpha(0f);
+        content.addView(blocker, new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        blocker.bringToFront();
+        googleAuthBlocker = blocker;
+        blocker.animate().alpha(1f).setDuration(120L).start();
+    }
+
+    private void hideGoogleAuthBlocker() {
+        View blocker = googleAuthBlocker;
+        googleAuthBlocker = null;
+        if (blocker == null) return;
+        blocker.animate().cancel();
+        if (blocker.getParent() instanceof ViewGroup) {
+            ((ViewGroup) blocker.getParent()).removeView(blocker);
         }
     }
 
@@ -581,32 +615,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupBlurViews() {
+        if (blurViewsConfigured) return;
         ViewGroup brightTarget = findViewById(R.id.brightBackgroundTarget);
         if (brightTarget == null) return;
-        
+
+        // Adaptive blur preserves the frosted look while reducing GPU work on low-RAM phones.
+        float radius = 6f;
+        android.app.ActivityManager activityManager =
+                (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT
+                && activityManager != null && activityManager.isLowRamDevice()) {
+            radius = 3f;
+        }
+
         int[] blurIds = {
-            R.id.blurTopBar, R.id.blurBottomBar,
-            R.id.blurSearchBar,
-            R.id.blurSmartBanner,
-            R.id.blurNewSetExclusive,
-            R.id.blurSetat2, R.id.blurSetat3,
-            R.id.blurSetat5, R.id.blurSetat6, R.id.blurSetat7,
-            R.id.blurSetat8, R.id.blurSetat9, R.id.blurSetat10,
-            R.id.blurSetat11, R.id.blurSetat12,
-            R.id.blurProfileBtn, R.id.blurOrgVipBtn, R.id.blurLangBtn,
-            R.id.blurPopularBtn, R.id.blurHowToDownloadBtn, R.id.blurHowToAddBtn,
-            R.id.blurBottomNavBar
+            R.id.blurTopBar, R.id.blurBottomBar, R.id.blurSearchBar, R.id.blurSmartBanner,
+            R.id.blurNewSetExclusive, R.id.blurSetat2, R.id.blurSetat3, R.id.blurSetat5,
+            R.id.blurSetat6, R.id.blurSetat7, R.id.blurSetat8, R.id.blurSetat9,
+            R.id.blurSetat10, R.id.blurSetat11, R.id.blurSetat12, R.id.blurProfileBtn,
+            R.id.blurOrgVipBtn, R.id.blurLangBtn, R.id.blurPopularBtn,
+            R.id.blurHowToDownloadBtn, R.id.blurHowToAddBtn, R.id.blurBottomNavBar
         };
-        
+
         for (int id : blurIds) {
             View view = findViewById(id);
             if (view instanceof BlurView) {
                 ((BlurView) view).setupWith(BlurTargetHelper.ensure(brightTarget))
-                    // Keep the same glass appearance while reducing GPU work across the many home cards.
-                    .setBlurRadius(6f)
-                    .setBlurEnabled(true);
+                        .setBlurRadius(radius)
+                        .setBlurEnabled(true);
             }
         }
+        blurViewsConfigured = true;
     }
 
     private void setupSmartBanner() {
@@ -618,11 +657,8 @@ public class MainActivity extends AppCompatActivity {
 
         blurSmartBanner.setVisibility(View.GONE); 
 
-        if (smartBannerDatabaseRef != null && smartBannerValueListener != null) {
-            smartBannerDatabaseRef.removeEventListener(smartBannerValueListener);
-        }
-        smartBannerDatabaseRef = FirebaseDatabase.getInstance().getReference("smart_banner");
-        smartBannerValueListener = new ValueEventListener() {
+        DatabaseReference smartBannerRef = FirebaseDatabase.getInstance().getReference("smart_banner");
+        smartBannerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isDestroyed() || !snapshot.exists()) return;
@@ -674,8 +710,7 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
             @Override public void onCancelled(@NonNull DatabaseError error) {}
-        };
-        smartBannerDatabaseRef.addValueEventListener(smartBannerValueListener);
+        });
     }
 
     private void checkAndRequestNotifications() {
@@ -806,14 +841,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startGoogleSignIn() {
-        if (isFinishing() || isDestroyed() || googleSignInInProgress) return;
+        if (isFinishing() || isDestroyed()) return;
         if (credentialManager == null) {
             credentialManager = CredentialManager.create(getApplicationContext());
         }
 
-        // The login dialog has already closed. Block taps on the home screen while Credential Manager prepares its UI.
+        // Lock the underlying screen immediately; this is an unobtrusive touch shield,
+        // not a loading dialog. It stays until Google/Firebase finishes or the flow is cancelled.
         dismissGoogleLoadingDialog();
-        showGoogleSignInOverlay();
+        showGoogleAuthBlocker();
         try {
             GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
                     .setServerClientId(getString(R.string.default_web_client_id))
@@ -832,15 +868,14 @@ public class MainActivity extends AppCompatActivity {
                     new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
                         @Override
                         public void onResult(GetCredentialResponse result) {
-                            dismissGoogleSignInOverlay();
                             if (isFinishing() || isDestroyed()) return;
                             handleGoogleCredential(result.getCredential());
                         }
 
                         @Override
                         public void onError(@NonNull GetCredentialException e) {
-                            dismissGoogleSignInOverlay();
                             dismissGoogleLoadingDialog();
+                            hideGoogleAuthBlocker();
                             android.util.Log.e("GoogleSignIn", "Credential Manager sign-in failed", e);
                             // User cancellation is normal; keep the login dialog usable without an error toast.
                             if (e instanceof GetCredentialCancellationException) return;
@@ -851,90 +886,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
         } catch (RuntimeException e) {
-            dismissGoogleSignInOverlay();
             dismissGoogleLoadingDialog();
+            hideGoogleAuthBlocker();
             android.util.Log.e("GoogleSignIn", "Unable to start Credential Manager", e);
             Toast.makeText(this, tr("تعذر بدء تسجيل الدخول بجوجل", "Could not start Google Sign-In"), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void showGoogleSignInOverlay() {
-        FrameLayout content = findViewById(android.R.id.content);
-        if (content == null) return;
-        googleSignInInProgress = true;
-        if (googleSignInOverlay != null && googleSignInOverlay.getParent() != null) return;
-
-        FrameLayout overlay = new FrameLayout(this);
-        overlay.setBackgroundColor(Color.argb(112, 0, 0, 0));
-        overlay.setClickable(true);
-        overlay.setFocusable(true);
-        overlay.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
-
-        LinearLayout status = new LinearLayout(this);
-        status.setOrientation(LinearLayout.VERTICAL);
-        status.setGravity(Gravity.CENTER);
-        status.setPadding(dp(24), dp(20), dp(24), dp(20));
-        GradientDrawable statusBackground = new GradientDrawable();
-        statusBackground.setColor(Color.argb(238, 10, 15, 20));
-        statusBackground.setCornerRadius(dp(18));
-        statusBackground.setStroke(dp(1), Color.argb(180, 197, 160, 89));
-        status.setBackground(statusBackground);
-        status.setElevation(dp(8));
-
-        ProgressBar progress = new ProgressBar(this);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            progress.setIndeterminateTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#C5A059")));
-        }
-        status.addView(progress, new LinearLayout.LayoutParams(dp(36), dp(36)));
-
-        TextView message = new TextView(this);
-        message.setText(tr("جارٍ تجهيز نافذة جوجل…", "Preparing Google sign-in…"));
-        message.setTextColor(Color.WHITE);
-        message.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        message.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams messageParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        messageParams.topMargin = dp(12);
-        status.addView(message, messageParams);
-
-        FrameLayout.LayoutParams statusParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.CENTER);
-        overlay.addView(status, statusParams);
-        overlay.setOnTouchListener((v, event) -> true);
-        content.addView(overlay, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        googleSignInOverlay = overlay;
-    }
-
-    private int dp(float value) {
-        return Math.round(value * getResources().getDisplayMetrics().density);
-    }
-
-    private void removeGoogleSignInOverlay() {
-        if (googleSignInOverlay != null) {
-            View view = googleSignInOverlay;
-            googleSignInOverlay = null;
-            if (view.getParent() instanceof ViewGroup) {
-                ((ViewGroup) view.getParent()).removeView(view);
-            }
-        }
-    }
-
-    private void dismissGoogleSignInOverlay() {
-        googleSignInInProgress = false;
-        removeGoogleSignInOverlay();
-    }
-
-    public void warmUpCustomTabs() {
-        if (isFinishing() || isDestroyed() || customTabsWarmupRequested) return;
-        try {
-            String browserPackage = CustomTabsClient.getPackageName(this, null);
-            if (browserPackage != null && !browserPackage.isEmpty()
-                    && CustomTabsClient.connectAndInitialize(getApplicationContext(), browserPackage)) {
-                customTabsWarmupRequested = true;
-            }
-        } catch (RuntimeException e) {
-            android.util.Log.d("CustomTabs", "Browser warm-up unavailable; normal URL opening remains enabled", e);
         }
     }
 
@@ -946,17 +901,20 @@ public class MainActivity extends AppCompatActivity {
                         GoogleIdTokenCredential.createFrom(((CustomCredential) credential).getData());
                 String idToken = googleCredential.getIdToken();
                 if (idToken == null || idToken.trim().isEmpty()) {
+                    hideGoogleAuthBlocker();
                     Toast.makeText(this, tr("لم يتم استلام رمز الدخول من جوجل.",
                             "Google did not return an ID token."), Toast.LENGTH_LONG).show();
                     return;
                 }
                 firebaseAuthWithGoogle(idToken);
             } catch (Exception e) {
+                hideGoogleAuthBlocker();
                 android.util.Log.e("GoogleSignIn", "Unable to parse Google ID token credential", e);
                 Toast.makeText(this, tr("تعذر قراءة بيانات حساب جوجل.",
                         "Could not read Google account credentials."), Toast.LENGTH_LONG).show();
             }
         } else {
+            hideGoogleAuthBlocker();
             android.util.Log.w("GoogleSignIn", "Credential Manager returned an unsupported credential type: "
                     + credential.getType());
             Toast.makeText(this, tr("نوع تسجيل الدخول غير مدعوم.",
@@ -1083,11 +1041,8 @@ public class MainActivity extends AppCompatActivity {
         imgProfilePic = findViewById(R.id.imgProfilePic);
         if (imgProfilePic == null) return;
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            DialogHelper.loadProfileImageIntoView(this, imgProfilePic, user.getUid());
-        } else {
-            imgProfilePic.setImageResource(R.drawable.ic_default_user);
-        }
+        if (user != null) DialogHelper.loadProfileImageIntoView(this, imgProfilePic, user.getUid());
+        else DialogHelper.loadProfileImageIntoView(this, imgProfilePic);
     }
 
     private void saveProfileImageToFirebase(String base64) {
@@ -1104,13 +1059,14 @@ public class MainActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(String idToken) {
         if (idToken == null || idToken.trim().isEmpty()) {
             dismissGoogleLoadingDialog();
+            hideGoogleAuthBlocker();
             Toast.makeText(this, tr("رمز تسجيل الدخول من جوجل غير صالح", "Google ID token is missing"), Toast.LENGTH_LONG).show();
             return;
         }
-        googleSignInLoadingDialog = DialogHelper.showLoadingDialog(this, currentLang,
-                tr("جاري المصادقة مع جوجل...", "Authenticating with Google..."));
+        // Firebase authentication runs silently behind the same touch shield.
         mAuth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null))
             .addOnCompleteListener(this, task -> {
+                hideGoogleAuthBlocker();
                 dismissGoogleLoadingDialog();
                 if (task.isSuccessful()) {
                     FirebaseUser user = mAuth.getCurrentUser();
@@ -1122,9 +1078,7 @@ public class MainActivity extends AppCompatActivity {
                         FirebaseMessaging.getInstance().subscribeToTopic("logged_in_users");
                     }
                     updateFcmToken();
-                    loadProfileImage();
-                    loadUserHeaderInfo();
-                    ProfileDialogHelper.refreshDialogDataIfOpen(this);
+                    // authStateListener refreshes the home header, avatar and open profile UI.
                 } else {
                     Exception error = task.getException();
                     android.util.Log.e("GoogleSignIn", "Firebase sign-in with Google credential failed", error);
@@ -1462,10 +1416,11 @@ public class MainActivity extends AppCompatActivity {
     @Override public void onBackPressed() { DialogHelper.showExitDialog(this, currentLang); }
     
     @Override
-    protected void onPause() {
-        // Credential Manager may bring its account picker to the foreground; never draw our overlay over system UI.
-        removeGoogleSignInOverlay();
-        super.onPause();
+    protected void onStart() {
+        super.onStart();
+        if (mAuth != null && authStateListener != null) {
+            mAuth.addAuthStateListener(authStateListener);
+        }
     }
 
     @Override 
@@ -1476,11 +1431,16 @@ public class MainActivity extends AppCompatActivity {
             refreshLanguageSmoothly();
         }
         if(adMobAdsHelper != null) adMobAdsHelper.onResume();
+        // Initial account UI is loaded in initializeLogic(); auth changes are handled
+        // by authStateListener, avoiding duplicate image/database work on every resume.
     }
     
     @Override 
     protected void onStop() {
         super.onStop();
+        if (mAuth != null && authStateListener != null) {
+            mAuth.removeAuthStateListener(authStateListener);
+        }
         if (pianoLoadingDialog != null && pianoLoadingDialog.isShowing()) {
             pianoLoadingDialog.dismiss();
             pianoLoadingDialog = null;
@@ -1488,18 +1448,14 @@ public class MainActivity extends AppCompatActivity {
     }
     
     @Override 
-    protected void onDestroy() {
-        dismissGoogleSignInOverlay();
+    protected void onDestroy() { 
+        super.onDestroy();
+        hideGoogleAuthBlocker();
+        dismissGoogleLoadingDialog();
         if (mAuth != null && authStateListener != null) {
             mAuth.removeAuthStateListener(authStateListener);
-            authStateListener = null;
         }
-        if (smartBannerDatabaseRef != null && smartBannerValueListener != null) {
-            smartBannerDatabaseRef.removeEventListener(smartBannerValueListener);
-            smartBannerValueListener = null;
-        }
-        super.onDestroy();
-        if(adMobAdsHelper != null) adMobAdsHelper.onDestroy();
+        if(adMobAdsHelper != null) adMobAdsHelper.onDestroy(); 
         if(executorService != null) executorService.shutdown();
     }
     
