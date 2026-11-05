@@ -9,7 +9,7 @@
     android:layoutDirection="locale">
 
     <!-- 🌟 الهدف الساطع للزجاج 🌟 -->
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurTarget
         android:id="@+id/brightBackgroundTarget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/vntrocreen" />
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurTarget>
 
     <!-- 🌟 التعتيم 70% 🌟 -->
     <View

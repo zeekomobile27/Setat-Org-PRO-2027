@@ -8,7 +8,7 @@
     android:background="#000000"
     android:layoutDirection="locale">
 
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurTarget
         android:id="@+id/brightBackgroundTarget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/vntrocreen" />
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurTarget>
 
     <View
         android:layout_width="match_parent"
