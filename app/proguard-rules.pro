@@ -19,27 +19,11 @@
 -keep class com.google.android.gms.common.** { *; }
 
 # ==========================================
-# 4. خدمات مصادقة وقاعدة بيانات فايربيس (مُحدّث لحل مشكلة الانهيار)
+# 4. خدمات مصادقة وقاعدة بيانات فايربيس
 # ==========================================
 -keep class com.google.firebase.** { *; }
 -keep class com.firebaseui.** { *; }
 -keep class com.google.android.gms.auth.** { *; }
-
-# --- [ إضافات الحماية الجديدة الصارمة لتسجيل الدخول ] ---
--keep class com.google.android.gms.auth.api.signin.** { *; }
--keep class com.google.android.gms.common.api.** { *; }
--keep class com.google.android.gms.tasks.** { *; }
--keep class com.google.firebase.auth.** { *; }
-
-# حماية الـ Callbacks والـ Listeners الخاصة بالمهام (Tasks) لضمان عودة النتيجة
--keep public class * implements com.google.android.gms.tasks.OnCompleteListener
--keep public class * implements com.google.android.gms.tasks.OnSuccessListener
--keep public class * implements com.google.android.gms.tasks.OnFailureListener
-
-# حماية كلاسات الاستثناءات (Exceptions) لكي لا تسبب انهياراً مفاجئاً
--keep class com.google.android.gms.common.api.ApiException { *; }
--keep class com.google.firebase.auth.FirebaseAuthException { *; }
-# ----------------------------------------------------
 
 # حماية دوال قراءة البيانات لفايربيس
 -keepclassmembers class * {
@@ -90,8 +74,6 @@
 # ==========================================
 -keep class eightbitlab.com.blurview.** { *; }
 -keep class nl.dionsegijn.konfetti.** { *; }
-# حماية الأنيميشن لمنع ثقل وتعليق الشاشة الافتتاحية
--keep class android.animation.** { *; }
 
 # ==========================================
 # 9. حماية الروابط العكسية للواجهات (Android Views)
