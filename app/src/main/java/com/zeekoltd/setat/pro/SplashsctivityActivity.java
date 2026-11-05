@@ -25,7 +25,6 @@ import androidx.core.view.WindowInsetsCompat;
 import java.util.Locale;
 
 import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
 
 public class SplashsctivityActivity extends AppCompatActivity {
     
@@ -71,10 +70,12 @@ public class SplashsctivityActivity extends AppCompatActivity {
         setContentView(R.layout.splashsctivity);
         
         videoView1 = findViewById(R.id.videoView1);
+        blurSkipBtn = findViewById(R.id.blurSkipBtn);
         setupVideo();
 
-        // إعداد وتفعيل تأثير الزجاج لزر التخطي
-        blurSkipBtn = findViewById(R.id.blurSkipBtn);
+        // يحتفظ زر التخطي بخلفيته الزجاجية الحالية. لا نربطه بـ BlurTarget هنا:
+        // VideoView مبني على SurfaceView ولا يدعمه BlurView، كما أن استهداف
+        // جذر الشاشة سيجعل BlurTarget يحتوي على BlurView نفسه.
         ViewGroup root = findViewById(R.id.mainContentView);
         if (root != null) {
             ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
@@ -94,12 +95,6 @@ public class SplashsctivityActivity extends AppCompatActivity {
             });
             ViewCompat.requestApplyInsets(root);
         }
-        if (blurSkipBtn != null && root != null) {
-            blurSkipBtn.setupWith(BlurTargetHelper.ensure(root))
-                       .setBlurRadius(15f)
-                       .setBlurEnabled(true);
-        }
-
         // نظام زر الرجوع الجديد (خروج مباشر بدون نافذة تأكيد)
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -164,13 +159,33 @@ public class SplashsctivityActivity extends AppCompatActivity {
     }
 
     private void setupVideo() {
+        if (videoView1 == null) return;
+
         videoView1.setMediaController(null);
         videoView1.setClickable(false);
         videoView1.setFocusable(false);
         videoView1.setFocusableInTouchMode(false);
+        videoView1.setOnErrorListener((mediaPlayer, what, extra) -> {
+            // تعطل فك الفيديو لا يجب أن يمنع المستخدم من دخول التطبيق.
+            videoView1.setVisibility(View.GONE);
+            if (!isTransitioned && blurSkipBtn != null) {
+                blurSkipBtn.setVisibility(View.VISIBLE);
+                blurSkipBtn.setAlpha(1f);
+            }
+            return true;
+        });
 
         String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.splash_video;
-        videoView1.setVideoPath(videoPath);
-        videoView1.start();
+        try {
+            videoView1.setVideoPath(videoPath);
+            videoView1.start();
+        } catch (RuntimeException error) {
+            // بعض الأجهزة قد ترفض تهيئة مشغل الفيديو؛ اترك مسار الدخول يعمل.
+            videoView1.setVisibility(View.GONE);
+            if (!isTransitioned && blurSkipBtn != null) {
+                blurSkipBtn.setVisibility(View.VISIBLE);
+                blurSkipBtn.setAlpha(1f);
+            }
+        }
     }
 }
