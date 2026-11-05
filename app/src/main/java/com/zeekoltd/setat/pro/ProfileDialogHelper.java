@@ -43,6 +43,8 @@ public class ProfileDialogHelper {
     private static TextView currentProfileName;
 
     public static void showProfileDialog(MainActivity activity, String currentLang) {
+        // Warm the in-app browser before the user taps the privacy-policy link.
+        activity.warmUpCustomTabs();
         final Dialog dialog = new Dialog(activity, android.R.style.Theme_Translucent_NoTitleBar);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         
@@ -188,7 +190,10 @@ public class ProfileDialogHelper {
                 DialogHelper.showLogoutConfirmDialog(activity, currentLang, () -> {
                     FirebaseAuth.getInstance().signOut();
                     activity.clearGoogleCredentialState();
+                    // Update the avatar and display name synchronously instead of waiting for another Activity resume.
                     activity.loadProfileImage();
+                    activity.loadUserHeaderInfo();
+                    refreshDialogDataIfOpen(activity);
                     Toast.makeText(activity, activity.tr("تم تسجيل الخروج", "Logged out"), Toast.LENGTH_SHORT).show();
                 });
             });
