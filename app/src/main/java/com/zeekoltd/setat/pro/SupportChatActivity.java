@@ -326,8 +326,8 @@ public class SupportChatActivity extends AppCompatActivity {
         BlurView blurTopBar = findViewById(R.id.blurTopBar);
         BlurView blurBottomBar = findViewById(R.id.blurBottomBar);
         
-        if (blurTopBar != null) blurTopBar.setupWith(brightTarget, new RenderScriptBlur(this)).setBlurRadius(radius).setBlurEnabled(true);
-        if (blurBottomBar != null) blurBottomBar.setupWith(brightTarget, new RenderScriptBlur(this)).setBlurRadius(radius).setBlurEnabled(true);
+        if (blurTopBar != null) blurTopBar.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(radius).setBlurEnabled(true);
+        if (blurBottomBar != null) blurBottomBar.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(radius).setBlurEnabled(true);
     }
 
     @Override
@@ -961,7 +961,7 @@ public class SupportChatActivity extends AppCompatActivity {
         BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(rootView, new RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);

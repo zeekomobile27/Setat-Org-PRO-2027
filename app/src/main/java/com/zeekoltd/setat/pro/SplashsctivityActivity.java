@@ -95,7 +95,7 @@ public class SplashsctivityActivity extends AppCompatActivity {
             ViewCompat.requestApplyInsets(root);
         }
         if (blurSkipBtn != null && root != null) {
-            blurSkipBtn.setupWith(root, new RenderScriptBlur(this))
+            blurSkipBtn.setupWith(BlurTargetHelper.ensure(root))
                        .setBlurRadius(15f)
                        .setBlurEnabled(true);
         }

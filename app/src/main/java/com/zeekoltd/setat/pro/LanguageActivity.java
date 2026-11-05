@@ -215,7 +215,7 @@ public class LanguageActivity extends AppCompatActivity {
         eightbitlab.com.blurview.BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup targetView = getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(targetView, new eightbitlab.com.blurview.RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -271,7 +271,7 @@ public class LanguageActivity extends AppCompatActivity {
         eightbitlab.com.blurview.BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup targetView = getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(targetView, new eightbitlab.com.blurview.RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);

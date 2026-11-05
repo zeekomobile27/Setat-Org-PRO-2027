@@ -83,7 +83,7 @@ public class DialogHelper {
         }
         
         if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(targetView, new RenderScriptBlur(context))
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView))
                     .setBlurRadius(15f)
                     .setBlurEnabled(true);
         }
@@ -287,7 +287,7 @@ public class DialogHelper {
         for (int id : blurIds) {
             BlurView bv = loginRootView.findViewById(id);
             if (bv != null && targetView != null) {
-                bv.setupWith(targetView, new RenderScriptBlur(context))
+                bv.setupWith(BlurTargetHelper.ensure(targetView))
                   .setBlurRadius(15f)
                   .setBlurEnabled(true);
             }
@@ -516,7 +516,7 @@ public class DialogHelper {
         }
         
         if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(targetView, new RenderScriptBlur(context)).setBlurRadius(15f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
         
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);

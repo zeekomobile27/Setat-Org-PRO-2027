@@ -124,7 +124,7 @@ public class AlertActivity extends AppCompatActivity {
         BlurView blurTopBarAlert = findViewById(R.id.blurTopBarAlert);
         
         if (blurTopBarAlert != null) {
-            blurTopBarAlert.setupWith(brightTarget, new RenderScriptBlur(this))
+            blurTopBarAlert.setupWith(BlurTargetHelper.ensure(brightTarget))
                 .setBlurRadius(15f)
                 .setBlurEnabled(true);
         }
@@ -202,7 +202,7 @@ public class AlertActivity extends AppCompatActivity {
                         blurCard.setClipToOutline(true);
                         
                         if (brightTarget != null) {
-                            blurCard.setupWith(brightTarget, new RenderScriptBlur(this))
+                            blurCard.setupWith(BlurTargetHelper.ensure(brightTarget))
                                     .setBlurRadius(15f)
                                     .setBlurEnabled(true);
                         }
@@ -291,7 +291,7 @@ public class AlertActivity extends AppCompatActivity {
             targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
         }
         if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(targetView, new RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);

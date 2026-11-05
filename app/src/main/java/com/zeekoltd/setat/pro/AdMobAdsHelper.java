@@ -493,7 +493,7 @@ public class AdMobAdsHelper {
         ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
         
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(rootView, new RenderScriptBlur(activity))
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView))
                     .setBlurRadius(15f)
                     .setBlurEnabled(true);
         }

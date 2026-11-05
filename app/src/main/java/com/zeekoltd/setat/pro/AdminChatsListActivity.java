@@ -96,7 +96,7 @@ public class AdminChatsListActivity extends AppCompatActivity {
         BlurView blurTopBarAdmin = findViewById(R.id.blurTopBarAdmin);
         
         if (blurTopBarAdmin != null) {
-            blurTopBarAdmin.setupWith(brightTarget, new RenderScriptBlur(this))
+            blurTopBarAdmin.setupWith(BlurTargetHelper.ensure(brightTarget))
                 .setBlurRadius(15f)
                 .setBlurEnabled(true);
         }

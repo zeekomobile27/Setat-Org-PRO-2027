@@ -310,8 +310,8 @@ public class Them2026Activity extends AppCompatActivity {
         BlurView blurTopBar = findViewById(R.id.blurTopBarNew);
         BlurView blurListBtn = findViewById(R.id.blurListBtn);
 
-        if (blurTopBar != null) blurTopBar.setupWith(brightTarget, new RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
-        if (blurListBtn != null) blurListBtn.setupWith(brightTarget, new RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
+        if (blurTopBar != null) blurTopBar.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(15f).setBlurEnabled(true);
+        if (blurListBtn != null) blurListBtn.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(15f).setBlurEnabled(true);
     }
 
     private void saveThemesToCache() {
@@ -414,7 +414,7 @@ public class Them2026Activity extends AppCompatActivity {
             targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
         }
         if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(targetView, new RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -492,7 +492,7 @@ public class Them2026Activity extends AppCompatActivity {
             targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
         }
         if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(targetView, new RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -727,9 +727,9 @@ public class Them2026Activity extends AppCompatActivity {
                 BlurView blurDown = itemView.findViewById(R.id.blurDownloadBtn);
 
                 if (root != null) {
-                    if (blurCenter != null) blurCenter.setupWith(root, new RenderScriptBlur(itemView.getContext())).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurBottom != null) blurBottom.setupWith(root, new RenderScriptBlur(itemView.getContext())).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurDown != null) blurDown.setupWith(root, new RenderScriptBlur(itemView.getContext())).setBlurRadius(10f).setBlurEnabled(true);
+                    if (blurCenter != null) blurCenter.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
+                    if (blurBottom != null) blurBottom.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
+                    if (blurDown != null) blurDown.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(10f).setBlurEnabled(true);
                 }
 
                 if (centerMovingBorder != null) {

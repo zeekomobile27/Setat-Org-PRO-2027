@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(rootView, new RenderScriptBlur(this)).setBlurRadius(10f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(10f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
         BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(rootView, new RenderScriptBlur(this)).setBlurRadius(10f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(10f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -607,7 +607,7 @@ public class MainActivity extends AppCompatActivity {
         for (int id : blurIds) {
             View view = findViewById(id);
             if (view instanceof BlurView) {
-                ((BlurView) view).setupWith(brightTarget, new RenderScriptBlur(this))
+                ((BlurView) view).setupWith(BlurTargetHelper.ensure(brightTarget))
                     .setBlurRadius(radius)
                     .setBlurEnabled(true);
             }
@@ -727,7 +727,7 @@ public class MainActivity extends AppCompatActivity {
         BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(rootView, new RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         TextView tvTitle = baseView.findViewById(R.id.tvDialogTitle);

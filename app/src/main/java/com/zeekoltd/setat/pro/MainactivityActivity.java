@@ -147,7 +147,7 @@ public class MainactivityActivity extends AppCompatActivity {
         if (brightTarget == null) return;
         
         if (blurBtnRetry != null) {
-            blurBtnRetry.setupWith(brightTarget, new RenderScriptBlur(this))
+            blurBtnRetry.setupWith(BlurTargetHelper.ensure(brightTarget))
                 .setBlurRadius(15f)
                 .setBlurEnabled(true);
         }

@@ -183,7 +183,7 @@ public class MyFcmService extends FirebaseMessagingService {
         
         ViewGroup targetView = decorView.findViewById(android.R.id.content);
         if (targetView != null) {
-            blurView.setupWith(targetView, new RenderScriptBlur(activity))
+            blurView.setupWith(BlurTargetHelper.ensure(targetView))
                     .setBlurRadius(15f)
                     .setBlurEnabled(true)
                     .setOverlayColor(Color.parseColor("#1AFFFFFF"));

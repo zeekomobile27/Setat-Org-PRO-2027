@@ -223,7 +223,7 @@ public class SearchActivity extends AppCompatActivity {
         if (brightTarget == null) brightTarget = appRootView;
         if (brightTarget == null) return;
         BlurView blurTopBar = findViewById(R.id.blurTopBarNew);
-        if (blurTopBar != null) blurTopBar.setupWith(brightTarget, new RenderScriptBlur(this)).setBlurRadius(15f).setBlurEnabled(true);
+        if (blurTopBar != null) blurTopBar.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(15f).setBlurEnabled(true);
     }
 
     private void loadUserPreferences() {
@@ -588,12 +588,12 @@ public class SearchActivity extends AppCompatActivity {
                 BlurView blurDown = itemView.findViewById(R.id.blurDownloadBtn);
 
                 if (root != null) {
-                    if (blurCenter != null) blurCenter.setupWith(root, new RenderScriptBlur(itemView.getContext())).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurDev != null) blurDev.setupWith(root, new RenderScriptBlur(itemView.getContext())).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurLike != null) blurLike.setupWith(root, new RenderScriptBlur(itemView.getContext())).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurFav != null) blurFav.setupWith(root, new RenderScriptBlur(itemView.getContext())).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurBottom != null) blurBottom.setupWith(root, new RenderScriptBlur(itemView.getContext())).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurDown != null) blurDown.setupWith(root, new RenderScriptBlur(itemView.getContext())).setBlurRadius(10f).setBlurEnabled(true);
+                    if (blurCenter != null) blurCenter.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
+                    if (blurDev != null) blurDev.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
+                    if (blurLike != null) blurLike.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
+                    if (blurFav != null) blurFav.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
+                    if (blurBottom != null) blurBottom.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
+                    if (blurDown != null) blurDown.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(10f).setBlurEnabled(true);
                 }
 
                 if (centerMovingBorder != null) {

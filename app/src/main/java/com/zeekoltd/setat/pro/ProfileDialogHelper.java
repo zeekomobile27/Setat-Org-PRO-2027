@@ -88,7 +88,7 @@ public class ProfileDialogHelper {
         View decorView = activity.getWindow().getDecorView();
         ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
         if (blurDialogRoot != null && rootView != null) {
-            blurDialogRoot.setupWith(rootView, new RenderScriptBlur(activity))
+            blurDialogRoot.setupWith(BlurTargetHelper.ensure(rootView))
                     .setBlurRadius(20f) 
                     .setBlurEnabled(true);
         }
@@ -286,7 +286,7 @@ public class ProfileDialogHelper {
         View decorView = activity.getWindow().getDecorView();
         ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(rootView, new RenderScriptBlur(activity)).setBlurRadius(15f).setBlurEnabled(true);
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(15f).setBlurEnabled(true);
         }
         
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
