@@ -187,6 +187,7 @@ public class ProfileDialogHelper {
                 dialog.dismiss();
                 DialogHelper.showLogoutConfirmDialog(activity, currentLang, () -> {
                     FirebaseAuth.getInstance().signOut();
+                    activity.clearGoogleCredentialState();
                     activity.loadProfileImage();
                     Toast.makeText(activity, activity.tr("تم تسجيل الخروج", "Logged out"), Toast.LENGTH_SHORT).show();
                 });
@@ -343,12 +344,14 @@ public class ProfileDialogHelper {
         user.delete().addOnCompleteListener(task -> {
             loading.dismiss();
             if (task.isSuccessful()) {
-                activity.mGoogleSignInClient.signOut();
+                FirebaseAuth.getInstance().signOut();
+                activity.clearGoogleCredentialState();
                 activity.loadProfileImage(); 
                 Toast.makeText(activity, activity.tr("تم حذف الحساب نهائياً", "Account deleted permanently"), Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(activity, activity.tr("الرجاء تسجيل الخروج والدخول مجدداً ثم المحاولة", "Please re-login and try again"), Toast.LENGTH_LONG).show();
                 FirebaseAuth.getInstance().signOut();
+                activity.clearGoogleCredentialState();
                 activity.loadProfileImage(); 
             }
         });

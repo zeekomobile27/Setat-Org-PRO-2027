@@ -39,17 +39,23 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.cardview.widget.CardView;
+import androidx.credentials.ClearCredentialStateRequest;
+import androidx.credentials.Credential;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.CustomCredential;
+import androidx.credentials.GetCredentialRequest;
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.ClearCredentialException;
+import androidx.credentials.exceptions.GetCredentialException;
+import androidx.credentials.exceptions.GetCredentialCancellationException;
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
@@ -88,13 +94,12 @@ public class MainActivity extends AppCompatActivity {
 
     public FirebaseAuth mAuth; 
     private DatabaseReference usersRef;
-    public GoogleSignInClient mGoogleSignInClient; 
+    private CredentialManager credentialManager;
     private ImageView imgProfilePic;
     public static final String DEV_UID = "GrWIoyYfgCVU3BJjZzfu2T0PYdo2"; 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public ActivityResultLauncher<String> pickImageLauncher; 
-    public ActivityResultLauncher<Intent> googleSignInLauncher; 
     private ActivityResultLauncher<String> requestPermissionLauncher;
     
     public Dialog googleSignInLoadingDialog = null; 
@@ -430,37 +435,6 @@ public class MainActivity extends AppCompatActivity {
             new ActivityResultContracts.GetContent(),
             uri -> { if (uri != null) launchUCrop(uri); }
         );
-        googleSignInLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
-                    dismissGoogleLoadingDialog();
-                    return; // The user may cancel the account picker; do not treat it as a crash.
-                }
-
-                try {
-                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
-                    GoogleSignInAccount account = task.getResult(ApiException.class);
-                    if (account == null || account.getIdToken() == null || account.getIdToken().isEmpty()) {
-                        dismissGoogleLoadingDialog();
-                        Toast.makeText(this, tr("لم يتم استلام رمز الدخول من جوجل. تحقق من إعدادات OAuth.",
-                                "Google did not return an ID token. Check OAuth configuration."), Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    firebaseAuthWithGoogle(account.getIdToken());
-                } catch (ApiException e) {
-                    dismissGoogleLoadingDialog();
-                    android.util.Log.e("GoogleSignIn", "Google account selection failed; status=" + e.getStatusCode(), e);
-                    Toast.makeText(this, tr("تعذر تسجيل الدخول بجوجل (" + e.getStatusCode() + ")",
-                            "Google Sign-In failed (" + e.getStatusCode() + ")"), Toast.LENGTH_LONG).show();
-                } catch (RuntimeException e) {
-                    dismissGoogleLoadingDialog();
-                    android.util.Log.e("GoogleSignIn", "Unexpected Google Sign-In result", e);
-                    Toast.makeText(this, tr("حدث خطأ أثناء تسجيل الدخول", "An error occurred during sign-in"), Toast.LENGTH_LONG).show();
-                }
-            }
-        );
-
         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
             if (!isGranted) showNotificationWarningDialog();
         });
@@ -477,9 +451,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         updateFcmToken();
         usersRef = FirebaseDatabase.getInstance().getReference("users");
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        credentialManager = CredentialManager.create(getApplicationContext());
         
         adMobAdsHelper = AdMobAdsHelper.getInstance(this);
         adMobAdsHelper.setCurrentLanguage(currentLang);
@@ -807,32 +779,103 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startGoogleSignIn() {
-        if (mGoogleSignInClient == null || googleSignInLauncher == null) {
-            Toast.makeText(this, tr("خدمة تسجيل الدخول غير جاهزة. أعد فتح التطبيق.",
-                    "Sign-in is not ready. Please reopen the app."), Toast.LENGTH_LONG).show();
-            return;
+        if (isFinishing() || isDestroyed()) return;
+        if (credentialManager == null) {
+            credentialManager = CredentialManager.create(getApplicationContext());
         }
-        // Do not keep a full-screen translucent/blur dialog open while Google Play
-        // services displays its account picker. The dialog can dim or cover the
-        // external account UI on some devices. Show progress only after a token returns.
+
+        // Never keep the app's full-screen loading dialog above the system sign-in UI.
         dismissGoogleLoadingDialog();
         try {
-            mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
-                if (isFinishing() || isDestroyed()) {
-                    return;
-                }
-                try {
-                    googleSignInLauncher.launch(mGoogleSignInClient.getSignInIntent());
-                } catch (RuntimeException e) {
-                    dismissGoogleLoadingDialog();
-                    android.util.Log.e("GoogleSignIn", "Unable to launch Google account picker", e);
-                    Toast.makeText(this, tr("تعذر فتح نافذة حسابات جوجل", "Could not open Google account picker"), Toast.LENGTH_LONG).show();
-                }
-            });
+            GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
+                    .setServerClientId(getString(R.string.default_web_client_id))
+                    .setFilterByAuthorizedAccounts(false)
+                    .setAutoSelectEnabled(false)
+                    .build();
+            GetCredentialRequest request = new GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOption)
+                    .build();
+
+            credentialManager.getCredentialAsync(
+                    this,
+                    request,
+                    new android.os.CancellationSignal(),
+                    ContextCompat.getMainExecutor(this),
+                    new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
+                        @Override
+                        public void onResult(GetCredentialResponse result) {
+                            if (isFinishing() || isDestroyed()) return;
+                            handleGoogleCredential(result.getCredential());
+                        }
+
+                        @Override
+                        public void onError(@NonNull GetCredentialException e) {
+                            dismissGoogleLoadingDialog();
+                            android.util.Log.e("GoogleSignIn", "Credential Manager sign-in failed", e);
+                            // User cancellation is normal; keep the login dialog usable without an error toast.
+                            if (e instanceof GetCredentialCancellationException) return;
+                            Toast.makeText(MainActivity.this,
+                                    tr("تعذر تسجيل الدخول عبر جوجل. حاول مرة أخرى.",
+                                       "Google sign-in could not be completed. Please try again."),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
         } catch (RuntimeException e) {
             dismissGoogleLoadingDialog();
-            android.util.Log.e("GoogleSignIn", "Unable to start Google Sign-In", e);
+            android.util.Log.e("GoogleSignIn", "Unable to start Credential Manager", e);
             Toast.makeText(this, tr("تعذر بدء تسجيل الدخول بجوجل", "Could not start Google Sign-In"), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void handleGoogleCredential(@NonNull Credential credential) {
+        if (credential instanceof CustomCredential
+                && GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL.equals(credential.getType())) {
+            try {
+                GoogleIdTokenCredential googleCredential =
+                        GoogleIdTokenCredential.createFrom(((CustomCredential) credential).getData());
+                String idToken = googleCredential.getIdToken();
+                if (idToken == null || idToken.trim().isEmpty()) {
+                    Toast.makeText(this, tr("لم يتم استلام رمز الدخول من جوجل.",
+                            "Google did not return an ID token."), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                firebaseAuthWithGoogle(idToken);
+            } catch (Exception e) {
+                android.util.Log.e("GoogleSignIn", "Unable to parse Google ID token credential", e);
+                Toast.makeText(this, tr("تعذر قراءة بيانات حساب جوجل.",
+                        "Could not read Google account credentials."), Toast.LENGTH_LONG).show();
+            }
+        } else {
+            android.util.Log.w("GoogleSignIn", "Credential Manager returned an unsupported credential type: "
+                    + credential.getType());
+            Toast.makeText(this, tr("نوع تسجيل الدخول غير مدعوم.",
+                    "Unsupported sign-in credential type."), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /** Clears provider-side credential state after the user explicitly signs out. */
+    public void clearGoogleCredentialState() {
+        if (credentialManager == null) {
+            credentialManager = CredentialManager.create(getApplicationContext());
+        }
+        try {
+            credentialManager.clearCredentialStateAsync(
+                    new ClearCredentialStateRequest(),
+                    new android.os.CancellationSignal(),
+                    ContextCompat.getMainExecutor(getApplicationContext()),
+                    new CredentialManagerCallback<Void, ClearCredentialException>() {
+                        @Override
+                        public void onResult(Void result) {
+                            android.util.Log.d("GoogleSignIn", "Credential state cleared after sign-out");
+                        }
+
+                        @Override
+                        public void onError(@NonNull ClearCredentialException e) {
+                            android.util.Log.w("GoogleSignIn", "Could not clear provider credential state", e);
+                        }
+                    });
+        } catch (RuntimeException e) {
+            android.util.Log.w("GoogleSignIn", "Unable to clear provider credential state", e);
         }
     }
 
