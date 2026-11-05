@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
     public FirebaseAuth mAuth; 
     private DatabaseReference usersRef;
     public GoogleSignInClient mGoogleSignInClient; 
-    public static final int RC_SIGN_IN = 9001;
     private ImageView imgProfilePic;
     public static final String DEV_UID = "GrWIoyYfgCVU3BJjZzfu2T0PYdo2"; 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -434,19 +433,30 @@ public class MainActivity extends AppCompatActivity {
         googleSignInLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                googleSignInLoadingDialog = DialogHelper.showLoadingDialog(this, currentLang, 
-                    tr("جاري تسجيل الدخول...", "Signing in..."));
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
-                    try {
-                        GoogleSignInAccount account = task.getResult(ApiException.class);
-                        firebaseAuthWithGoogle(account.getIdToken());
-                    } catch (ApiException e) {
-                        dismissGoogleLoadingDialog();
-                        Toast.makeText(this, tr("فشل تسجيل جوجل", "Google Sign-In failed"), Toast.LENGTH_SHORT).show();
-                    }
-                } else {
+                if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
                     dismissGoogleLoadingDialog();
+                    return; // The user may cancel the account picker; do not treat it as a crash.
+                }
+
+                try {
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                    GoogleSignInAccount account = task.getResult(ApiException.class);
+                    if (account == null || account.getIdToken() == null || account.getIdToken().isEmpty()) {
+                        dismissGoogleLoadingDialog();
+                        Toast.makeText(this, tr("لم يتم استلام رمز الدخول من جوجل. تحقق من إعدادات OAuth.",
+                                "Google did not return an ID token. Check OAuth configuration."), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    firebaseAuthWithGoogle(account.getIdToken());
+                } catch (ApiException e) {
+                    dismissGoogleLoadingDialog();
+                    android.util.Log.e("GoogleSignIn", "Google account selection failed; status=" + e.getStatusCode(), e);
+                    Toast.makeText(this, tr("تعذر تسجيل الدخول بجوجل (" + e.getStatusCode() + ")",
+                            "Google Sign-In failed (" + e.getStatusCode() + ")"), Toast.LENGTH_LONG).show();
+                } catch (RuntimeException e) {
+                    dismissGoogleLoadingDialog();
+                    android.util.Log.e("GoogleSignIn", "Unexpected Google Sign-In result", e);
+                    Toast.makeText(this, tr("حدث خطأ أثناء تسجيل الدخول", "An error occurred during sign-in"), Toast.LENGTH_LONG).show();
                 }
             }
         );
@@ -797,12 +807,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startGoogleSignIn() {
-        googleSignInLoadingDialog = DialogHelper.showLoadingDialog(this, currentLang, 
-            tr("جاري الاتصال بجوجل...", "Connecting to Google..."));
-        mGoogleSignInClient.signOut().addOnCompleteListener(task -> {
-            googleSignInLauncher.launch(mGoogleSignInClient.getSignInIntent());
-            new Handler(Looper.getMainLooper()).postDelayed(() -> dismissGoogleLoadingDialog(), 500);
-        });
+        if (mGoogleSignInClient == null || googleSignInLauncher == null) {
+            Toast.makeText(this, tr("خدمة تسجيل الدخول غير جاهزة. أعد فتح التطبيق.",
+                    "Sign-in is not ready. Please reopen the app."), Toast.LENGTH_LONG).show();
+            return;
+        }
+        dismissGoogleLoadingDialog();
+        googleSignInLoadingDialog = DialogHelper.showLoadingDialog(this, currentLang,
+                tr("جاري الاتصال بجوجل...", "Connecting to Google..."));
+        try {
+            // Wait for sign-out to complete before opening the chooser; do not dismiss the
+            // loading state on a fixed timer while the external Google UI is still running.
+            mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+                if (isFinishing() || isDestroyed()) {
+                    dismissGoogleLoadingDialog();
+                    return;
+                }
+                try {
+                    googleSignInLauncher.launch(mGoogleSignInClient.getSignInIntent());
+                } catch (RuntimeException e) {
+                    dismissGoogleLoadingDialog();
+                    android.util.Log.e("GoogleSignIn", "Unable to launch Google account picker", e);
+                    Toast.makeText(this, tr("تعذر فتح نافذة حسابات جوجل", "Could not open Google account picker"), Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (RuntimeException e) {
+            dismissGoogleLoadingDialog();
+            android.util.Log.e("GoogleSignIn", "Unable to start Google Sign-In", e);
+            Toast.makeText(this, tr("تعذر بدء تسجيل الدخول بجوجل", "Could not start Google Sign-In"), Toast.LENGTH_LONG).show();
+        }
     }
 
     public void pickProfileImage() { pickImageLauncher.launch("image/*"); }
@@ -877,11 +910,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         }
-        if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK && data != null) {
-            try {
-                firebaseAuthWithGoogle(GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException.class).getIdToken());
-            } catch (ApiException e) {}
-        }
     }
 
     private String bitmapToBase64(Bitmap bitmap) {
@@ -919,6 +947,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
+        if (idToken == null || idToken.trim().isEmpty()) {
+            dismissGoogleLoadingDialog();
+            Toast.makeText(this, tr("رمز تسجيل الدخول من جوجل غير صالح", "Google ID token is missing"), Toast.LENGTH_LONG).show();
+            return;
+        }
         mAuth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null))
             .addOnCompleteListener(this, task -> {
                 dismissGoogleLoadingDialog();
@@ -926,15 +959,21 @@ public class MainActivity extends AppCompatActivity {
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (user != null) {
                         DialogHelper.saveAccountToPrefs(this, user.getUid(), user.getEmail(), user.getDisplayName());
-                        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
-                        usersRef.child(user.getUid()).child("displayName").setValue(user.getDisplayName());
-                        usersRef.child(user.getUid()).child("email").setValue(user.getEmail());
+                        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
+                        userRef.child("displayName").setValue(user.getDisplayName());
+                        userRef.child("email").setValue(user.getEmail());
                         FirebaseMessaging.getInstance().subscribeToTopic("logged_in_users");
                     }
                     updateFcmToken();
-                    loadProfileImage(); 
+                    loadProfileImage();
                     loadUserHeaderInfo();
                     ProfileDialogHelper.refreshDialogDataIfOpen(this);
+                } else {
+                    Exception error = task.getException();
+                    android.util.Log.e("GoogleSignIn", "Firebase sign-in with Google credential failed", error);
+                    String detail = error != null ? error.getLocalizedMessage() : null;
+                    Toast.makeText(this, tr("فشل ربط حساب جوجل بفايربيس" + (detail == null ? "" : ": " + detail),
+                            "Firebase sign-in failed" + (detail == null ? "" : ": " + detail)), Toast.LENGTH_LONG).show();
                 }
             });
     }

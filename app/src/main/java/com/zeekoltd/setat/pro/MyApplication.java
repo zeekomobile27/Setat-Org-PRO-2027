@@ -29,7 +29,7 @@ public class MyApplication extends Application {
         FirebaseApp.initializeApp(this);
         
         // 🚨 تم إزالة MobileAds.initialize من هنا للامتثال لسياسات GDPR 🚨
-        // سيتم تهيئته في MainActivity بعد موافقة المستخدم
+        // تتم تهيئته من خلال AdMobAdsHelper بعد اكتمال تدفق موافقة UMP.
 
         // مراقب دورة حياة الشاشات
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {

@@ -76,67 +76,102 @@ public class NativeAudioEngine {
         }
     }
 
-    // 🚀 الدالة الشاملة الجبارة: تضخ 54 ملف صوتي لـ C++ بضغطة واحدة
+    // Loads the bundled default banks from res/raw first. External files are a fallback
+    // for downloaded/custom sets only; this also prevents stale extracted files from
+    // shadowing the verified packaged audio resources in release builds.
     public void loadFullSetAsync(Context context, String s1, String s2, String r1, String r2, LoadListener listener) {
+        Context appContext = context.getApplicationContext();
         if (!isInitialized) isInitialized = initEngine();
-        
-        // 🚀 جلب المسار الآمن المتوافق مع جوجل بلاي وتحديثه ديناميكياً
-        File safeFolder = new File(context.getExternalFilesDir(null), "ZEEKOORG/Setat");
-        SETS_FOLDER_PATH = safeFolder.getAbsolutePath();
-        
-        ExecutorService executor = Executors.newFixedThreadPool(8); // 8 مسارات متوازية للسرعة
-        AtomicInteger loadedCount = new AtomicInteger(0);
-        int totalFilesToLoad = (24 * 2) + (3 * 2); 
+        if (!isInitialized) {
+            Log.e("ZeekoAudio", "Native audio engine failed to initialize");
+            if (listener != null) {
+                new android.os.Handler(android.os.Looper.getMainLooper()).post(listener::onAllLoaded);
+            }
+            return;
+        }
 
-        // 1. تحميل بنوك الأصوات
+        File externalRoot = appContext.getExternalFilesDir(null);
+        File safeFolder = externalRoot != null
+                ? new File(externalRoot, "ZEEKOORG/Setat")
+                : new File(appContext.getFilesDir(), "ZEEKOORG/Setat");
+        SETS_FOLDER_PATH = safeFolder.getAbsolutePath();
+
+        final int totalFilesToLoad = 54; // 24 x 2 sounds + 3 x 2 rhythms
+        final AtomicInteger loadedCount = new AtomicInteger(0);
+        final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+
+        // Two sound banks, 24 samples per bank.
         for (int bank = 0; bank < 2; bank++) {
-            final String prefix = (bank == 0) ? s1 : s2;
+            final String prefix = bank == 0 ? s1 : s2;
             for (int i = 0; i < 24; i++) {
                 final int b = bank;
                 final int idx = i;
                 executor.execute(() -> {
-                    String fileNameNoExt = prefix + "_" + String.format(Locale.US, "%02d", (idx + 1));
-                    File extFile = new File(SETS_FOLDER_PATH, fileNameNoExt + ".ogg");
-                    float[] pcm = null;
-                    if (extFile.exists()) {
-                        pcm = decodeOggToFloatArrayFromFile(extFile.getAbsolutePath());
-                    } else {
-                        int resId = context.getResources().getIdentifier(fileNameNoExt, "raw", context.getPackageName());
-                        if (resId != 0) pcm = decodeOggToFloatArray(context, resId);
-                    }
-                    if (pcm != null) loadSampleNative(b, idx, pcm);
-                    
-                    if (loadedCount.incrementAndGet() == totalFilesToLoad && listener != null) {
-                        new android.os.Handler(android.os.Looper.getMainLooper()).post(listener::onAllLoaded);
+                    try {
+                        String fileNameNoExt = prefix + "_" + String.format(Locale.US, "%02d", idx + 1);
+                        float[] pcm = loadSamplePreferPackagedResource(appContext, safeFolder, fileNameNoExt);
+                        if (pcm != null && pcm.length > 0) {
+                            loadSampleNative(b, idx, pcm);
+                        } else {
+                            Log.w("ZeekoAudio", "Sound sample unavailable: " + fileNameNoExt);
+                        }
+                    } catch (Exception e) {
+                        Log.e("ZeekoAudio", "Failed loading sound bank=" + b + " index=" + idx, e);
+                    } finally {
+                        notifyLoadProgress(loadedCount, totalFilesToLoad, listener, mainHandler);
                     }
                 });
             }
         }
 
-        // 2. تحميل بنوك الإيقاعات
+        // Two rhythm banks, each with A, B and intro samples.
+        final String[] suffixes = {"_a", "_b", "_intro"};
         for (int bank = 0; bank < 2; bank++) {
-            final String prefix = (bank == 0) ? r1 : r2;
-            String[] suffixes = {"_a", "_b", "_intro"};
-            for (int i = 0; i < 3; i++) {
+            final String prefix = bank == 0 ? r1 : r2;
+            for (int i = 0; i < suffixes.length; i++) {
                 final int b = bank;
                 final int idx = i;
                 executor.execute(() -> {
-                    String fileNameNoExt = prefix + suffixes[idx];
-                    File extFile = new File(SETS_FOLDER_PATH, fileNameNoExt + ".ogg");
-                    float[] pcm = null;
-                    if (extFile.exists()) {
-                        pcm = decodeOggToFloatArrayFromFile(extFile.getAbsolutePath());
-                    } else {
-                        int resId = context.getResources().getIdentifier(fileNameNoExt, "raw", context.getPackageName());
-                        if (resId != 0) pcm = decodeOggToFloatArray(context, resId);
-                    }
-                    if (pcm != null) loadRhythmSampleNative(b, idx, pcm);
-                    
-                    if (loadedCount.incrementAndGet() == totalFilesToLoad && listener != null) {
-                        new android.os.Handler(android.os.Looper.getMainLooper()).post(listener::onAllLoaded);
+                    try {
+                        String fileNameNoExt = prefix + suffixes[idx];
+                        float[] pcm = loadSamplePreferPackagedResource(appContext, safeFolder, fileNameNoExt);
+                        if (pcm != null && pcm.length > 0) {
+                            loadRhythmSampleNative(b, idx, pcm);
+                            Log.i("ZeekoAudio", "Loaded rhythm resource: " + fileNameNoExt + " frames=" + pcm.length);
+                        } else {
+                            Log.e("ZeekoAudio", "Rhythm sample unavailable: " + fileNameNoExt);
+                        }
+                    } catch (Exception e) {
+                        Log.e("ZeekoAudio", "Failed loading rhythm bank=" + b + " index=" + idx, e);
+                    } finally {
+                        notifyLoadProgress(loadedCount, totalFilesToLoad, listener, mainHandler);
                     }
                 });
             }
+        }
+        executor.shutdown();
+    }
+
+    private float[] loadSamplePreferPackagedResource(Context context, File externalSetFolder, String fileNameNoExt) {
+        int resId = context.getResources().getIdentifier(fileNameNoExt, "raw", context.getPackageName());
+        if (resId != 0) {
+            float[] packagedPcm = decodeOggToFloatArray(context, resId);
+            if (packagedPcm != null && packagedPcm.length > 0) return packagedPcm;
+            Log.w("ZeekoAudio", "Packaged resource could not be decoded; trying external fallback: " + fileNameNoExt);
+        }
+
+        File externalFile = new File(externalSetFolder, fileNameNoExt + ".ogg");
+        if (externalFile.isFile() && externalFile.canRead()) {
+            return decodeOggToFloatArrayFromFile(externalFile.getAbsolutePath());
+        }
+        return null;
+    }
+
+    private void notifyLoadProgress(AtomicInteger loadedCount, int totalFilesToLoad,
+                                    LoadListener listener, android.os.Handler mainHandler) {
+        if (loadedCount.incrementAndGet() == totalFilesToLoad && listener != null) {
+            mainHandler.post(listener::onAllLoaded);
         }
     }
 

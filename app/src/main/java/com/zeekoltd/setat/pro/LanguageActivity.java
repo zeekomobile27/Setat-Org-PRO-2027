@@ -33,14 +33,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 
-// استيرادات سياسات جوجل (UMP) ومحرك الإعلانات
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.ump.ConsentInformation;
-import com.google.android.ump.ConsentRequestParameters;
-import com.google.android.ump.UserMessagingPlatform;
-
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LanguageActivity extends AppCompatActivity {
 
@@ -56,9 +49,6 @@ public class LanguageActivity extends AppCompatActivity {
     private static final String LANGUAGE_SELECTED_KEY = "language_selected";
     private static final String PRIVACY_ACCEPTED_KEY = "privacy_accepted";
     private String currentLang = "ar";
-
-    // متغير لضمان عدم تهيئة الإعلانات مرتين (احترافية أداء)
-    private final AtomicBoolean isMobileAdsInitializeCalled = new AtomicBoolean(false);
 
     private String tr(String arabicText, String englishText) {
         return "en".equals(currentLang) ? englishText : arabicText;
@@ -151,47 +141,10 @@ public class LanguageActivity extends AppCompatActivity {
         }
     }
 
-    // 🌟 أكواد الموافقة الخاصة بجوجل (UMP) 🌟
+    // موافقة إعلانات Google تُدار مركزياً قبل تهيئة الإعلانات في AdMobAdsHelper.
+    // لا نربط عرض نموذج UMP بشاشة اللغة حتى يظهر أيضاً للمستخدمين الحاليين.
     private void checkGoogleConsentAndProceed() {
-        ConsentRequestParameters params = new ConsentRequestParameters.Builder()
-                .setTagForUnderAgeOfConsent(false)
-                .build();
-
-        ConsentInformation consentInformation = UserMessagingPlatform.getConsentInformation(this);
-
-        consentInformation.requestConsentInfoUpdate(
-                this,
-                params,
-                () -> {
-                    UserMessagingPlatform.loadAndShowConsentFormIfRequired(
-                            this,
-                            loadAndShowError -> {
-                                // تم جمع الموافقة، يمكننا الآن تهيئة الإعلانات
-                                if (consentInformation.canRequestAds()) {
-                                    initializeMobileAds();
-                                }
-                                // الانتقال للشاشة التالية سواء وافق أو لم يوافق
-                                startInternetCheckActivity();
-                            }
-                    );
-                },
-                requestConsentError -> {
-                    // في حال فشل الاتصال بخوادم جوجل، ننتقل للشاشة التالية لكي لا يعلق المستخدم
-                    startInternetCheckActivity();
-                });
-
-        // التحقق مما إذا كانت الموافقة محفوظة مسبقاً في الجلسة السابقة للتهيئة السريعة
-        if (consentInformation.canRequestAds()) {
-            initializeMobileAds();
-        }
-    }
-
-    private void initializeMobileAds() {
-        if (isMobileAdsInitializeCalled.getAndSet(true)) {
-            return;
-        }
-        // تهيئة محرك الإعلانات بأمان بعد ضمان الموافقة
-        MobileAds.initialize(this, initializationStatus -> {});
+        startInternetCheckActivity();
     }
 
     // 🌟 تحويل نافذة اللغة للزجاج الموحد 🌟

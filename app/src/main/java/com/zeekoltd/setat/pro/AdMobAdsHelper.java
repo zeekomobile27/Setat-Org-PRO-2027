@@ -176,17 +176,30 @@ public class AdMobAdsHelper {
 
         isInitializing = true;
         Activity activity = getActivity();
-        if (activity == null) return;
-        
-        // 🚀 تهيئة Google Mobile Ads
-        MobileAds.initialize(activity, initializationStatus -> {
-            isSdkInitialized = true;
+        if (activity == null) {
             isInitializing = false;
-            
-            Activity act = getActivity();
-            if (act != null) {
-                act.runOnUiThread(this::executePendingTasks);
+            pendingInitTasks.clear();
+            return;
+        }
+
+        // UMP must finish before MobileAds is initialized or any ad is requested.
+        AdMobConsentManager.ensureConsent(activity, canRequestAds -> {
+            if (!canRequestAds) {
+                isInitializing = false;
+                pendingInitTasks.clear();
+                return;
             }
+
+            MobileAds.initialize(activity.getApplicationContext(), initializationStatus -> {
+                isSdkInitialized = true;
+                isInitializing = false;
+                Activity currentActivity = getActivity();
+                if (currentActivity != null) {
+                    currentActivity.runOnUiThread(this::executePendingTasks);
+                } else {
+                    pendingInitTasks.clear();
+                }
+            });
         });
     }
 
