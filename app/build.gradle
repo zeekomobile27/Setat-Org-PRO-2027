@@ -93,7 +93,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-config'
 
-    implementation 'com.google.android.gms:play-services-auth:21.6.0'
+    // Modern Google sign-in via Android Credential Manager (official Firebase guidance).
+    implementation 'androidx.credentials:credentials:1.3.0'
+    implementation 'androidx.credentials:credentials-play-services-auth:1.3.0'
+    implementation 'com.google.android.libraries.identity.googleid:googleid:1.1.1'
 
     // FirebaseUI 10 is a major release; test all FirebaseUI flows after upgrade.
     implementation 'com.firebaseui:firebase-ui-database:10.0.0'
