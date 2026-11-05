@@ -20,7 +20,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NativeAudioEngine {
 
     private static NativeAudioEngine instance;
-    private boolean isInitialized = false;
+    private volatile boolean isInitialized = false;
+    private volatile boolean lastLoadHadSamples = false;
+
+    public boolean isAudioReady() {
+        return isInitialized && lastLoadHadSamples;
+    }
 
     // 🚀 مسار ديناميكي للذاكرة الآمنة للتطبيق (يتم تحديثه عند الاستدعاء ليطابق ZEEKOORG/Setat)
     private String SETS_FOLDER_PATH = "";
@@ -80,10 +85,23 @@ public class NativeAudioEngine {
     // for downloaded/custom sets only; this also prevents stale extracted files from
     // shadowing the verified packaged audio resources in release builds.
     public void loadFullSetAsync(Context context, String s1, String s2, String r1, String r2, LoadListener listener) {
+        loadFullSetAsync(context, s1, s2, r1, r2, true, listener);
+    }
+
+    /**
+     * Load either the packaged default bank or an imported/downloaded set.
+     * Packaged resources are preferred for the default bank; external extracted
+     * files are preferred for user-selected sets so identical prefixes cannot
+     * accidentally resolve to the built-in samples.
+     */
+    public void loadFullSetAsync(Context context, String s1, String s2, String r1, String r2,
+                                 boolean preferPackagedResources, LoadListener listener) {
         Context appContext = context.getApplicationContext();
+        lastLoadHadSamples = false;
         if (!isInitialized) isInitialized = initEngine();
         if (!isInitialized) {
             Log.e("ZeekoAudio", "Native audio engine failed to initialize");
+            lastLoadHadSamples = false;
             if (listener != null) {
                 new android.os.Handler(android.os.Looper.getMainLooper()).post(listener::onAllLoaded);
             }
@@ -98,8 +116,10 @@ public class NativeAudioEngine {
 
         final int totalFilesToLoad = 54; // 24 x 2 sounds + 3 x 2 rhythms
         final AtomicInteger loadedCount = new AtomicInteger(0);
+        final AtomicInteger successfulSamples = new AtomicInteger(0);
         final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
-        ExecutorService executor = Executors.newFixedThreadPool(4);
+        // Limit simultaneous MediaCodec decoders to reduce peak memory use on phones.
+        ExecutorService executor = Executors.newFixedThreadPool(2);
 
         // Two sound banks, 24 samples per bank.
         for (int bank = 0; bank < 2; bank++) {
@@ -110,16 +130,17 @@ public class NativeAudioEngine {
                 executor.execute(() -> {
                     try {
                         String fileNameNoExt = prefix + "_" + String.format(Locale.US, "%02d", idx + 1);
-                        float[] pcm = loadSamplePreferPackagedResource(appContext, safeFolder, fileNameNoExt);
+                        float[] pcm = loadSample(appContext, safeFolder, fileNameNoExt, preferPackagedResources);
                         if (pcm != null && pcm.length > 0) {
                             loadSampleNative(b, idx, pcm);
+                            successfulSamples.incrementAndGet();
                         } else {
                             Log.w("ZeekoAudio", "Sound sample unavailable: " + fileNameNoExt);
                         }
                     } catch (Exception e) {
                         Log.e("ZeekoAudio", "Failed loading sound bank=" + b + " index=" + idx, e);
                     } finally {
-                        notifyLoadProgress(loadedCount, totalFilesToLoad, listener, mainHandler);
+                        notifyLoadProgress(loadedCount, totalFilesToLoad, successfulSamples, listener, mainHandler);
                     }
                 });
             }
@@ -135,17 +156,18 @@ public class NativeAudioEngine {
                 executor.execute(() -> {
                     try {
                         String fileNameNoExt = prefix + suffixes[idx];
-                        float[] pcm = loadSamplePreferPackagedResource(appContext, safeFolder, fileNameNoExt);
+                        float[] pcm = loadSample(appContext, safeFolder, fileNameNoExt, preferPackagedResources);
                         if (pcm != null && pcm.length > 0) {
                             loadRhythmSampleNative(b, idx, pcm);
-                            Log.i("ZeekoAudio", "Loaded rhythm resource: " + fileNameNoExt + " frames=" + pcm.length);
+                            successfulSamples.incrementAndGet();
+                            Log.i("ZeekoAudio", "Loaded rhythm sample: " + fileNameNoExt + " frames=" + pcm.length);
                         } else {
                             Log.e("ZeekoAudio", "Rhythm sample unavailable: " + fileNameNoExt);
                         }
                     } catch (Exception e) {
                         Log.e("ZeekoAudio", "Failed loading rhythm bank=" + b + " index=" + idx, e);
                     } finally {
-                        notifyLoadProgress(loadedCount, totalFilesToLoad, listener, mainHandler);
+                        notifyLoadProgress(loadedCount, totalFilesToLoad, successfulSamples, listener, mainHandler);
                     }
                 });
             }
@@ -153,25 +175,44 @@ public class NativeAudioEngine {
         executor.shutdown();
     }
 
-    private float[] loadSamplePreferPackagedResource(Context context, File externalSetFolder, String fileNameNoExt) {
+    private float[] loadSample(Context context, File externalSetFolder, String fileNameNoExt,
+                               boolean preferPackagedResources) {
+        File externalFile = new File(externalSetFolder, fileNameNoExt + ".ogg");
         int resId = context.getResources().getIdentifier(fileNameNoExt, "raw", context.getPackageName());
+
+        if (!preferPackagedResources) {
+            if (!externalFile.isFile() || !externalFile.canRead()) {
+                Log.w("ZeekoAudio", "Selected external set is missing sample: " + externalFile.getAbsolutePath());
+                return null;
+            }
+            float[] externalPcm = decodeOggToFloatArrayFromFile(externalFile.getAbsolutePath());
+            if (externalPcm != null && externalPcm.length > 0) return externalPcm;
+            Log.e("ZeekoAudio", "External sample could not be decoded: " + fileNameNoExt);
+            return null;
+        }
+
         if (resId != 0) {
             float[] packagedPcm = decodeOggToFloatArray(context, resId);
             if (packagedPcm != null && packagedPcm.length > 0) return packagedPcm;
-            Log.w("ZeekoAudio", "Packaged resource could not be decoded; trying external fallback: " + fileNameNoExt);
+            Log.w("ZeekoAudio", "Packaged sample could not be decoded: " + fileNameNoExt);
+        } else {
+            Log.d("ZeekoAudio", "No packaged raw resource named " + fileNameNoExt);
         }
 
-        File externalFile = new File(externalSetFolder, fileNameNoExt + ".ogg");
-        if (externalFile.isFile() && externalFile.canRead()) {
+        if (preferPackagedResources && externalFile.isFile() && externalFile.canRead()) {
             return decodeOggToFloatArrayFromFile(externalFile.getAbsolutePath());
         }
         return null;
     }
 
     private void notifyLoadProgress(AtomicInteger loadedCount, int totalFilesToLoad,
-                                    LoadListener listener, android.os.Handler mainHandler) {
-        if (loadedCount.incrementAndGet() == totalFilesToLoad && listener != null) {
-            mainHandler.post(listener::onAllLoaded);
+                                    AtomicInteger successfulSamples, LoadListener listener,
+                                    android.os.Handler mainHandler) {
+        if (loadedCount.incrementAndGet() == totalFilesToLoad) {
+            lastLoadHadSamples = successfulSamples.get() > 0;
+            Log.i("ZeekoAudio", "Set loading complete: " + successfulSamples.get()
+                    + "/" + totalFilesToLoad + " samples decoded; engine=" + isInitialized);
+            if (listener != null) mainHandler.post(listener::onAllLoaded);
         }
     }
 

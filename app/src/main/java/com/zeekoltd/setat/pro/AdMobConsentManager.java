@@ -3,6 +3,7 @@ package com.zeekoltd.setat.pro;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -54,10 +55,24 @@ public final class AdMobConsentManager {
         consentInformation.requestConsentInfoUpdate(
                 activity,
                 parameters,
-                () -> UserMessagingPlatform.loadAndShowConsentFormIfRequired(
+                () -> {
+                    Log.i("AdMobConsent", "UMP info updated; consentStatus="
+                            + consentInformation.getConsentStatus()
+                            + ", privacyOptions="
+                            + consentInformation.getPrivacyOptionsRequirementStatus());
+                    UserMessagingPlatform.loadAndShowConsentFormIfRequired(
                         activity,
-                        formError -> complete(consentInformation)),
-                requestError -> complete(consentInformation));
+                        formError -> {
+                            if (formError != null) {
+                                Log.e("AdMobConsent", "UMP consent form failed: " + formError.getMessage());
+                            }
+                            complete(consentInformation);
+                        });
+                },
+                requestError -> {
+                    Log.e("AdMobConsent", "UMP consent info update failed: " + requestError.getMessage());
+                    complete(consentInformation);
+                });
     }
 
 
@@ -89,6 +104,7 @@ public final class AdMobConsentManager {
 
     private static void complete(ConsentInformation consentInformation) {
         boolean canRequestAds = consentInformation.canRequestAds();
+        Log.i("AdMobConsent", "UMP consent flow complete; canRequestAds=" + canRequestAds);
         synchronized (LOCK) {
             requestInProgress = false;
             requestComplete = true;

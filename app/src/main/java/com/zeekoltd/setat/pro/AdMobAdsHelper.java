@@ -92,8 +92,8 @@ public class AdMobAdsHelper {
     private float density;
     private final Handler handler;
     
-    private boolean isSdkInitialized = false;
-    private boolean isInitializing = false;
+    private volatile boolean isSdkInitialized = false;
+    private volatile boolean isInitializing = false;
     private final java.util.ArrayList<Runnable> pendingInitTasks = new java.util.ArrayList<>();
     
     private String currentLang = "ar";
@@ -190,16 +190,17 @@ public class AdMobAdsHelper {
                 return;
             }
 
-            MobileAds.initialize(activity.getApplicationContext(), initializationStatus -> {
+            Context applicationContext = activity.getApplicationContext();
+            new Thread(() -> MobileAds.initialize(applicationContext, initializationStatus -> {
                 isSdkInitialized = true;
                 isInitializing = false;
                 Activity currentActivity = getActivity();
-                if (currentActivity != null) {
+                if (currentActivity != null && !currentActivity.isFinishing() && !currentActivity.isDestroyed()) {
                     currentActivity.runOnUiThread(this::executePendingTasks);
                 } else {
-                    pendingInitTasks.clear();
+                    new Handler(Looper.getMainLooper()).post(pendingInitTasks::clear);
                 }
-            });
+            }), "AdMob-SDK-Initialization").start();
         });
     }
 

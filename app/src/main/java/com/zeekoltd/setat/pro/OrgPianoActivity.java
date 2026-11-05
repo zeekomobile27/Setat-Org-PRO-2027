@@ -56,9 +56,6 @@ public class OrgPianoActivity extends AppCompatActivity {
     // 🚀 تهيئة الاعلانات
     private AdMobAdsHelper adMobAdsHelper;
 
-    // 🚀 متغير للتحكم بالفتح النظيف وتصفير الذاكرة
-    private static boolean isAppProcessFresh = true;
-
     // 🚀 المتغيرات النصية لتخزين العناوين (Caching) للحفاظ عليها بعد مسح الملفات وتسريع التنقل
     private String cachedSound1Name = "string";
     private String cachedSound2Name = "sound2";
@@ -104,6 +101,9 @@ public class OrgPianoActivity extends AppCompatActivity {
 
     public static final String SETS_FOLDER_NAME = "ZEEKOORG/Setat";
     public String setsFolderPath;
+    private boolean activeSetIsDefault = true;
+    private String activeExternalSoundPrefix;
+    private String activeExternalRhythmPrefix;
 
     private int devClickCount = 0;
     private Handler devClickHandler = new Handler(Looper.getMainLooper());
@@ -190,10 +190,15 @@ public class OrgPianoActivity extends AppCompatActivity {
             }
         });
 
-        // 🚀 التنظيف الإجباري للذاكرة عند فتح التطبيق من الصفر لضمان إقلاع السيت الافتراضي
-        if (isAppProcessFresh) {
-            clearExtractedSetFiles();
-            isAppProcessFresh = false;
+        // Preserve the active extracted set files so user-selected sets can be restored.
+        // The built-in default remains the fallback when no external info/audio files exist.
+        activeSetIsDefault = !hasExternalActiveSetFiles();
+        if (activeSetIsDefault) {
+            activeExternalSoundPrefix = null;
+            activeExternalRhythmPrefix = null;
+        } else {
+            activeExternalSoundPrefix = detectSoundPrefix();
+            activeExternalRhythmPrefix = detectRhythmPrefix();
         }
 
         initUI();
@@ -252,31 +257,18 @@ public class OrgPianoActivity extends AppCompatActivity {
             adMobAdsHelper.destroyBanner();
         }
         engineReady = false;
-        clearExtractedSetFiles(); 
     }
 
     // 🚀 دالة المكنسة الذكية: تمسح الأصوات (ogg, json) وتتجاهل السيتات (zip, set) 
-    private void clearExtractedSetFiles() {
-        try {
-            if (setsFolderPath == null) return;
-            File dir = new File(setsFolderPath);
-            if (dir.exists() && dir.isDirectory()) {
-                File[] files = dir.listFiles();
-                if (files != null) {
-                    for (File f : files) {
-                        if (f.isFile()) {
-                            String name = f.getName().toLowerCase();
-                            // نحذف فقط الأصوات المفكوكة وبياناتها، ولا نحذف أي سيت مضغوط
-                            if (name.endsWith(".ogg") || name.endsWith(".json")) {
-                                f.delete();
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            android.util.Log.e("ZeekoAudio", "Error clearing extracted files", e);
+    private boolean hasExternalActiveSetFiles() {
+        if (setsFolderPath == null) return false;
+        File dir = new File(setsFolderPath);
+        File[] files = dir.listFiles();
+        if (files == null) return false;
+        for (File file : files) {
+            if (file.isFile() && file.getName().toLowerCase(java.util.Locale.ROOT).endsWith(".ogg")) return true;
         }
+        return false;
     }
 
     public void showLoading(String text) {
@@ -366,9 +358,7 @@ public class OrgPianoActivity extends AppCompatActivity {
     }
 
     public String getDisplayNameFromJson(String key, String defaultName) {
-        boolean isDefaultSet = detectSoundPrefix().equals("string");
-
-        if (isDefaultSet) {
+        if (activeSetIsDefault) {
             try {
                 java.io.InputStream is = getAssets().open("info.json");
                 byte[] buffer = new byte[is.available()];
@@ -399,10 +389,24 @@ public class OrgPianoActivity extends AppCompatActivity {
 
     // 🚀 دالة جديدة لتحديث الذاكرة المؤقتة للأسماء وقراءتها مرة واحدة فقط عند رفع السيت
     public void updateCachedNames() {
-        cachedSound1Name = getDisplayNameFromJson("sound1", "string");
-        cachedSound2Name = getDisplayNameFromJson("sound2", "sound2");
-        cachedRhythm1Name = getDisplayNameFromJson("rhythm1", "rhythm");
-        cachedRhythm2Name = getDisplayNameFromJson("rhythm2", "rhythm2");
+        String soundFallback1 = activeSetIsDefault ? "string" : externalSoundFallback();
+        String soundFallback2 = activeSetIsDefault ? "saz" : externalSoundFallback();
+        String rhythmFallback1 = activeSetIsDefault ? "dj27" : externalRhythmFallback();
+        String rhythmFallback2 = activeSetIsDefault ? "salo" : externalRhythmFallback();
+        cachedSound1Name = getDisplayNameFromJson("sound1", soundFallback1);
+        cachedSound2Name = getDisplayNameFromJson("sound2", soundFallback2);
+        cachedRhythm1Name = getDisplayNameFromJson("rhythm1", rhythmFallback1);
+        cachedRhythm2Name = getDisplayNameFromJson("rhythm2", rhythmFallback2);
+    }
+
+    private String externalSoundFallback() {
+        return activeExternalSoundPrefix != null && !activeExternalSoundPrefix.isEmpty()
+                ? activeExternalSoundPrefix : "string";
+    }
+
+    private String externalRhythmFallback() {
+        return activeExternalRhythmPrefix != null && !activeExternalRhythmPrefix.isEmpty()
+                ? activeExternalRhythmPrefix : "rhythm";
     }
 
     // 🚀 تم التعديل: تقرأ الأسماء من الذاكرة المؤقتة بدلاً من ملف info.json لضمان السرعة والاحتفاظ بها بعد التنظيف
@@ -473,13 +477,23 @@ public class OrgPianoActivity extends AppCompatActivity {
     public void updateDashboardVolume() {}
 
     private void loadSetIntoMemory() {
-        String s1 = getDisplayNameFromJson("sound1", "string");
-        String s2 = getDisplayNameFromJson("sound2", "sound2");
-        String r1 = getDisplayNameFromJson("rhythm1", "rhythm");
-        String r2 = getDisplayNameFromJson("rhythm2", "rhythm2");
+        // The built-in samples have fixed resource prefixes. The info.json values are
+        // display labels and must never decide which packaged audio resources are loaded.
+        String s1 = activeSetIsDefault ? "string" : getDisplayNameFromJson("sound1", externalSoundFallback());
+        String s2 = activeSetIsDefault ? "saz" : getDisplayNameFromJson("sound2", externalSoundFallback());
+        String r1 = activeSetIsDefault ? "dj27" : getDisplayNameFromJson("rhythm1", externalRhythmFallback());
+        String r2 = activeSetIsDefault ? "salo" : getDisplayNameFromJson("rhythm2", externalRhythmFallback());
         
         showLoading(tr("جاري قراءة الأصوات وتركيب السيت...", "Reading sounds and installing set..."));
-        audioEngine.loadFullSetAsync(this, s1, s2, r1, r2, () -> {
+        audioEngine.loadFullSetAsync(this, s1, s2, r1, r2, activeSetIsDefault, () -> {
+            if (!audioEngine.isAudioReady()) {
+                engineReady = false;
+                if (pianoView != null) pianoView.setTouchEnabled(false);
+                hideLoading();
+                android.util.Log.e("ZeekoAudio", "Audio initialization/loading failed; check ZeekoAudio logs for missing or undecodable samples.");
+                Toast.makeText(this, tr("تعذر تحميل الأصوات. أعد فتح شاشة العزف أو تحقق من ملفات السيت.", "Audio samples could not be loaded. Reopen the piano screen or check the set files."), Toast.LENGTH_LONG).show();
+                return;
+            }
             engineReady = true;
             if (pianoView != null) pianoView.setTouchEnabled(true); 
             hideLoading();
@@ -488,9 +502,6 @@ public class OrgPianoActivity extends AppCompatActivity {
             updateCachedNames(); 
             // 🌟 2. تحديث الشاشة من الذاكرة المؤقتة 🌟
             updateDashboardNames(); 
-            // 🌟 3. مسح الملفات للحفاظ على نظافة التخزين 🌟
-            clearExtractedSetFiles(); 
-            
             Toast.makeText(this, tr("تم تفعيل السيت بنجاح!", "Set activated successfully!"), Toast.LENGTH_SHORT).show();
         });
     }
@@ -505,7 +516,12 @@ public class OrgPianoActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(String soundPrefix, String rhythmPrefix) {
-                runOnUiThread(() -> loadSetIntoMemory());
+                runOnUiThread(() -> {
+                    activeSetIsDefault = false;
+                    activeExternalSoundPrefix = soundPrefix;
+                    activeExternalRhythmPrefix = rhythmPrefix;
+                    loadSetIntoMemory();
+                });
             }
 
             @Override
@@ -569,7 +585,12 @@ public class OrgPianoActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(String soundPrefix, String rhythmPrefix) {
-                runOnUiThread(() -> loadSetIntoMemory());
+                runOnUiThread(() -> {
+                    activeSetIsDefault = false;
+                    activeExternalSoundPrefix = soundPrefix;
+                    activeExternalRhythmPrefix = rhythmPrefix;
+                    loadSetIntoMemory();
+                });
             }
 
             @Override
@@ -593,7 +614,12 @@ public class OrgPianoActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(String soundPrefix, String rhythmPrefix) {
-                runOnUiThread(() -> loadSetIntoMemory());
+                runOnUiThread(() -> {
+                    activeSetIsDefault = true;
+                    activeExternalSoundPrefix = null;
+                    activeExternalRhythmPrefix = null;
+                    loadSetIntoMemory();
+                });
             }
 
             @Override
@@ -1102,12 +1128,20 @@ public class OrgPianoActivity extends AppCompatActivity {
         showLoading(tr("يرجى الانتظار...", "Please Wait..."));
         
         // 🚀 السحر يبدأ هنا: استدعاء الأسماء الافتراضية، وفي حال عدم وجودها سيقرأ من الـ Raw
-        String s1 = getDisplayNameFromJson("sound1", "string");
-        String s2 = getDisplayNameFromJson("sound2", "sound2");
-        String r1 = getDisplayNameFromJson("rhythm1", "rhythm");
-        String r2 = getDisplayNameFromJson("rhythm2", "rhythm2");
+        String s1 = activeSetIsDefault ? "string" : getDisplayNameFromJson("sound1", externalSoundFallback());
+        String s2 = activeSetIsDefault ? "saz" : getDisplayNameFromJson("sound2", externalSoundFallback());
+        String r1 = activeSetIsDefault ? "dj27" : getDisplayNameFromJson("rhythm1", externalRhythmFallback());
+        String r2 = activeSetIsDefault ? "salo" : getDisplayNameFromJson("rhythm2", externalRhythmFallback());
         
-        audioEngine.loadFullSetAsync(this, s1, s2, r1, r2, () -> {
+        audioEngine.loadFullSetAsync(this, s1, s2, r1, r2, activeSetIsDefault, () -> {
+            if (!audioEngine.isAudioReady()) {
+                engineReady = false;
+                if (pianoView != null) pianoView.setTouchEnabled(false);
+                hideLoading();
+                android.util.Log.e("ZeekoAudio", "Audio initialization/loading failed; check ZeekoAudio logs for missing or undecodable samples.");
+                Toast.makeText(this, tr("تعذر تحميل الأصوات. أعد فتح شاشة العزف أو تحقق من ملفات السيت.", "Audio samples could not be loaded. Reopen the piano screen or check the set files."), Toast.LENGTH_LONG).show();
+                return;
+            }
             engineReady = true;
             if (pianoView != null) pianoView.setTouchEnabled(true); 
             hideLoading(); 
@@ -1116,8 +1150,6 @@ public class OrgPianoActivity extends AppCompatActivity {
             updateCachedNames(); 
             // 🌟 2. تحديث الشاشة من الذاكرة المؤقتة 🌟
             updateDashboardNames(); 
-            // 🌟 3. مسح الملفات للحفاظ على نظافة التخزين 🌟
-            clearExtractedSetFiles(); 
         });
     }
 
