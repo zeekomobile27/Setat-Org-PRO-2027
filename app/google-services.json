@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "651145105055-jmc4fgicr16c5fqua3jp6aaf52l08qsq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zeekoltd.setat.pro",
+            "certificate_hash": "1036c82483999512ae1a151375c8cba30b35f5b2"
+          }
+        },
+        {
           "client_id": "651145105055-o7t8fui34ve8qrq8f92dfavckvedmaaq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
