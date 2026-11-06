@@ -59,14 +59,14 @@
         <activity android:name=".MainActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".MainactivityActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".SetatshabiActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatmonwahActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".SetatmonwahActivity" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".NewsetatActivity" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".SetatdabakatActivity" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".SetatiraqActivity" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".SetategeptActivity" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".SetatehtrafeActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".Org2025Activity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".Them2026Activity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".Org2025Activity" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".Them2026Activity" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".AlertActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".LanguageActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".DzirActivity" android:hardwareAccelerated="true" android:exported="false" />
