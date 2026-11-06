@@ -33,8 +33,9 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPagerSetsPop"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/blurListBtnPop"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- الشريط العلوي الزجاجي -->
