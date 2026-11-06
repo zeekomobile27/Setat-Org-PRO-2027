@@ -86,7 +86,9 @@ public class MovingBorderView extends View {
             });
         }
         
-        animator.start();
+        if (isAttachedToWindow() && getWindowVisibility() == VISIBLE && getVisibility() == VISIBLE) {
+            animator.start();
+        }
     }
 
     // دالة لتفعيل وضع الدوران المستمر
@@ -144,13 +146,49 @@ public class MovingBorderView extends View {
         super.onDraw(canvas);
         if (isVisible) {
             matrix.setRotate(rotation, getWidth() / 2f, getHeight() / 2f);
+            if (paint.getShader() == null) return;
             paint.getShader().setLocalMatrix(matrix);
             canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
         }
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (animator != null && getVisibility() == VISIBLE && getWindowVisibility() == VISIBLE) {
+            animator.start();
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (animator != null) animator.cancel();
+        super.onDetachedFromWindow();
+    }
+
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        updateAnimatorVisibility();
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        updateAnimatorVisibility();
+    }
+
+    private void updateAnimatorVisibility() {
+        if (animator == null) return;
+        if (isAttachedToWindow() && isShown() && getWindowVisibility() == VISIBLE) {
+            if (!animator.isRunning()) animator.start();
+        } else if (animator.isRunning()) {
+            animator.cancel();
+        }
+    }
+
     public void startAnimation() {
-        if (!animator.isRunning()) animator.start();
+        updateAnimatorVisibility();
     }
 
     public void stopAnimation() {
