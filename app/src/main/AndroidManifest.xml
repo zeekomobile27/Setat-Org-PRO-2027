@@ -58,30 +58,30 @@
         <!-- باقي الشاشات تم إزالة قيد الـ Portrait منها استجابةً لسياسة جوجل للتابلت و Android 16 -->
         <activity android:name=".MainActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".MainactivityActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatshabiActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".SetatshabiActivity" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".SetatmonwahActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".NewsetatActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatdabakatActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatiraqActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetategeptActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatehtrafeActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".NewsetatActivity" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".SetatdabakatActivity" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".SetatiraqActivity" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".SetategeptActivity" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".SetatehtrafeActivity" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".Org2025Activity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".Them2026Activity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".AlertActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".LanguageActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".DzirActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".YemeActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".NewActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".DzirActivity" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".YemeActivity" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".NewActivity" android:hardwareAccelerated="true" android:exported="false" />
         
         <!-- إضافة الشاشة الشائعة الجديدة هنا -->
-        <activity android:name=".PopularActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".PopularActivity" android:hardwareAccelerated="true" android:exported="false" />
         
-        <activity android:name=".SoriActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".SoriActivity" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".ChatActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".SupportChatActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
         <activity android:name=".AdminChatsListActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".FavoritesActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SearchActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".FavoritesActivity" android:hardwareAccelerated="true" android:exported="false" />
+        <activity android:name=".SearchActivity" android:hardwareAccelerated="true" android:exported="false" />
 
         <!-- شاشة العزف: الاتجاه الأفقي على الهواتف، مع السماح بالتكيّف على الشاشات الكبيرة -->
         <activity
