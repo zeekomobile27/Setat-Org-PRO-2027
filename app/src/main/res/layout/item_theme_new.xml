@@ -1,129 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    android:layoutDirection="locale">
+<?xml version='1.0' encoding='utf-8'?>
+<ScrollView xmlns:ns0="http://schemas.android.com/apk/res/android" xmlns:ns1="http://schemas.android.com/apk/res-auto" ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:fillViewport="true" ns0:clipToPadding="false" ns0:padding="8dp" ns0:scrollbars="none"><LinearLayout ns0:layout_width="match_parent" ns0:layout_height="wrap_content" ns0:orientation="horizontal" ns0:gravity="center_vertical" ns0:layoutDirection="ltr" ns0:baselineAligned="false"><eightbitlab.com.blurview.BlurView ns0:id="@+id/blurCenterWindow" ns0:layout_width="0dp" ns0:layout_height="wrap_content" ns0:layout_marginHorizontal="20dp" ns0:background="@drawable/bg_glass_border" ns0:clipToOutline="true" ns1:blurOverlayColor="#1AFFFFFF" ns0:layout_weight="1" ns0:layout_marginEnd="10dp"> 
 
-    <eightbitlab.com.blurview.BlurView
-        android:id="@+id/blurCenterWindow"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="170dp" 
-        android:background="@drawable/bg_glass_border"
-        android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"> 
+        <androidx.constraintlayout.widget.ConstraintLayout ns0:layout_width="match_parent" ns0:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <com.zeekoltd.setat.pro.MovingBorderView ns0:id="@+id/centerMovingBorder" ns0:layout_width="0dp" ns0:layout_height="0dp" ns1:layout_constraintTop_toTopOf="parent" ns1:layout_constraintBottom_toBottomOf="parent" ns1:layout_constraintStart_toStartOf="parent" ns1:layout_constraintEnd_toEndOf="parent" />
 
-            <com.zeekoltd.setat.pro.MovingBorderView
-                android:id="@+id/centerMovingBorder"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+            <LinearLayout ns0:layout_width="match_parent" ns0:layout_height="wrap_content" ns0:orientation="vertical" ns0:gravity="center" ns0:paddingTop="15dp" ns0:paddingBottom="15dp" ns0:paddingHorizontal="15dp" ns1:layout_constraintTop_toTopOf="parent" ns1:layout_constraintBottom_toBottomOf="parent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:paddingHorizontal="15dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
+                <TextView ns0:id="@+id/tvPreviewLabel" ns0:layout_width="wrap_content" ns0:layout_height="wrap_content" ns0:layout_marginBottom="4dp" ns0:text="معاينة الثيم" ns0:textColor="#FFFFFF" ns0:textSize="18sp" ns0:textStyle="bold" ns0:shadowColor="#FF000000" ns0:shadowDx="1" ns0:shadowDy="1" ns0:shadowRadius="2" />
 
-                <TextView
-                    android:id="@+id/tvPreviewLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    android:text="معاينة الثيم"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:shadowColor="#FF000000"
-                    android:shadowDx="1"
-                    android:shadowDy="1"
-                    android:shadowRadius="2" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp">
+                <androidx.constraintlayout.widget.ConstraintLayout ns0:layout_width="match_parent" ns0:layout_height="wrap_content" ns0:layout_marginBottom="15dp">
                     
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/imageContainerCard1"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        app:layout_constraintDimensionRatio="1280:576"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#33000000">
+                    <androidx.cardview.widget.CardView ns0:id="@+id/imageContainerCard1" ns0:layout_width="match_parent" ns0:layout_height="0dp" ns1:layout_constraintDimensionRatio="1280:576" ns1:layout_constraintTop_toTopOf="parent" ns1:layout_constraintBottom_toBottomOf="parent" ns1:layout_constraintStart_toStartOf="parent" ns1:layout_constraintEnd_toEndOf="parent" ns1:cardCornerRadius="10dp" ns1:cardElevation="0dp" ns1:cardBackgroundColor="#33000000">
                         
-                        <ImageView
-                            android:id="@+id/imgThemePreview1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="fitCenter" 
-                            android:src="@drawable/img_org_preview" />
+                        <ImageView ns0:id="@+id/imgThemePreview1" ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:scaleType="fitCenter" ns0:src="@drawable/img_org_preview" />
                             
-                        <ProgressBar
-                            android:id="@+id/imageLoadingBar1"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            android:indeterminateTint="#FFFFFF"
-                            android:visibility="gone" />
+                        <ProgressBar ns0:id="@+id/imageLoadingBar1" ns0:layout_width="30dp" ns0:layout_height="30dp" ns0:layout_gravity="center" ns0:indeterminateTint="#FFFFFF" ns0:visibility="gone" />
                     </androidx.cardview.widget.CardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <androidx.constraintlayout.widget.ConstraintLayout ns0:layout_width="match_parent" ns0:layout_height="wrap_content">
                     
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/imageContainerCard2"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        app:layout_constraintDimensionRatio="1280:576"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="#33000000">
+                    <androidx.cardview.widget.CardView ns0:id="@+id/imageContainerCard2" ns0:layout_width="match_parent" ns0:layout_height="0dp" ns1:layout_constraintDimensionRatio="1280:576" ns1:layout_constraintTop_toTopOf="parent" ns1:layout_constraintBottom_toBottomOf="parent" ns1:layout_constraintStart_toStartOf="parent" ns1:layout_constraintEnd_toEndOf="parent" ns1:cardCornerRadius="10dp" ns1:cardElevation="0dp" ns1:cardBackgroundColor="#33000000">
                         
-                        <ImageView
-                            android:id="@+id/imgThemePreview2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="fitCenter" 
-                            android:src="@drawable/img_org_preview" />
+                        <ImageView ns0:id="@+id/imgThemePreview2" ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:scaleType="fitCenter" ns0:src="@drawable/img_org_preview" />
                             
-                        <ProgressBar
-                            android:id="@+id/imageLoadingBar2"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            android:indeterminateTint="#FFFFFF"
-                            android:visibility="gone" />
+                        <ProgressBar ns0:id="@+id/imageLoadingBar2" ns0:layout_width="30dp" ns0:layout_height="30dp" ns0:layout_gravity="center" ns0:indeterminateTint="#FFFFFF" ns0:visibility="gone" />
                     </androidx.cardview.widget.CardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -131,82 +33,22 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </eightbitlab.com.blurview.BlurView>
 
-    <eightbitlab.com.blurview.BlurView
-        android:id="@+id/blurBottomInfo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/bg_glass_border"
-        android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/blurCenterWindow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    <eightbitlab.com.blurview.BlurView ns0:id="@+id/blurBottomInfo" ns0:layout_width="0dp" ns0:layout_height="wrap_content" ns0:layout_marginHorizontal="20dp" ns0:background="@drawable/bg_glass_border" ns0:clipToOutline="true" ns1:blurOverlayColor="#1AFFFFFF" ns0:layout_weight="1" ns0:layout_marginTop="0dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="15dp"
-            android:gravity="center_vertical|start">
+        <LinearLayout ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:orientation="vertical" ns0:paddingHorizontal="10dp" ns0:paddingVertical="10dp" ns0:gravity="center_vertical|start">
 
-            <TextView
-                android:id="@+id/tvSetTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ثيم اورج جديد"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:shadowColor="#FF000000"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="3" />
+            <TextView ns0:id="@+id/tvSetTitle" ns0:layout_width="wrap_content" ns0:layout_height="wrap_content" ns0:text="ثيم اورج جديد" ns0:textColor="#FFFFFF" ns0:textSize="20sp" ns0:textStyle="bold" ns0:shadowColor="#FF000000" ns0:shadowDx="1" ns0:shadowDy="1" ns0:shadowRadius="3" />
 
-            <TextView
-                android:id="@+id/tvSetDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="تصميم احترافي مريح للعين"
-                android:textColor="#E0E0E0"
-                android:textSize="14sp"
-                android:maxLines="2"
-                android:ellipsize="end" />
+            <TextView ns0:id="@+id/tvSetDescription" ns0:layout_width="match_parent" ns0:layout_height="wrap_content" ns0:layout_marginTop="4dp" ns0:text="تصميم احترافي مريح للعين" ns0:textColor="#E0E0E0" ns0:textSize="14sp" ns0:maxLines="2" ns0:ellipsize="end" />
 
-            <eightbitlab.com.blurview.BlurView
-                android:id="@+id/blurDownloadBtn"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/bg_glass_capsule"
-                android:clipToOutline="true"
-                app:blurOverlayColor="#33FFFFFF">
+            <eightbitlab.com.blurview.BlurView ns0:id="@+id/blurDownloadBtn" ns0:layout_width="match_parent" ns0:layout_height="40dp" ns0:layout_marginTop="8dp" ns0:layout_gravity="center_horizontal" ns0:background="@drawable/bg_glass_capsule" ns0:clipToOutline="true" ns1:blurOverlayColor="#33FFFFFF">
                 
-                <LinearLayout
-                    android:id="@+id/btnDownloadSet"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                <LinearLayout ns0:id="@+id/btnDownloadSet" ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:orientation="horizontal" ns0:gravity="center" ns0:clickable="true" ns0:focusable="true" ns0:background="?attr/selectableItemBackground">
                     
-                    <TextView
-                        android:id="@+id/tvDownloadLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="تحميل الثيم"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+                    <TextView ns0:id="@+id/tvDownloadLabel" ns0:layout_width="wrap_content" ns0:layout_height="wrap_content" ns0:text="تحميل الثيم" ns0:textColor="#FFFFFF" ns0:textSize="15sp" ns0:textStyle="bold" />
                 </LinearLayout>
             </eightbitlab.com.blurview.BlurView>
         </LinearLayout>
     </eightbitlab.com.blurview.BlurView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout></ScrollView>

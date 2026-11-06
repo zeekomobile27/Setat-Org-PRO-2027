@@ -1,263 +1,64 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:scrollbars="none">
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="690dp"
-    android:background="@android:color/transparent"
-    android:layoutDirection="locale">
+<?xml version='1.0' encoding='utf-8'?>
+<ScrollView xmlns:ns0="http://schemas.android.com/apk/res/android" xmlns:ns1="http://schemas.android.com/apk/res-auto" ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:fillViewport="true" ns0:clipToPadding="false" ns0:padding="8dp" ns0:scrollbars="none"><LinearLayout ns0:layout_width="match_parent" ns0:layout_height="wrap_content" ns0:orientation="horizontal" ns0:gravity="center_vertical" ns0:layoutDirection="ltr" ns0:baselineAligned="false"><LinearLayout ns0:id="@+id/sideIconsContainer" ns0:layout_width="60dp" ns0:layout_height="wrap_content" ns0:orientation="vertical" ns0:gravity="center" ns0:layout_marginEnd="8dp">
 
-    <LinearLayout
-        android:id="@+id/sideIconsContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginEnd="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <eightbitlab.com.blurview.BlurView
-            android:id="@+id/blurDevIcon"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:layout_marginBottom="15dp"
-            android:background="@drawable/bg_glass_circle_border"
-            android:clipToOutline="true"
-            app:blurOverlayColor="#1AFFFFFF">
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+        <eightbitlab.com.blurview.BlurView ns0:id="@+id/blurDevIcon" ns0:layout_width="55dp" ns0:layout_height="55dp" ns0:layout_marginBottom="15dp" ns0:background="@drawable/bg_glass_circle_border" ns0:clipToOutline="true" ns1:blurOverlayColor="#1AFFFFFF">
+            <FrameLayout ns0:layout_width="match_parent" ns0:layout_height="match_parent">
                 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:layout_gravity="center"
-                    app:cardCornerRadius="22.5dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="@android:color/transparent">
+                <androidx.cardview.widget.CardView ns0:layout_width="45dp" ns0:layout_height="45dp" ns0:layout_gravity="center" ns1:cardCornerRadius="22.5dp" ns1:cardElevation="0dp" ns1:cardBackgroundColor="@android:color/transparent">
                     
-                    <ImageView
-                        android:id="@+id/imgDevIcon"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_default_user" />
+                    <ImageView ns0:id="@+id/imgDevIcon" ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:scaleType="centerCrop" ns0:src="@drawable/ic_default_user" />
                 </androidx.cardview.widget.CardView>
                 
             </FrameLayout>
         </eightbitlab.com.blurview.BlurView>
 
-        <eightbitlab.com.blurview.BlurView
-            android:id="@+id/blurLikeBtn"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/bg_glass_circle_border"
-            android:clipToOutline="true"
-            app:blurOverlayColor="#1AFFFFFF">
-            <ImageView
-                android:id="@+id/btnLike"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_gravity="center"
-                android:src="@drawable/icon_heart"
-                app:tint="#FFFFFF" />
+        <eightbitlab.com.blurview.BlurView ns0:id="@+id/blurLikeBtn" ns0:layout_width="55dp" ns0:layout_height="55dp" ns0:layout_marginBottom="5dp" ns0:background="@drawable/bg_glass_circle_border" ns0:clipToOutline="true" ns1:blurOverlayColor="#1AFFFFFF">
+            <ImageView ns0:id="@+id/btnLike" ns0:layout_width="26dp" ns0:layout_height="26dp" ns0:layout_gravity="center" ns0:src="@drawable/icon_heart" ns1:tint="#FFFFFF" />
         </eightbitlab.com.blurview.BlurView>
         
-        <TextView
-            android:id="@+id/tvLikesCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:text="0"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:shadowColor="#FF000000"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:shadowRadius="2" />
+        <TextView ns0:id="@+id/tvLikesCount" ns0:layout_width="wrap_content" ns0:layout_height="wrap_content" ns0:layout_marginBottom="15dp" ns0:text="0" ns0:textColor="#FFFFFF" ns0:textSize="12sp" ns0:textStyle="bold" ns0:shadowColor="#FF000000" ns0:shadowDx="1" ns0:shadowDy="1" ns0:shadowRadius="2" />
 
-        <eightbitlab.com.blurview.BlurView
-            android:id="@+id/blurFavBtn"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
-            android:background="@drawable/bg_glass_circle_border"
-            android:clipToOutline="true"
-            app:blurOverlayColor="#1AFFFFFF">
-            <ImageView
-                android:id="@+id/btnFavorite"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                android:src="@drawable/icon_star"
-                app:tint="#FFFFFF" />
+        <eightbitlab.com.blurview.BlurView ns0:id="@+id/blurFavBtn" ns0:layout_width="55dp" ns0:layout_height="55dp" ns0:background="@drawable/bg_glass_circle_border" ns0:clipToOutline="true" ns1:blurOverlayColor="#1AFFFFFF">
+            <ImageView ns0:id="@+id/btnFavorite" ns0:layout_width="24dp" ns0:layout_height="24dp" ns0:layout_gravity="center" ns0:src="@drawable/icon_star" ns1:tint="#FFFFFF" />
         </eightbitlab.com.blurview.BlurView>
     </LinearLayout>
 
-    <eightbitlab.com.blurview.BlurView
-        android:id="@+id/blurCenterWindow"
-        android:layout_width="260dp"
-        android:layout_height="350dp"
-        android:background="@drawable/bg_glass_border"
-        android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/sideIconsContainer"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"> 
+    <eightbitlab.com.blurview.BlurView ns0:id="@+id/blurCenterWindow" ns0:layout_width="0dp" ns0:layout_height="245dp" ns0:background="@drawable/bg_glass_border" ns0:clipToOutline="true" ns1:blurOverlayColor="#1AFFFFFF" ns0:layout_weight="1" ns0:layout_marginEnd="10dp"> 
 
-        <com.zeekoltd.setat.pro.MovingBorderView
-            android:id="@+id/centerMovingBorder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <com.zeekoltd.setat.pro.MovingBorderView ns0:id="@+id/centerMovingBorder" ns0:layout_width="match_parent" ns0:layout_height="match_parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="20dp"
-            android:paddingBottom="10dp">
+        <LinearLayout ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:orientation="vertical" ns0:gravity="center" ns0:paddingTop="6dp" ns0:paddingBottom="6dp">
 
-            <TextView
-                android:id="@+id/tvPreviewLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:text="معاينة السيت"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:shadowColor="#FF000000"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="2" />
+            <TextView ns0:id="@+id/tvPreviewLabel" ns0:layout_width="wrap_content" ns0:layout_height="wrap_content" ns0:layout_marginBottom="2dp" ns0:text="معاينة السيت" ns0:textColor="#FFFFFF" ns0:textSize="18sp" ns0:textStyle="bold" ns0:shadowColor="#FF000000" ns0:shadowDx="1" ns0:shadowDy="1" ns0:shadowRadius="2" />
 
-            <com.zeekoltd.setat.pro.SmoothWaveView
-                android:id="@+id/smoothWave"
-                android:layout_width="200dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="5dp" />
+            <com.zeekoltd.setat.pro.SmoothWaveView ns0:id="@+id/smoothWave" ns0:layout_width="match_parent" ns0:layout_height="25dp" ns0:layout_marginTop="5dp" />
 
-            <ImageView
-                android:id="@+id/btnPlayPause"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="10dp"
-                android:src="@drawable/ic_play_glow"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"/>
+            <ImageView ns0:id="@+id/btnPlayPause" ns0:layout_width="42dp" ns0:layout_height="42dp" ns0:layout_marginTop="2dp" ns0:src="@drawable/ic_play_glow" ns0:clickable="true" ns0:focusable="true" ns0:background="?attr/selectableItemBackgroundBorderless" />
 
-            <TextView
-                android:id="@+id/tvPlayStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="تشغيل"
-                android:textColor="#E0E0E0"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+            <TextView ns0:id="@+id/tvPlayStatus" ns0:layout_width="wrap_content" ns0:layout_height="wrap_content" ns0:layout_marginTop="5dp" ns0:text="تشغيل" ns0:textColor="#E0E0E0" ns0:textSize="14sp" ns0:textStyle="bold" />
 
-            <ProgressBar
-                android:id="@+id/audioLoadingBar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:indeterminateTint="#FFFFFF"
-                android:visibility="gone" />
+            <ProgressBar ns0:id="@+id/audioLoadingBar" ns0:layout_width="40dp" ns0:layout_height="40dp" ns0:layout_marginTop="15dp" ns0:indeterminateTint="#FFFFFF" ns0:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/imgOrgPreview"
-                android:layout_width="220dp"
-                android:layout_height="90dp"
-                android:layout_marginTop="10dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/img_org_preview" />
+            <ImageView ns0:id="@+id/imgOrgPreview" ns0:layout_width="match_parent" ns0:layout_height="60dp" ns0:layout_marginTop="3dp" ns0:scaleType="fitCenter" ns0:src="@drawable/img_org_preview" />
         </LinearLayout>
     </eightbitlab.com.blurview.BlurView>
 
-    <eightbitlab.com.blurview.BlurView
-        android:id="@+id/blurBottomInfo"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/bg_glass_border"
-        android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/blurCenterWindow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    <eightbitlab.com.blurview.BlurView ns0:id="@+id/blurBottomInfo" ns0:layout_width="0dp" ns0:layout_height="wrap_content" ns0:background="@drawable/bg_glass_border" ns0:clipToOutline="true" ns1:blurOverlayColor="#1AFFFFFF" ns0:layout_weight="1" ns0:layout_marginTop="0dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="15dp"
-            android:gravity="center_vertical|start">
+        <LinearLayout ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:orientation="vertical" ns0:paddingHorizontal="10dp" ns0:paddingVertical="10dp" ns0:gravity="center_vertical|start">
 
-            <TextView
-                android:id="@+id/tvSetTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="سيت عراقي جديد"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:shadowColor="#FF000000"
-                android:shadowDx="1"
-                android:shadowDy="1"
-                android:shadowRadius="3" />
+            <TextView ns0:id="@+id/tvSetTitle" ns0:layout_width="wrap_content" ns0:layout_height="wrap_content" ns0:text="سيت عراقي جديد" ns0:textColor="#FFFFFF" ns0:textSize="20sp" ns0:textStyle="bold" ns0:shadowColor="#FF000000" ns0:shadowDx="1" ns0:shadowDy="1" ns0:shadowRadius="3" />
 
-            <TextView
-                android:id="@+id/tvSetDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="ايقاعات واصوات جديدة احترافية"
-                android:textColor="#E0E0E0"
-                android:textSize="14sp"
-                android:maxLines="2"
-                android:ellipsize="end" />
+            <TextView ns0:id="@+id/tvSetDescription" ns0:layout_width="match_parent" ns0:layout_height="wrap_content" ns0:layout_marginTop="4dp" ns0:text="ايقاعات واصوات جديدة احترافية" ns0:textColor="#E0E0E0" ns0:textSize="14sp" ns0:maxLines="2" ns0:ellipsize="end" />
 
-            <eightbitlab.com.blurview.BlurView
-                android:id="@+id/blurDownloadBtn"
-                android:layout_width="220dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/bg_glass_capsule"
-                android:clipToOutline="true"
-                app:blurOverlayColor="#33FFFFFF">
+            <eightbitlab.com.blurview.BlurView ns0:id="@+id/blurDownloadBtn" ns0:layout_width="match_parent" ns0:layout_height="40dp" ns0:layout_marginTop="8dp" ns0:layout_gravity="center_horizontal" ns0:background="@drawable/bg_glass_capsule" ns0:clipToOutline="true" ns1:blurOverlayColor="#33FFFFFF">
                 
-                <LinearLayout
-                    android:id="@+id/btnDownloadSet"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackground">
+                <LinearLayout ns0:id="@+id/btnDownloadSet" ns0:layout_width="match_parent" ns0:layout_height="match_parent" ns0:orientation="horizontal" ns0:gravity="center" ns0:clickable="true" ns0:focusable="true" ns0:background="?attr/selectableItemBackground">
                     
-                    <TextView
-                        android:id="@+id/tvDownloadLabel"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="تحميل السيت"
-                        android:textColor="#FFFFFF"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+                    <TextView ns0:id="@+id/tvDownloadLabel" ns0:layout_width="wrap_content" ns0:layout_height="wrap_content" ns0:text="تحميل السيت" ns0:textColor="#FFFFFF" ns0:textSize="15sp" ns0:textStyle="bold" />
                 </LinearLayout>
             </eightbitlab.com.blurview.BlurView>
         </LinearLayout>
     </eightbitlab.com.blurview.BlurView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+</LinearLayout></ScrollView>
