@@ -1,131 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainContentView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000"
-    android:layoutDirection="locale">
+<?xml version='1.0' encoding='utf-8'?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/mainContentView" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#000000" android:layoutDirection="locale">
 
-    <eightbitlab.com.blurview.BlurTarget
-        android:id="@+id/brightBackgroundTarget"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+    <eightbitlab.com.blurview.BlurTarget android:id="@+id/brightBackgroundTarget" android:layout_width="match_parent" android:layout_height="match_parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent">
         
-        <ImageView
-            android:id="@+id/imgMainBackground"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/zeeko40" />
+        <ImageView android:id="@+id/imgMainBackground" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" android:src="@drawable/zeeko40" />
     </eightbitlab.com.blurview.BlurTarget>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#66000000"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+    <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="#66000000" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- مشغل البطاقات (مثل السيتات الحصرية) -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPagerSets"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/blurTopBarNew"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
+    
+    <androidx.viewpager2.widget.ViewPager2 android:id="@+id/viewPagerSets" android:layout_width="match_parent" android:layout_height="0dp" app:layout_constraintTop_toBottomOf="@id/blurTopBarNew" android:layout_marginTop="4dp" app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- شريط البحث العلوي الزجاجي -->
-    <eightbitlab.com.blurview.BlurView
-        android:id="@+id/blurTopBarNew"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_marginHorizontal="25dp"
-        android:layout_marginTop="35dp"
-        android:background="@drawable/bg_glass_capsule"
-        android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    
+    <eightbitlab.com.blurview.BlurView android:id="@+id/blurTopBarNew" android:layout_width="match_parent" android:layout_height="44dp" android:layout_marginHorizontal="25dp" android:layout_marginTop="35dp" android:background="@drawable/bg_glass_capsule" android:clipToOutline="true" app:blurOverlayColor="#1AFFFFFF" app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
         
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="15dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="15dp">
             
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/icon_arrow_circle_right_round"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                app:tint="#FFFFFF"
-                android:rotation="180"/> 
+            <ImageView android:id="@+id/btnBack" android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/icon_arrow_circle_right_round" android:background="?attr/selectableItemBackgroundBorderless" android:clickable="true" android:focusable="true" app:tint="#FFFFFF" android:rotation="180" /> 
 
-            <EditText
-                android:id="@+id/etSearchInput"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginHorizontal="12dp"
-                android:background="@null"
-                android:hint="ابحث عن إسم السيت أو القسم..."
-                android:textColor="#FFFFFF"
-                android:textColorHint="#99FFFFFF"
-                android:textSize="14sp"
-                android:singleLine="true"
-                android:imeOptions="actionSearch"/>
+            <EditText android:id="@+id/etSearchInput" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_marginHorizontal="12dp" android:background="@null" android:hint="ابحث عن إسم السيت أو القسم..." android:textColor="#FFFFFF" android:textColorHint="#99FFFFFF" android:textSize="14sp" android:singleLine="true" android:imeOptions="actionSearch" />
 
-            <ImageView
-                android:id="@+id/btnClearSearch"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_close"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:visibility="gone"
-                app:tint="#FFFFFF"/>
+            <ImageView android:id="@+id/btnClearSearch" android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_close" android:background="?attr/selectableItemBackgroundBorderless" android:clickable="true" android:focusable="true" android:visibility="gone" app:tint="#FFFFFF" />
         </LinearLayout>
     </eightbitlab.com.blurview.BlurView>
 
-    <!-- شاشة التحميل الأولية للمحرك -->
-    <ProgressBar
-        android:id="@+id/pbLoadingGlobal"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:indeterminateTint="#FFD700"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+    
+    <ProgressBar android:id="@+id/pbLoadingGlobal" android:layout_width="45dp" android:layout_height="45dp" android:indeterminateTint="#FFD700" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- رسالة عدم وجود نتائج -->
-    <TextView
-        android:id="@+id/tvNoResults"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="لا توجد نتائج مطابقة لبحثك 🔍"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:shadowColor="#FF000000"
-        android:shadowDx="1"
-        android:shadowDy="1"
-        android:shadowRadius="3"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+    
+    <TextView android:id="@+id/tvNoResults" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="لا توجد نتائج مطابقة لبحثك 🔍" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" android:shadowColor="#FF000000" android:shadowDx="1" android:shadowDy="1" android:shadowRadius="3" android:visibility="gone" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
