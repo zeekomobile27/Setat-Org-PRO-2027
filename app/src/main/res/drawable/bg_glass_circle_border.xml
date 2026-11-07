@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="oval">
-            <solid android:color="#26FFFFFF" />
+            <solid android:color="#80A8BFB1" />
             <stroke
                 android:width="1.2dp"
                 android:color="#99FFD700" />
