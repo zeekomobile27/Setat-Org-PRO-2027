@@ -74,10 +74,6 @@ public class DialogHelper {
         Activity activity = (Activity) context;
         
         // 🌟 التعديل السحري: البحث عن الهدف الساطع أولاً لتجاهل التعتيم 🌟
-        ViewGroup targetView = decorView.findViewById(R.id.brightBackgroundTarget);
-        if (targetView == null) {
-            targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
         if (centerMovingBorder != null) {
@@ -302,14 +298,6 @@ public class DialogHelper {
         dialog.setContentView(loginRootView);
 
         Activity activity = (Activity) context;
-        
-        ViewGroup targetView = loginRootView.findViewById(R.id.brightBackgroundTarget);
-        if (targetView == null) {
-            targetView = decorView.findViewById(R.id.brightBackgroundTarget);
-        }
-        if (targetView == null) {
-            targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        }
         
         // ربط كافة طبقات الزجاج في النافذة الجديدة بالخلفية
         int[] blurIds = {
@@ -538,10 +526,6 @@ public class DialogHelper {
         Activity activity = (Activity) context;
         
         // 🌟 التعديل السحري: البحث عن الهدف الساطع أولاً لتجاهل التعتيم 🌟
-        ViewGroup targetView = decorView.findViewById(R.id.brightBackgroundTarget);
-        if (targetView == null) {
-            targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        }
         
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
         if (centerMovingBorder != null) {

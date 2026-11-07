@@ -606,11 +606,6 @@ public class YemeActivity extends AppCompatActivity {
 
         FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
 
-        ViewGroup targetView = decorView.findViewById(R.id.brightBackgroundTarget);
-        if (targetView == null) {
-            targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        }
-
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
         if (centerMovingBorder != null) {
             centerMovingBorder.setCornerRadius(14f);
@@ -679,11 +674,6 @@ public class YemeActivity extends AppCompatActivity {
         dialog.setContentView(baseView);
 
         FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
-
-        ViewGroup targetView = decorView.findViewById(R.id.brightBackgroundTarget);
-        if (targetView == null) {
-            targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
         if (centerMovingBorder != null) {
