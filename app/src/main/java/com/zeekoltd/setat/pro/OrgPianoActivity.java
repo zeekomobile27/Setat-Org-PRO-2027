@@ -646,6 +646,14 @@ public class OrgPianoActivity extends AppCompatActivity {
         });
     }
 
+    public void requestRewardedSetDownload(String fileUrl, String setName) {
+        if (adMobAdsHelper == null) {
+            adMobAdsHelper = AdMobAdsHelper.getInstance(this);
+            adMobAdsHelper.setCurrentLanguage(currentLang);
+        }
+        adMobAdsHelper.showAdDialog(fileUrl, rewardedUrl -> downloadAndInstallSet(rewardedUrl, setName));
+    }
+
     private void loadDefaultSet() {
         showLoading(tr("جاري استعادة الافتراضي...", "Restoring Default..."));
         engineReady = false;
