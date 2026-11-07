@@ -76,9 +76,8 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:5.0.9'
 
     // Emoji and UI effects
-    // BlurView 4.0.0: use the BlurTarget API and keep calls compatible with the current library API.
+
     implementation 'com.vanniktech:emoji-google:0.24.1'
-    implementation 'com.github.Dimezis:BlurView:version-4.0.0'
     implementation 'nl.dionsegijn:konfetti-xml:2.2.0'
 
     // Google Ads and privacy consent
