@@ -19,7 +19,7 @@ android {
         // Keep API 24 as requested.
         minSdk 24
         targetSdk 37
-        versionCode 9
+        versionCode 10
         versionName "2027"
         externalNativeBuild {
             cmake {
