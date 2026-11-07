@@ -186,10 +186,6 @@ public class AlertActivity extends AppCompatActivity {
                         blurCard.setBackgroundResource(R.drawable.bg_glass_border);
                         blurCard.setClipToOutline(true);
                         
-                        if (brightTarget != null) {
-                            
-                        }
-
                         LinearLayout notificationCard = new LinearLayout(this);
                         notificationCard.setLayoutParams(new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
