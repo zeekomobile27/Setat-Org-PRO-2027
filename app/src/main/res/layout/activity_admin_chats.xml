@@ -8,7 +8,7 @@
     android:background="#000000"
     android:layoutDirection="locale">
 
-    <eightbitlab.com.blurview.BlurTarget
+    <FrameLayout
         android:id="@+id/brightBackgroundTarget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/vntrocreen" />
-    </eightbitlab.com.blurview.BlurTarget>
+    </FrameLayout>
 
     <View
         android:layout_width="match_parent"
@@ -30,7 +30,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
-    <eightbitlab.com.blurview.BlurView
+    <FrameLayout
         android:id="@+id/blurTopBarAdmin"
         android:layout_width="match_parent"
         android:layout_height="65dp"
@@ -38,7 +38,6 @@
         android:layout_marginTop="25dp"
         android:background="@drawable/bg_glass_capsule"
         android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -113,7 +112,7 @@
                 android:shadowDy="1"
                 android:shadowRadius="2"/>
         </LinearLayout>
-    </eightbitlab.com.blurview.BlurView>
+    </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerAdminChats"

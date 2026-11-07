@@ -7,13 +7,12 @@
     android:layout_height="match_parent"
     android:layoutDirection="locale">
 
-    <eightbitlab.com.blurview.BlurView
+    <FrameLayout
         android:id="@+id/blurCenterWindow"
         android:layout_width="320dp"
         android:layout_height="0dp"
         android:background="@drawable/bg_glass_border"
         android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintTop_toTopOf="@+id/mainContentWrapper"
         app:layout_constraintBottom_toBottomOf="@+id/mainContentWrapper"
         app:layout_constraintStart_toStartOf="parent"

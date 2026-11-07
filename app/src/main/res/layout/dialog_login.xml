@@ -8,7 +8,7 @@
     android:background="#000000"
     android:layoutDirection="locale">
 
-    <eightbitlab.com.blurview.BlurTarget
+    <FrameLayout
         android:id="@+id/brightBackgroundTarget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/vntrocreen" />
-    </eightbitlab.com.blurview.BlurTarget>
+    </FrameLayout>
 
     <View
         android:layout_width="match_parent"
@@ -48,13 +48,12 @@
             android:paddingTop="35dp"
             android:paddingBottom="30dp">
 
-            <eightbitlab.com.blurview.BlurView
+            <FrameLayout
                 android:id="@+id/blurTopBarLogin"
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:background="@drawable/bg_glass_capsule"
-                android:clipToOutline="true"
-                app:blurOverlayColor="#1AFFFFFF">
+                android:clipToOutline="true">
                 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -114,7 +113,7 @@
                             android:shadowRadius="2" />
                     </LinearLayout>
                 </LinearLayout>
-            </eightbitlab.com.blurview.BlurView>
+            </FrameLayout>
 
             <View
                 android:layout_width="80dp"
@@ -123,14 +122,13 @@
                 android:layout_marginBottom="25dp"
                 android:background="#00FFFF" />
 
-            <eightbitlab.com.blurview.BlurView
+            <FrameLayout
                 android:id="@+id/blurTabContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:layout_marginBottom="30dp"
                 android:background="@drawable/bg_glass_capsule"
-                android:clipToOutline="true"
-                app:blurOverlayColor="#1AFFFFFF">
+                android:clipToOutline="true">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -168,7 +166,7 @@
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
-            </eightbitlab.com.blurview.BlurView>
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/loginContent"
@@ -248,14 +246,13 @@
                         android:background="?attr/selectableItemBackgroundBorderless"/>
                 </LinearLayout>
 
-                <eightbitlab.com.blurview.BlurView
+                <FrameLayout
                     android:id="@+id/blurBtnLogin"
                     android:layout_width="260dp"
                     android:layout_height="50dp"
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/bg_glass_capsule"
-                    android:clipToOutline="true"
-                    app:blurOverlayColor="#1AFFFFFF">
+                    android:clipToOutline="true">
                     
                     <LinearLayout
                         android:id="@+id/btnLogin"
@@ -278,7 +275,7 @@
                             android:shadowDy="1"
                             android:shadowRadius="2"/>
                     </LinearLayout>
-                </eightbitlab.com.blurview.BlurView>
+                </FrameLayout>
 
                 <LinearLayout
                     android:layout_width="260dp"
@@ -310,13 +307,12 @@
                         android:background="#80FFFFFF" />
                 </LinearLayout>
 
-                <eightbitlab.com.blurview.BlurView
+                <FrameLayout
                     android:id="@+id/blurBtnGoogleLogin"
                     android:layout_width="260dp"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_glass_capsule"
-                    android:clipToOutline="true"
-                    app:blurOverlayColor="#1AFFFFFF">
+                    android:clipToOutline="true">
                     
                     <LinearLayout
                         android:id="@+id/btnGoogleLogin"
@@ -347,7 +343,7 @@
                             android:shadowDy="1"
                             android:shadowRadius="2" />
                     </LinearLayout>
-                </eightbitlab.com.blurview.BlurView>
+                </FrameLayout>
 
             </LinearLayout>
 
@@ -479,14 +475,13 @@
                         android:textSize="15sp" />
                 </LinearLayout>
 
-                <eightbitlab.com.blurview.BlurView
+                <FrameLayout
                     android:id="@+id/blurBtnRegister"
                     android:layout_width="260dp"
                     android:layout_height="50dp"
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/bg_glass_capsule"
-                    android:clipToOutline="true"
-                    app:blurOverlayColor="#1AFFFFFF">
+                    android:clipToOutline="true">
                     
                     <LinearLayout
                         android:id="@+id/btnRegister"
@@ -509,15 +504,14 @@
                             android:shadowDy="1"
                             android:shadowRadius="2" />
                     </LinearLayout>
-                </eightbitlab.com.blurview.BlurView>
+                </FrameLayout>
 
-                <eightbitlab.com.blurview.BlurView
+                <FrameLayout
                     android:id="@+id/blurBtnGoogleRegister"
                     android:layout_width="260dp"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_glass_capsule"
-                    android:clipToOutline="true"
-                    app:blurOverlayColor="#1AFFFFFF">
+                    android:clipToOutline="true">
                     
                     <LinearLayout
                         android:id="@+id/btnGoogleRegister"
@@ -548,18 +542,17 @@
                             android:shadowDy="1"
                             android:shadowRadius="2" />
                     </LinearLayout>
-                </eightbitlab.com.blurview.BlurView>
+                </FrameLayout>
 
             </LinearLayout>
 
-            <eightbitlab.com.blurview.BlurView
+            <FrameLayout
                 android:id="@+id/blurBtnCancel"
                 android:layout_width="260dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="25dp"
                 android:background="@drawable/bg_glass_capsule"
-                android:clipToOutline="true"
-                app:blurOverlayColor="#1AFFFFFF">
+                android:clipToOutline="true">
                 
                 <LinearLayout
                     android:id="@+id/btnCancel"
@@ -582,7 +575,7 @@
                         android:shadowDy="1"
                         android:shadowRadius="2" />
                 </LinearLayout>
-            </eightbitlab.com.blurview.BlurView>
+            </FrameLayout>
 
         </LinearLayout>
     </ScrollView>

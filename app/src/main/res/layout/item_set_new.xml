@@ -18,14 +18,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <eightbitlab.com.blurview.BlurView
+        <FrameLayout
             android:id="@+id/blurDevIcon"
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:layout_marginBottom="15dp"
             android:background="@drawable/bg_glass_circle_border"
-            android:clipToOutline="true"
-            app:blurOverlayColor="#1AFFFFFF">
+            android:clipToOutline="true">
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -47,16 +46,15 @@
                 </androidx.cardview.widget.CardView>
                 
             </FrameLayout>
-        </eightbitlab.com.blurview.BlurView>
+        </FrameLayout>
 
-        <eightbitlab.com.blurview.BlurView
+        <FrameLayout
             android:id="@+id/blurLikeBtn"
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:layout_marginBottom="5dp"
             android:background="@drawable/bg_glass_circle_border"
-            android:clipToOutline="true"
-            app:blurOverlayColor="#1AFFFFFF">
+            android:clipToOutline="true">
             <ImageView
                 android:id="@+id/btnLike"
                 android:layout_width="26dp"
@@ -64,7 +62,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/icon_heart"
                 app:tint="#FFFFFF" />
-        </eightbitlab.com.blurview.BlurView>
+        </FrameLayout>
         
         <TextView
             android:id="@+id/tvLikesCount"
@@ -80,13 +78,12 @@
             android:shadowDy="1"
             android:shadowRadius="2" />
 
-        <eightbitlab.com.blurview.BlurView
+        <FrameLayout
             android:id="@+id/blurFavBtn"
             android:layout_width="55dp"
             android:layout_height="55dp"
             android:background="@drawable/bg_glass_circle_border"
-            android:clipToOutline="true"
-            app:blurOverlayColor="#1AFFFFFF">
+            android:clipToOutline="true">
             <ImageView
                 android:id="@+id/btnFavorite"
                 android:layout_width="24dp"
@@ -94,16 +91,15 @@
                 android:layout_gravity="center"
                 android:src="@drawable/icon_star"
                 app:tint="#FFFFFF" />
-        </eightbitlab.com.blurview.BlurView>
+        </FrameLayout>
     </LinearLayout>
 
-    <eightbitlab.com.blurview.BlurView
+    <FrameLayout
         android:id="@+id/blurCenterWindow"
         android:layout_width="260dp"
         android:layout_height="350dp"
         android:background="@drawable/bg_glass_border"
         android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/sideIconsContainer"
         app:layout_constraintTop_toTopOf="parent"
@@ -179,9 +175,9 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/img_org_preview" />
         </LinearLayout>
-    </eightbitlab.com.blurview.BlurView>
+    </FrameLayout>
 
-    <eightbitlab.com.blurview.BlurView
+    <FrameLayout
         android:id="@+id/blurBottomInfo"
         android:layout_width="0dp"
         android:layout_height="200dp"
@@ -190,7 +186,6 @@
         android:layout_marginTop="30dp"
         android:background="@drawable/bg_glass_border"
         android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintTop_toBottomOf="@id/blurCenterWindow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -227,15 +222,14 @@
                 android:maxLines="2"
                 android:ellipsize="end" />
 
-            <eightbitlab.com.blurview.BlurView
+            <FrameLayout
                 android:id="@+id/blurDownloadBtn"
                 android:layout_width="220dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="15dp"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/bg_glass_capsule"
-                android:clipToOutline="true"
-                app:blurOverlayColor="#33FFFFFF">
+                android:clipToOutline="true">
                 
                 <LinearLayout
                     android:id="@+id/btnDownloadSet"
@@ -256,8 +250,8 @@
                         android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
-            </eightbitlab.com.blurview.BlurView>
+            </FrameLayout>
         </LinearLayout>
-    </eightbitlab.com.blurview.BlurView>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
