@@ -128,7 +128,7 @@ public class ProfileDialogHelper {
         tvLogout.setText(activity.tr("تسجيل الخروج", "Logout"));
         tvDeleteAccount.setText(activity.tr("حذف الحساب نهائياً", "Delete Account Permanently"));
         tvDev.setText(activity.tr("تطوير : ZEEKO ORG APPS LTD", "Developer: ZEEKO ORG APPS LTD"));
-        tvRights.setText(activity.tr("جميع الحقوق محفوظة © 2026", "All rights reserved © 2026"));
+        tvRights.setText(activity.tr("جميع الحقوق محفوظة © 2027", "All rights reserved © 2027"));
 
         try {
             PackageInfo pInfo = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
