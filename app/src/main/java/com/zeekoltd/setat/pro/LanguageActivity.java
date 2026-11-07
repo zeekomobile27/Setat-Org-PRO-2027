@@ -212,9 +212,10 @@ public class LanguageActivity extends AppCompatActivity {
         View baseView = LayoutInflater.from(this).inflate(R.layout.dialog_base_glass, null);
         languageDialog.setContentView(baseView);
         
-        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        eightbitlab.com.blurview.BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup targetView = getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && targetView != null) {
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -267,9 +268,10 @@ public class LanguageActivity extends AppCompatActivity {
         View baseView = LayoutInflater.from(this).inflate(R.layout.dialog_base_glass, null);
         privacyDialog.setContentView(baseView);
         
-        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        eightbitlab.com.blurview.BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup targetView = getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && targetView != null) {
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);

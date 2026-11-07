@@ -55,6 +55,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
+
 public class Them2026Activity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "ad_frequency_prefs";
@@ -116,7 +120,7 @@ public class Them2026Activity extends AppCompatActivity {
         appRootView = findViewById(R.id.mainContentView);
 
         initializeLogic();
-        
+        setupGlobalBlurViews();
         checkAndShowTutorial();
 
         // 🌟 إظهار تأثير الـ Skeleton Loading عند بدء التشغيل 🌟
@@ -298,7 +302,19 @@ public class Them2026Activity extends AppCompatActivity {
         });
     }
 
-private void saveThemesToCache() {
+    private void setupGlobalBlurViews() {
+        ViewGroup brightTarget = findViewById(R.id.brightBackgroundTarget);
+        if (brightTarget == null) brightTarget = appRootView;
+        if (brightTarget == null) return;
+
+        BlurView blurTopBar = findViewById(R.id.blurTopBarNew);
+        BlurView blurListBtn = findViewById(R.id.blurListBtn);
+
+        if (blurTopBar != null) blurTopBar.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(15f).setBlurEnabled(true);
+        if (blurListBtn != null) blurListBtn.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(15f).setBlurEnabled(true);
+    }
+
+    private void saveThemesToCache() {
         try {
             org.json.JSONArray jsonArray = new org.json.JSONArray();
             for (ThemeModel theme : themesList) {
@@ -390,7 +406,7 @@ private void saveThemesToCache() {
         View baseView = LayoutInflater.from(this).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
 
-        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         View decorView = getWindow().getDecorView();
 
         ViewGroup targetView = decorView.findViewById(R.id.brightBackgroundTarget);
@@ -398,6 +414,7 @@ private void saveThemesToCache() {
             targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
         }
         if (blurCenterWindow != null && targetView != null) {
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -467,7 +484,7 @@ private void saveThemesToCache() {
         View baseView = LayoutInflater.from(this).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
 
-        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         View decorView = getWindow().getDecorView();
 
         ViewGroup targetView = decorView.findViewById(R.id.brightBackgroundTarget);
@@ -475,6 +492,7 @@ private void saveThemesToCache() {
             targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
         }
         if (blurCenterWindow != null && targetView != null) {
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -704,11 +722,14 @@ private void saveThemesToCache() {
                 if(tvPreviewLabel != null) tvPreviewLabel.setText(tr("معاينة الثيم", "Preview Theme"));
                 if(tvDownloadLabel != null) tvDownloadLabel.setText(tr("تحميل الثيم", "Download Theme"));
 
-                android.widget.FrameLayout blurCenter = itemView.findViewById(R.id.blurCenterWindow);
-                android.widget.FrameLayout blurBottom = itemView.findViewById(R.id.blurBottomInfo);
-                android.widget.FrameLayout blurDown = itemView.findViewById(R.id.blurDownloadBtn);
+                BlurView blurCenter = itemView.findViewById(R.id.blurCenterWindow);
+                BlurView blurBottom = itemView.findViewById(R.id.blurBottomInfo);
+                BlurView blurDown = itemView.findViewById(R.id.blurDownloadBtn);
 
                 if (root != null) {
+                    if (blurCenter != null) blurCenter.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
+                    if (blurBottom != null) blurBottom.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
+                    if (blurDown != null) blurDown.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(10f).setBlurEnabled(true);
                 }
 
                 if (centerMovingBorder != null) {

@@ -18,6 +18,10 @@ import com.google.firebase.database.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
+
 public class AdminChatsListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerAdminChats;
@@ -79,12 +83,26 @@ public class AdminChatsListActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
         
-        
+        setupBlurViews();
         loadChatsList();
     }
     
     // 🌟 تفعيل الزجاج للشريط العلوي 🌟
-private void loadChatsList() {
+    private void setupBlurViews() {
+        ViewGroup brightTarget = findViewById(R.id.brightBackgroundTarget);
+        if (brightTarget == null) brightTarget = appRootView;
+        if (brightTarget == null) return;
+        
+        BlurView blurTopBarAdmin = findViewById(R.id.blurTopBarAdmin);
+        
+        if (blurTopBarAdmin != null) {
+            blurTopBarAdmin.setupWith(BlurTargetHelper.ensure(brightTarget))
+                .setBlurRadius(15f)
+                .setBlurEnabled(true);
+        }
+    }
+
+    private void loadChatsList() {
         metadataRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {

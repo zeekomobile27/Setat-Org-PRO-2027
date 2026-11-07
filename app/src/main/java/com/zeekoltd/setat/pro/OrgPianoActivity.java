@@ -616,17 +616,8 @@ public class OrgPianoActivity extends AppCompatActivity {
         }
     }
 
-    // تحميل السيت من متجر شاشة العزف بعد إكمال مشاهدة الإعلان المكافأ.
+    // 🚀 دالة التحميل المباشر والمجاني بدون إعلانات مكافأة 
     public void downloadAndInstallSet(String fileUrl, String setName) {
-        if (adMobAdsHelper == null || fileUrl == null || fileUrl.trim().isEmpty()) {
-            Toast.makeText(this, tr("تعذر تحميل السيت حالياً.", "Unable to download this set right now."), Toast.LENGTH_LONG).show();
-            return;
-        }
-        adMobAdsHelper.showAdDialog(fileUrl, rewardedUrl -> downloadAndInstallSetAfterReward(rewardedUrl, setName));
-    }
-
-    private void downloadAndInstallSetAfterReward(String fileUrl, String setName) {
-        if (fileUrl == null || fileUrl.trim().isEmpty()) return;
         showLoading(tr("جاري تحميل السيت...\n", "Downloading Set...\n") + setName);
         engineReady = false;
 
@@ -1230,7 +1221,7 @@ public class OrgPianoActivity extends AppCompatActivity {
         GradientDrawable gd = new GradientDrawable();
         gd.setShape(GradientDrawable.RECTANGLE);
         gd.setCornerRadius(getResources().getDisplayMetrics().density * 15);
-        gd.setColor(Color.parseColor("#80A8BFB1"));
+        gd.setColor(Color.parseColor("#4D555555"));
         gd.setStroke(2, Color.parseColor("#80FFFFFF"));
         view.setBackground(gd);
         if (view instanceof TextView) {

@@ -38,6 +38,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
+
 import android.app.Dialog;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
@@ -242,7 +246,7 @@ public class SupportChatActivity extends AppCompatActivity {
 
         btnSend.setOnClickListener(v -> sendMessage());
         
-        
+        setupBlurViews();
         loadMessagesWithWelcome();
         resetUnreadCount();
         checkBanStatus();
@@ -313,7 +317,20 @@ public class SupportChatActivity extends AppCompatActivity {
     }
 
     // 🌟 تفعيل الزجاج للشريط العلوي والسفلي 🌟
-@Override
+    private void setupBlurViews() {
+        ViewGroup brightTarget = findViewById(R.id.brightBackgroundTarget);
+        if (brightTarget == null) return;
+        
+        float radius = 15f;
+        
+        BlurView blurTopBar = findViewById(R.id.blurTopBar);
+        BlurView blurBottomBar = findViewById(R.id.blurBottomBar);
+        
+        if (blurTopBar != null) blurTopBar.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(radius).setBlurEnabled(true);
+        if (blurBottomBar != null) blurBottomBar.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(radius).setBlurEnabled(true);
+    }
+
+    @Override
     public void onBackPressed() {
         if (isEmojiShowing) {
             emojiPopup.dismiss();
@@ -941,9 +958,10 @@ public class SupportChatActivity extends AppCompatActivity {
         View baseView = LayoutInflater.from(this).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
         
-        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);

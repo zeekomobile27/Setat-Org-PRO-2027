@@ -28,6 +28,10 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.firebase.FirebaseApp;
 
 import java.util.Locale;
+
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
+
 public class MainactivityActivity extends AppCompatActivity {
 
     private String currentLang = "ar";
@@ -38,7 +42,7 @@ public class MainactivityActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private LinearLayout buttonRetry;
     private TextView tvBtnRetry;
-    private android.widget.FrameLayout blurBtnRetry;
+    private BlurView blurBtnRetry;
     private View mainContentView;
 
     private String tr(String arabicText, String englishText) {
@@ -111,7 +115,7 @@ public class MainactivityActivity extends AppCompatActivity {
             }
         });
 
-        
+        setupBlurViews();
         checkNetworkAndProceed(1500);
 
         buttonRetry.setOnTouchListener((v, event) -> {
@@ -138,7 +142,18 @@ public class MainactivityActivity extends AppCompatActivity {
         });
     }
     
-private boolean isNetworkAvailable() {
+    private void setupBlurViews() {
+        ViewGroup brightTarget = (ViewGroup) mainContentView;
+        if (brightTarget == null) return;
+        
+        if (blurBtnRetry != null) {
+            blurBtnRetry.setupWith(BlurTargetHelper.ensure(brightTarget))
+                .setBlurRadius(15f)
+                .setBlurEnabled(true);
+        }
+    }
+
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
             Network network = connectivityManager.getActiveNetwork();

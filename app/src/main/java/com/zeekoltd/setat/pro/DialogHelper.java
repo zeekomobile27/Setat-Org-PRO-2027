@@ -44,6 +44,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
+
 public class DialogHelper {
     private static String tr(String lang, String ar, String en) { return "en".equals(lang) ? en : ar; }
     private static ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -68,7 +72,7 @@ public class DialogHelper {
         View baseView = LayoutInflater.from(context).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
 
-        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         Activity activity = (Activity) context;
         View decorView = activity.getWindow().getDecorView();
         
@@ -79,6 +83,9 @@ public class DialogHelper {
         }
         
         if (blurCenterWindow != null && targetView != null) {
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView))
+                    .setBlurRadius(15f)
+                    .setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -322,8 +329,11 @@ public class DialogHelper {
             R.id.blurBtnCancel
         };
         for (int id : blurIds) {
-            android.widget.FrameLayout bv = loginRootView.findViewById(id);
+            BlurView bv = loginRootView.findViewById(id);
             if (bv != null && targetView != null) {
+                bv.setupWith(BlurTargetHelper.ensure(targetView))
+                  .setBlurRadius(15f)
+                  .setBlurEnabled(true);
             }
         }
 
@@ -539,7 +549,7 @@ public class DialogHelper {
         View baseView = LayoutInflater.from(context).inflate(R.layout.dialog_base_glass, null);
         loadingDialog.setContentView(baseView);
 
-        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         Activity activity = (Activity) context;
         View decorView = activity.getWindow().getDecorView();
         
@@ -550,6 +560,7 @@ public class DialogHelper {
         }
         
         if (blurCenterWindow != null && targetView != null) {
+            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
         
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
