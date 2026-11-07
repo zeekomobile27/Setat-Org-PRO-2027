@@ -1,6 +1,7 @@
 package com.zeekoltd.setat.pro;
 
 import android.content.Intent;
+import android.widget.FrameLayout;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -52,9 +53,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -130,7 +128,7 @@ public class SearchActivity extends AppCompatActivity {
         appRootView = findViewById(R.id.mainContentView);
 
         initializeLogic();
-        setupGlobalBlurViews();
+        setupGlobalFrameLayouts();
         loadUserPreferences();
         fetchAllSetsForSearch();
 
@@ -218,13 +216,7 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    private void setupGlobalBlurViews() {
-        ViewGroup brightTarget = findViewById(R.id.brightBackgroundTarget);
-        if (brightTarget == null) brightTarget = appRootView;
-        if (brightTarget == null) return;
-        BlurView blurTopBar = findViewById(R.id.blurTopBarNew);
-        if (blurTopBar != null) blurTopBar.setupWith(BlurTargetHelper.ensure(brightTarget)).setBlurRadius(15f).setBlurEnabled(true);
-    }
+    private void setupGlobalFrameLayouts() {}
 
     private void loadUserPreferences() {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -580,20 +572,20 @@ public class SearchActivity extends AppCompatActivity {
                     @Override public void onCancelled(@NonNull DatabaseError error) {}
                 });
 
-                BlurView blurCenter = itemView.findViewById(R.id.blurCenterWindow);
-                BlurView blurDev = itemView.findViewById(R.id.blurDevIcon);
-                BlurView blurLike = itemView.findViewById(R.id.blurLikeBtn);
-                BlurView blurFav = itemView.findViewById(R.id.blurFavBtn);
-                BlurView blurBottom = itemView.findViewById(R.id.blurBottomInfo);
-                BlurView blurDown = itemView.findViewById(R.id.blurDownloadBtn);
+                FrameLayout blurCenter = itemView.findViewById(R.id.blurCenterWindow);
+                FrameLayout blurDev = itemView.findViewById(R.id.blurDevIcon);
+                FrameLayout blurLike = itemView.findViewById(R.id.blurLikeBtn);
+                FrameLayout blurFav = itemView.findViewById(R.id.blurFavBtn);
+                FrameLayout blurBottom = itemView.findViewById(R.id.blurBottomInfo);
+                FrameLayout blurDown = itemView.findViewById(R.id.blurDownloadBtn);
 
                 if (root != null) {
-                    if (blurCenter != null) blurCenter.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurDev != null) blurDev.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurLike != null) blurLike.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurFav != null) blurFav.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurBottom != null) blurBottom.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(15f).setBlurEnabled(true);
-                    if (blurDown != null) blurDown.setupWith(BlurTargetHelper.ensure(root)).setBlurRadius(10f).setBlurEnabled(true);
+                    
+                    
+                    
+                    
+                    
+                    
                 }
 
                 if (centerMovingBorder != null) {

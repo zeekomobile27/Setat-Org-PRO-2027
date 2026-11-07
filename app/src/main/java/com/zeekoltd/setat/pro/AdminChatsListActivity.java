@@ -1,6 +1,7 @@
 package com.zeekoltd.setat.pro;
 
 import android.content.Intent;
+import android.widget.FrameLayout;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -18,9 +19,6 @@ import com.google.firebase.database.*;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
 
 public class AdminChatsListActivity extends AppCompatActivity {
 
@@ -83,24 +81,12 @@ public class AdminChatsListActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
         
-        setupBlurViews();
+        setupFrameLayouts();
         loadChatsList();
     }
     
     // 🌟 تفعيل الزجاج للشريط العلوي 🌟
-    private void setupBlurViews() {
-        ViewGroup brightTarget = findViewById(R.id.brightBackgroundTarget);
-        if (brightTarget == null) brightTarget = appRootView;
-        if (brightTarget == null) return;
-        
-        BlurView blurTopBarAdmin = findViewById(R.id.blurTopBarAdmin);
-        
-        if (blurTopBarAdmin != null) {
-            blurTopBarAdmin.setupWith(BlurTargetHelper.ensure(brightTarget))
-                .setBlurRadius(15f)
-                .setBlurEnabled(true);
-        }
-    }
+    private void setupFrameLayouts() {}
 
     private void loadChatsList() {
         metadataRef.addValueEventListener(new ValueEventListener() {

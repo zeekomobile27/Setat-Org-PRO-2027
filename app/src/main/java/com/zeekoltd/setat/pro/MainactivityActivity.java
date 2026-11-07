@@ -1,6 +1,7 @@
 package com.zeekoltd.setat.pro;
 
 import android.app.Activity;
+import android.widget.FrameLayout;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,9 +30,6 @@ import com.google.firebase.FirebaseApp;
 
 import java.util.Locale;
 
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
-
 public class MainactivityActivity extends AppCompatActivity {
 
     private String currentLang = "ar";
@@ -42,7 +40,7 @@ public class MainactivityActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private LinearLayout buttonRetry;
     private TextView tvBtnRetry;
-    private BlurView blurBtnRetry;
+    private FrameLayout blurBtnRetry;
     private View mainContentView;
 
     private String tr(String arabicText, String englishText) {
@@ -115,7 +113,7 @@ public class MainactivityActivity extends AppCompatActivity {
             }
         });
 
-        setupBlurViews();
+        setupFrameLayouts();
         checkNetworkAndProceed(1500);
 
         buttonRetry.setOnTouchListener((v, event) -> {
@@ -142,16 +140,7 @@ public class MainactivityActivity extends AppCompatActivity {
         });
     }
     
-    private void setupBlurViews() {
-        ViewGroup brightTarget = (ViewGroup) mainContentView;
-        if (brightTarget == null) return;
-        
-        if (blurBtnRetry != null) {
-            blurBtnRetry.setupWith(BlurTargetHelper.ensure(brightTarget))
-                .setBlurRadius(15f)
-                .setBlurEnabled(true);
-        }
-    }
+    private void setupFrameLayouts() {}
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

@@ -1,6 +1,7 @@
 package com.zeekoltd.setat.pro;
 
 import android.app.Dialog;
+import android.widget.FrameLayout;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,9 +33,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
-
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
 
 public class ProfileDialogHelper {
 
@@ -86,14 +84,8 @@ public class ProfileDialogHelper {
             ViewCompat.requestApplyInsets(dialogRoot);
         }
 
-        BlurView blurDialogRoot = dialog.findViewById(R.id.blurDialogRoot);
+        FrameLayout blurDialogRoot = dialog.findViewById(R.id.blurDialogRoot);
         View decorView = activity.getWindow().getDecorView();
-        ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        if (blurDialogRoot != null && rootView != null) {
-            blurDialogRoot.setupWith(BlurTargetHelper.ensure(rootView))
-                    .setBlurRadius(20f) 
-                    .setBlurEnabled(true);
-        }
 
         View btnBack = dialog.findViewById(R.id.dialogBtnBack);
         TextView tvTitle = dialog.findViewById(R.id.dialogTvTitle);
@@ -313,12 +305,7 @@ public class ProfileDialogHelper {
         View baseView = LayoutInflater.from(activity).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
         
-        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
-        View decorView = activity.getWindow().getDecorView();
-        ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(15f).setBlurEnabled(true);
-        }
+        FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
         if (centerMovingBorder != null) {

@@ -67,8 +67,6 @@ public class LanguageActivity extends AppCompatActivity {
         buildScreenUI();
         checkInitialStates();
     }
-
-    // 🌟 بناء الواجهة برمجياً لتدعم الزجاج الموحد 🌟
     private void buildScreenUI() {
         RelativeLayout mainLayout = new RelativeLayout(this);
         mainLayout.setLayoutParams(new RelativeLayout.LayoutParams(
@@ -198,8 +196,6 @@ public class LanguageActivity extends AppCompatActivity {
         container.setGravity(Gravity.CENTER_HORIZONTAL);
         container.addView(languageGroup);
         container.addView(btnView);
-
-        // إنشاء النافذة الزجاجية عن طريق المساعد، مع إضافة تعتيم (70%) تلقائياً داخله
         languageDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
         languageDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         if (languageDialog.getWindow() != null) {
@@ -211,12 +207,6 @@ public class LanguageActivity extends AppCompatActivity {
 
         View baseView = LayoutInflater.from(this).inflate(R.layout.dialog_base_glass, null);
         languageDialog.setContentView(baseView);
-        
-        eightbitlab.com.blurview.BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
-        ViewGroup targetView = getWindow().getDecorView().findViewById(android.R.id.content);
-        if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
-        }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
         if (centerMovingBorder != null) {
@@ -267,12 +257,6 @@ public class LanguageActivity extends AppCompatActivity {
 
         View baseView = LayoutInflater.from(this).inflate(R.layout.dialog_base_glass, null);
         privacyDialog.setContentView(baseView);
-        
-        eightbitlab.com.blurview.BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
-        ViewGroup targetView = getWindow().getDecorView().findViewById(android.R.id.content);
-        if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
-        }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
         if (centerMovingBorder != null) {

@@ -1,6 +1,7 @@
 package com.zeekoltd.setat.pro;
 
 import android.app.Activity;
+import android.widget.FrameLayout;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -34,9 +35,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
 
 public class MyFcmService extends FirebaseMessagingService {
 
@@ -162,7 +160,7 @@ public class MyFcmService extends FirebaseMessagingService {
         View popupView = LayoutInflater.from(activity).inflate(R.layout.layout_notification_popup, decorView, false);
 
         // ربط العناصر
-        BlurView blurView = popupView.findViewById(R.id.blurViewPopup);
+        FrameLayout blurView = popupView.findViewById(R.id.blurViewPopup);
         TextView tvTitle = popupView.findViewById(R.id.tvPopupTitle);
         TextView tvBody = popupView.findViewById(R.id.tvPopupBody);
 
@@ -172,7 +170,7 @@ public class MyFcmService extends FirebaseMessagingService {
         // إنشاء خلفية "الدمعة" (الزاوية العلوية اليسرى حادة، والباقي دائري)
         GradientDrawable bgShape = new GradientDrawable();
         bgShape.setShape(GradientDrawable.RECTANGLE);
-        bgShape.setColor(Color.parseColor("#4D000000")); 
+        bgShape.setColor(Color.parseColor("#6607A38A")); 
         float radius = 25f * density;
         bgShape.setCornerRadii(new float[]{0, 0, radius, radius, radius, radius, radius, radius});
         bgShape.setStroke((int) (1.5f * density), Color.parseColor("#4DFFFFFF")); 
@@ -180,14 +178,6 @@ public class MyFcmService extends FirebaseMessagingService {
         // تطبيق الزجاج وشكل الدمعة
         blurView.setBackground(bgShape);
         blurView.setClipToOutline(true);
-        
-        ViewGroup targetView = decorView.findViewById(android.R.id.content);
-        if (targetView != null) {
-            blurView.setupWith(BlurTargetHelper.ensure(targetView))
-                    .setBlurRadius(15f)
-                    .setBlurEnabled(true)
-                    .setOverlayColor(Color.parseColor("#1AFFFFFF"));
-        }
 
         // حركات الدخول الانسيابية
         popupView.setTranslationY(-300f * density);

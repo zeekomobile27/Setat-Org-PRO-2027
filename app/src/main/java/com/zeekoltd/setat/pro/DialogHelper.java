@@ -1,6 +1,7 @@
 package com.zeekoltd.setat.pro;
 
 import android.app.Activity;
+import android.widget.FrameLayout;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -45,9 +46,6 @@ import java.io.FileOutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
-
 public class DialogHelper {
     private static String tr(String lang, String ar, String en) { return "en".equals(lang) ? en : ar; }
     private static ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -72,20 +70,13 @@ public class DialogHelper {
         View baseView = LayoutInflater.from(context).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
 
-        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         Activity activity = (Activity) context;
-        View decorView = activity.getWindow().getDecorView();
         
         // 🌟 التعديل السحري: البحث عن الهدف الساطع أولاً لتجاهل التعتيم 🌟
         ViewGroup targetView = decorView.findViewById(R.id.brightBackgroundTarget);
         if (targetView == null) {
             targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        }
-        
-        if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView))
-                    .setBlurRadius(15f)
-                    .setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -311,7 +302,6 @@ public class DialogHelper {
         dialog.setContentView(loginRootView);
 
         Activity activity = (Activity) context;
-        View decorView = activity.getWindow().getDecorView();
         
         ViewGroup targetView = loginRootView.findViewById(R.id.brightBackgroundTarget);
         if (targetView == null) {
@@ -329,12 +319,7 @@ public class DialogHelper {
             R.id.blurBtnCancel
         };
         for (int id : blurIds) {
-            BlurView bv = loginRootView.findViewById(id);
-            if (bv != null && targetView != null) {
-                bv.setupWith(BlurTargetHelper.ensure(targetView))
-                  .setBlurRadius(15f)
-                  .setBlurEnabled(true);
-            }
+            FrameLayout bv = loginRootView.findViewById(id);
         }
 
         LinearLayout btnChangeLangLogin = loginRootView.findViewById(R.id.btnChangeLangLogin);
@@ -549,18 +534,13 @@ public class DialogHelper {
         View baseView = LayoutInflater.from(context).inflate(R.layout.dialog_base_glass, null);
         loadingDialog.setContentView(baseView);
 
-        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         Activity activity = (Activity) context;
-        View decorView = activity.getWindow().getDecorView();
         
         // 🌟 التعديل السحري: البحث عن الهدف الساطع أولاً لتجاهل التعتيم 🌟
         ViewGroup targetView = decorView.findViewById(R.id.brightBackgroundTarget);
         if (targetView == null) {
             targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        }
-        
-        if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
         
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);

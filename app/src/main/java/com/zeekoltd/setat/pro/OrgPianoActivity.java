@@ -765,7 +765,7 @@ public class OrgPianoActivity extends AppCompatActivity {
             GradientDrawable base = new GradientDrawable();
             base.setShape(GradientDrawable.RECTANGLE);
             base.setCornerRadius(crDp * d);
-            base.setColor(Color.parseColor("#4D555555"));
+            base.setColor(Color.parseColor("#6607A38A"));
             base.setStroke((int)(1.5f * d), Color.parseColor(isActive ? colorHex : "#80FFFFFF"));
             
             // 2. هندسة الشرطة العلوية الدقيقة (Dash) مثل الأجهزة الحقيقية

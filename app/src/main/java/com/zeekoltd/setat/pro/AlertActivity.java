@@ -1,6 +1,7 @@
 package com.zeekoltd.setat.pro;
 
 import android.app.Dialog;
+import android.widget.FrameLayout;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,9 +37,6 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import java.util.Locale;
-
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
 
 public class AlertActivity extends AppCompatActivity {
     
@@ -109,26 +107,14 @@ public class AlertActivity extends AppCompatActivity {
             ViewCompat.requestApplyInsets(mainContentView);
         }
         
-        setupBlurViews();
+        setupFrameLayouts();
         setupUI();
         setupEventListeners();
         setupNetworkReceiver();
     }
 
     // 🌟 تفعيل الزجاج للشريط العلوي 🌟
-    private void setupBlurViews() {
-        ViewGroup brightTarget = findViewById(R.id.brightBackgroundTarget);
-        if (brightTarget == null) brightTarget = (ViewGroup) mainContentView;
-        if (brightTarget == null) return;
-        
-        BlurView blurTopBarAlert = findViewById(R.id.blurTopBarAlert);
-        
-        if (blurTopBarAlert != null) {
-            blurTopBarAlert.setupWith(BlurTargetHelper.ensure(brightTarget))
-                .setBlurRadius(15f)
-                .setBlurEnabled(true);
-        }
-    }
+    private void setupFrameLayouts() {}
 
     private void setupUI() {
         final float density = getResources().getDisplayMetrics().density;
@@ -187,13 +173,12 @@ public class AlertActivity extends AppCompatActivity {
                 contentLayout.addView(countText);
                 
                 // 🌟 تحويل كروت الإشعارات للزجاج الموحد برمجياً 🌟
-                ViewGroup brightTarget = findViewById(R.id.brightBackgroundTarget);
                 
                 for (int i = 0; i < notificationList.length; i++) {
                     String notification = notificationList[i];
                     if (!notification.trim().isEmpty()) {
                         
-                        BlurView blurCard = new BlurView(this);
+                        FrameLayout blurCard = new FrameLayout(this);
                         LinearLayout.LayoutParams blurParams = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                         blurParams.setMargins(0, 0, 0, (int)(15 * density));
@@ -202,9 +187,7 @@ public class AlertActivity extends AppCompatActivity {
                         blurCard.setClipToOutline(true);
                         
                         if (brightTarget != null) {
-                            blurCard.setupWith(BlurTargetHelper.ensure(brightTarget))
-                                    .setBlurRadius(15f)
-                                    .setBlurEnabled(true);
+                            
                         }
 
                         LinearLayout notificationCard = new LinearLayout(this);
@@ -284,14 +267,11 @@ public class AlertActivity extends AppCompatActivity {
         View baseView = LayoutInflater.from(this).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
         
-        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         View decorView = getWindow().getDecorView();
         ViewGroup targetView = decorView.findViewById(R.id.brightBackgroundTarget);
         if (targetView == null) {
             targetView = (ViewGroup) decorView.findViewById(android.R.id.content);
-        }
-        if (blurCenterWindow != null && targetView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(targetView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
