@@ -631,7 +631,7 @@ public class AdMobAdsHelper {
                 }
             }
         };
-        handler.postDelayed(timeoutRunnable, 10000); 
+        handler.postDelayed(timeoutRunnable, 15000); 
 
         // الفاحص المستمر لمعرفة ما إذا كان الإعلان قد أصبح جاهزاً
         final Runnable checkRunnable = new Runnable() {
