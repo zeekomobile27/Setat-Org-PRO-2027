@@ -712,7 +712,10 @@ public class OrgDialogs {
                     final String finalTitle = title;
                     btnDownload.setOnClickListener(v -> {
                         dialog.dismiss();
-                        activity.downloadAndInstallSet(finalUrl, finalTitle);
+                        AdMobAdsHelper ads = AdMobAdsHelper.getInstance(activity);
+                        ads.setCurrentLanguage(activity.currentLang);
+                        ads.showAdDialog(finalUrl, pendingUrl ->
+                                activity.downloadAndInstallSet(pendingUrl, finalTitle));
                     });
                     itemCard.addView(btnDownload);
 
