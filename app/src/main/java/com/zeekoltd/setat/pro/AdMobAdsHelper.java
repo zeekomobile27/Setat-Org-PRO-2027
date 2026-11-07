@@ -395,17 +395,22 @@ public class AdMobAdsHelper {
                 }
             });
 
-            mRewardedAd.show(activity, new OnUserEarnedRewardListener() {
-                @Override
-                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                    Activity act = getActivity();
-                    if (act != null) {
-                        act.runOnUiThread(() -> { 
-                            userEarnedReward = true; 
-                        });
+            try {
+                mRewardedAd.show(activity, new OnUserEarnedRewardListener() {
+                    @Override
+                    public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                        Activity act = getActivity();
+                        if (act != null) {
+                            act.runOnUiThread(() -> {
+                                userEarnedReward = true;
+                            });
+                        }
                     }
-                }
-            });
+                });
+            } catch (RuntimeException showError) {
+                // إذا تعذر بدء عرض الإعلان، أكمل التحميل بدلاً من حظر المستخدم.
+                showAdLoadErrorDialog();
+            }
         }
     }
 
@@ -679,35 +684,36 @@ public class AdMobAdsHelper {
     private void showAdLoadErrorDialog() {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
-        
-        isDialogLoading = false;
-        isDialogTimedOut = false;
 
-        final Dialog errorDialog = createBaseGlassDialog(activity, null, 
-            tr("فـشــل تـحـمـيـل الإعــلان 😥\nحاول مرة أخرى لاحقاً", "Failed to load ad 😥\nPlease try again later"));
-        errorDialog.setCancelable(true);
+        Runnable continueDownload = () -> {
+            if (!isActivityValid()) return;
 
-        LinearLayout dynamicContainer = errorDialog.findViewById(R.id.dialogDynamicContainer);
-
-        View okBtnView = LayoutInflater.from(activity).inflate(R.layout.item_dialog_button, dynamicContainer, false);
-        TextView tvOk = okBtnView.findViewById(R.id.tvButtonText);
-        tvOk.setText(tr("موافق", "OK"));
-        dynamicContainer.addView(okBtnView);
-
-        okBtnView.setOnClickListener(v -> {
-            safeDismissDialog(errorDialog);
-            
-            if (currentAdDialog != null && currentAdDialog.isShowing()) {
-                safeDismissDialog(currentAdDialog);
-            }
-            
+            isDialogLoading = false;
+            isDialogTimedOut = false;
             isShowingAdDialog = false;
-            currentAdDialog = null;
+            hideBlockingOverlay();
+
+            if (currentAdDialog != null) {
+                safeDismissDialog(currentAdDialog);
+                currentAdDialog = null;
+            }
+
+            // لا نمنح مكافأة مشاهدة؛ نمرر الرابط لمسار التحميل مباشرة بسبب تعذر الإعلان.
+            String downloadUrl = pendingUrlAfterAd;
+            OnRewardEarnedListener listener = pendingRewardListener;
             pendingUrlAfterAd = "";
             pendingRewardListener = null;
-        });
 
-        safeShowDialog(errorDialog);
+            if (listener != null && downloadUrl != null && !downloadUrl.isEmpty()) {
+                listener.onRewardEarned(downloadUrl);
+            }
+        };
+
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            continueDownload.run();
+        } else {
+            activity.runOnUiThread(continueDownload);
+        }
     }
 
     // ============================================================
