@@ -32,10 +32,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
-
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
-
 public class ProfileDialogHelper {
 
     private static Dialog currentDialog;
@@ -86,13 +82,10 @@ public class ProfileDialogHelper {
             ViewCompat.requestApplyInsets(dialogRoot);
         }
 
-        BlurView blurDialogRoot = dialog.findViewById(R.id.blurDialogRoot);
+        android.widget.FrameLayout blurDialogRoot = dialog.findViewById(R.id.blurDialogRoot);
         View decorView = activity.getWindow().getDecorView();
         ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
         if (blurDialogRoot != null && rootView != null) {
-            blurDialogRoot.setupWith(BlurTargetHelper.ensure(rootView))
-                    .setBlurRadius(20f) 
-                    .setBlurEnabled(true);
         }
 
         View btnBack = dialog.findViewById(R.id.dialogBtnBack);
@@ -313,11 +306,10 @@ public class ProfileDialogHelper {
         View baseView = LayoutInflater.from(activity).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
         
-        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         View decorView = activity.getWindow().getDecorView();
         ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(15f).setBlurEnabled(true);
         }
         
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);

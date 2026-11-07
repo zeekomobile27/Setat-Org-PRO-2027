@@ -23,16 +23,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.util.Locale;
-
-import eightbitlab.com.blurview.BlurView;
-
 public class SplashsctivityActivity extends AppCompatActivity {
     
     private String currentLang = "ar";
     private SharedPreferences prefs;
     private VideoView videoView1;
     private boolean isTransitioned = false; 
-    private BlurView blurSkipBtn;
+    private android.widget.FrameLayout blurSkipBtn;
 
     // دالة للحصول على النص حسب اللغة
     private String tr(String arabicText, String englishText) {
@@ -74,8 +71,8 @@ public class SplashsctivityActivity extends AppCompatActivity {
         setupVideo();
 
         // يحتفظ زر التخطي بخلفيته الزجاجية الحالية. لا نربطه بـ BlurTarget هنا:
-        // VideoView مبني على SurfaceView ولا يدعمه BlurView، كما أن استهداف
-        // جذر الشاشة سيجعل BlurTarget يحتوي على BlurView نفسه.
+        // VideoView مبني على SurfaceView ولا يدعمه android.widget.FrameLayout، كما أن استهداف
+        // جذر الشاشة سيجعل BlurTarget يحتوي على android.widget.FrameLayout نفسه.
         ViewGroup root = findViewById(R.id.mainContentView);
         if (root != null) {
             ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {

@@ -54,8 +54,6 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
@@ -214,10 +212,9 @@ public class MainActivity extends AppCompatActivity {
         dialog.setContentView(baseView);
         currentSmartDialog = dialog;
         
-        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(10f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -361,10 +358,9 @@ public class MainActivity extends AppCompatActivity {
             );
         }
 
-        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(10f).setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -477,7 +473,7 @@ public class MainActivity extends AppCompatActivity {
         loadProfileImage();
         loadUserHeaderInfo();
         loadDynamicSetsCounts();
-        setupBlurViews();
+        
         setupSmartBanner();
         
         new Handler(Looper.getMainLooper()).postDelayed(this::checkAndRequestNotifications, 2000);
@@ -614,41 +610,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupBlurViews() {
-        if (blurViewsConfigured) return;
-        ViewGroup brightTarget = findViewById(R.id.brightBackgroundTarget);
-        if (brightTarget == null) return;
-
-        // Adaptive blur preserves the frosted look while reducing GPU work on low-RAM phones.
-        float radius = 6f;
-        android.app.ActivityManager activityManager =
-                (android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT
-                && activityManager != null && activityManager.isLowRamDevice()) {
-            radius = 3f;
-        }
-
-        int[] blurIds = {
-            R.id.blurTopBar, R.id.blurBottomBar, R.id.blurSearchBar, R.id.blurSmartBanner,
-            R.id.blurNewSetExclusive, R.id.blurSetat2, R.id.blurSetat3, R.id.blurSetat5,
-            R.id.blurSetat6, R.id.blurSetat7, R.id.blurSetat8, R.id.blurSetat9,
-            R.id.blurSetat10, R.id.blurSetat11, R.id.blurSetat12, R.id.blurProfileBtn,
-            R.id.blurOrgVipBtn, R.id.blurLangBtn, R.id.blurPopularBtn,
-            R.id.blurHowToDownloadBtn, R.id.blurHowToAddBtn, R.id.blurBottomNavBar
-        };
-
-        for (int id : blurIds) {
-            View view = findViewById(id);
-            if (view instanceof BlurView) {
-                ((BlurView) view).setupWith(BlurTargetHelper.ensure(brightTarget))
-                        .setBlurRadius(radius)
-                        .setBlurEnabled(true);
-            }
-        }
-        blurViewsConfigured = true;
-    }
-
-    private void setupSmartBanner() {
+private void setupSmartBanner() {
         View blurSmartBanner = findViewById(R.id.blurSmartBanner);
         TextView tvSmartBannerText = findViewById(R.id.tvSmartBannerText);
         View btnSmartBanner = findViewById(R.id.btnSmartBanner);
@@ -758,10 +720,9 @@ public class MainActivity extends AppCompatActivity {
         View baseView = LayoutInflater.from(this).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
         
-        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         ViewGroup rootView = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView)).setBlurRadius(15f).setBlurEnabled(true);
         }
 
         TextView tvTitle = baseView.findViewById(R.id.tvDialogTitle);

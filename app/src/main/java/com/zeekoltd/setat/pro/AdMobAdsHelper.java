@@ -45,10 +45,6 @@ import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
 import java.lang.ref.WeakReference;
-
-import eightbitlab.com.blurview.BlurView;
-import eightbitlab.com.blurview.RenderScriptBlur;
-
 public class AdMobAdsHelper {
 
     // ============================================================
@@ -489,14 +485,11 @@ public class AdMobAdsHelper {
         View baseView = LayoutInflater.from(activity).inflate(R.layout.dialog_base_glass, null);
         dialog.setContentView(baseView);
 
-        BlurView blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
+        android.widget.FrameLayout blurCenterWindow = baseView.findViewById(R.id.blurCenterWindow);
         View decorView = activity.getWindow().getDecorView();
         ViewGroup rootView = (ViewGroup) decorView.findViewById(android.R.id.content);
         
         if (blurCenterWindow != null && rootView != null) {
-            blurCenterWindow.setupWith(BlurTargetHelper.ensure(rootView))
-                    .setBlurRadius(15f)
-                    .setBlurEnabled(true);
         }
 
         MovingBorderView centerMovingBorder = baseView.findViewById(R.id.centerMovingBorder);
@@ -596,7 +589,7 @@ public class AdMobAdsHelper {
     }
 
     // ============================================================
-    // 5. نافذة جاري تحميل الإعلان (مؤقت 10 ثواني كحد أقصى)
+    // 5. نافذة جاري تحميل الإعلان (مؤقت 15 ثانية كحد أقصى)
     // ============================================================
     private void showAdLoadingDialog() {
         Activity activity = getActivity();
@@ -626,7 +619,7 @@ public class AdMobAdsHelper {
             loadRewardedAd();
         }
 
-        // 🚀 مؤقت الإلغاء النهائي (Timeout) بعد 10 ثواني بالضبط
+        // 🚀 مؤقت الإلغاء النهائي (Timeout) بعد 15 ثانية بالضبط
         final Runnable timeoutRunnable = new Runnable() {
             @Override
             public void run() {
@@ -642,7 +635,7 @@ public class AdMobAdsHelper {
                 }
             }
         };
-        handler.postDelayed(timeoutRunnable, 10000); 
+        handler.postDelayed(timeoutRunnable, 15000); 
 
         // الفاحص المستمر لمعرفة ما إذا كان الإعلان قد أصبح جاهزاً
         final Runnable checkRunnable = new Runnable() {
