@@ -15,12 +15,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurDialogRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:blurOverlayColor="#25FFFFFF"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" android:background="#80A8BFB1">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -44,14 +45,15 @@
                     android:gravity="center_vertical"
                     android:layout_marginBottom="20dp">
 
-                    <FrameLayout
+                    <eightbitlab.com.blurview.BlurView
                         android:id="@+id/dialogBtnBack"
                         android:layout_width="35dp"
                         android:layout_height="35dp"
                         android:background="@drawable/bg_glass_circle_border"
                         android:clipToOutline="true"
                         android:clickable="true"
-                        android:focusable="true">
+                        android:focusable="true"
+                        app:blurOverlayColor="#0DFFFFFF">
                         <FrameLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
@@ -62,7 +64,7 @@
                                 android:src="@drawable/ic_close"
                                 app:tint="#FFFFFF" />
                         </FrameLayout>
-                    </FrameLayout>
+                    </eightbitlab.com.blurview.BlurView>
 
                     <TextView
                         android:id="@+id/dialogTvTitle"
@@ -145,7 +147,7 @@
                         android:layout_marginStart="8dp" />
                 </LinearLayout>
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/dialogEditNameContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -153,7 +155,8 @@
                     android:layout_marginBottom="12dp"
                     android:background="@drawable/bg_glass_border"
                     android:clipToOutline="true"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    app:blurOverlayColor="#0DFFFFFF">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -201,7 +204,7 @@
                             android:textSize="13sp"
                             android:textStyle="bold" />
                     </LinearLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
                 <!-- تم حذف حاوية نظام المستويات والمكافآت (dialogLevelContainer) من هنا -->
 
@@ -224,11 +227,12 @@
                         android:clickable="true"
                         android:focusable="true">
 
-                        <FrameLayout
+                        <eightbitlab.com.blurview.BlurView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:background="@drawable/bg_glass_circle_border"
-                            android:clipToOutline="true">
+                            android:clipToOutline="true"
+                            app:blurOverlayColor="#0DFFFFFF">
                             <FrameLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent">
@@ -239,7 +243,7 @@
                                     android:src="@drawable/ic_menu_support"
                                     app:tint="#FFFFFF" />
                             </FrameLayout>
-                        </FrameLayout>
+                        </eightbitlab.com.blurview.BlurView>
                         <TextView
                             android:id="@+id/dialogTvSupport"
                             android:layout_width="wrap_content"
@@ -265,11 +269,12 @@
                         android:clickable="true"
                         android:focusable="true">
 
-                        <FrameLayout
+                        <eightbitlab.com.blurview.BlurView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:background="@drawable/bg_glass_circle_border"
-                            android:clipToOutline="true">
+                            android:clipToOutline="true"
+                            app:blurOverlayColor="#0DFFFFFF">
                             <FrameLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent">
@@ -280,7 +285,7 @@
                                     android:src="@drawable/icon_website"
                                     app:tint="#FFFFFF" />
                             </FrameLayout>
-                        </FrameLayout>
+                        </eightbitlab.com.blurview.BlurView>
                         <TextView
                             android:id="@+id/dialogTvWebsite"
                             android:layout_width="wrap_content"
@@ -306,11 +311,12 @@
                         android:clickable="true"
                         android:focusable="true">
 
-                        <FrameLayout
+                        <eightbitlab.com.blurview.BlurView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:background="@drawable/bg_glass_circle_border"
-                            android:clipToOutline="true">
+                            android:clipToOutline="true"
+                            app:blurOverlayColor="#0DFFFFFF">
                             <FrameLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent">
@@ -321,7 +327,7 @@
                                     android:src="@drawable/icon_privacy"
                                     app:tint="#FFFFFF" />
                             </FrameLayout>
-                        </FrameLayout>
+                        </eightbitlab.com.blurview.BlurView>
                         <TextView
                             android:id="@+id/dialogTvPrivacy"
                             android:layout_width="wrap_content"
@@ -347,11 +353,12 @@
                         android:clickable="true"
                         android:focusable="true">
 
-                        <FrameLayout
+                        <eightbitlab.com.blurview.BlurView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:background="@drawable/bg_glass_circle_border"
-                            android:clipToOutline="true">
+                            android:clipToOutline="true"
+                            app:blurOverlayColor="#0DFFFFFF">
                             <FrameLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent">
@@ -362,7 +369,7 @@
                                     android:src="@drawable/icon_about"
                                     app:tint="#FFFFFF" />
                             </FrameLayout>
-                        </FrameLayout>
+                        </eightbitlab.com.blurview.BlurView>
                         <TextView
                             android:id="@+id/dialogTvAbout"
                             android:layout_width="wrap_content"
@@ -379,12 +386,13 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:layout_width="200dp"
                     android:layout_height="40dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/bg_glass_border"
-                    android:clipToOutline="true">
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#0DFF4444">
                     <LinearLayout
                         android:id="@+id/dialogBtnLogout"
                         android:layout_width="match_parent"
@@ -413,14 +421,15 @@
                             android:textSize="14sp"
                             android:textStyle="bold"/>
                     </LinearLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:layout_width="200dp"
                     android:layout_height="40dp"
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/bg_glass_border"
-                    android:clipToOutline="true">
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#0DFF4444">
                     <LinearLayout
                         android:id="@+id/dialogBtnDeleteAccount"
                         android:layout_width="match_parent"
@@ -449,7 +458,7 @@
                             android:textSize="14sp"
                             android:textStyle="bold"/>
                     </LinearLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
                 <View
                     android:layout_width="200dp"
@@ -503,5 +512,5 @@
 
             </LinearLayout>
         </ScrollView>
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurView>
 </androidx.constraintlayout.widget.ConstraintLayout>

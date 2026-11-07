@@ -8,7 +8,7 @@
     android:background="#000000"
     android:layoutDirection="locale">
 
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurTarget
         android:id="@+id/brightBackgroundTarget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -26,10 +26,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#33000000" />
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurTarget>
 
-    <FrameLayout android:id="@+id/blurTopBar" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" android:background="#80A8BFB1" />
-    <FrameLayout android:id="@+id/blurBottomBar" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" android:background="#80A8BFB1" />
+    <eightbitlab.com.blurview.BlurView android:id="@+id/blurTopBar" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone"/>
+    <eightbitlab.com.blurview.BlurView android:id="@+id/blurBottomBar" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/topBarContainer"
@@ -44,12 +44,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <FrameLayout
+        <eightbitlab.com.blurview.BlurView
             android:id="@+id/blurLangBtn"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:background="#80A8BFB1"
-            android:clipToOutline="true">
+            android:background="@drawable/bg_glass_capsule"
+            android:clipToOutline="true"
+            app:blurOverlayColor="#00000000">
 
             <LinearLayout
                 android:id="@+id/btnLangTopBar"
@@ -81,19 +82,20 @@
                     android:shadowDy="1"
                     android:shadowRadius="2" />
             </LinearLayout>
-        </FrameLayout>
+        </eightbitlab.com.blurview.BlurView>
 
         <Space
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <FrameLayout
+        <eightbitlab.com.blurview.BlurView
             android:id="@+id/blurProfileBtn"
             android:layout_width="wrap_content"
             android:layout_height="46dp"
-            android:background="#80A8BFB1"
-            android:clipToOutline="true">
+            android:background="@drawable/bg_glass_capsule"
+            android:clipToOutline="true"
+            app:blurOverlayColor="#00000000">
 
             <LinearLayout
                 android:id="@+id/btnProfileClick"
@@ -152,7 +154,7 @@
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
-        </FrameLayout>
+        </eightbitlab.com.blurview.BlurView>
     </LinearLayout>
 
     <ScrollView
@@ -172,13 +174,14 @@
             android:orientation="vertical"
             android:paddingHorizontal="16dp">
 
-            <FrameLayout
+            <eightbitlab.com.blurview.BlurView
                 android:id="@+id/blurOrgVipBtn"
                 android:layout_width="match_parent"
                 android:layout_height="135dp"
                 android:layout_marginBottom="12dp"
-                android:background="#80A8BFB1"
-                android:clipToOutline="true">
+                android:background="@drawable/bg_glass_border"
+                android:clipToOutline="true"
+                app:blurOverlayColor="#00000000">
 
                 <FrameLayout
                     android:id="@+id/btnOrgVipClick"
@@ -265,15 +268,16 @@
                         </LinearLayout>
                     </LinearLayout>
                 </FrameLayout>
-            </FrameLayout>
+            </eightbitlab.com.blurview.BlurView>
 
-            <FrameLayout
+            <eightbitlab.com.blurview.BlurView
                 android:id="@+id/blurSearchBar"
                 android:layout_width="match_parent"
                 android:layout_height="46dp"
                 android:layout_marginBottom="10dp"
-                android:background="#80A8BFB1"
-                android:clipToOutline="true">
+                android:background="@drawable/bg_glass_capsule"
+                android:clipToOutline="true"
+                app:blurOverlayColor="#00000000">
 
                 <LinearLayout
                     android:id="@+id/btnGlobalSearch"
@@ -314,15 +318,16 @@
                             app:tint="#FFD700"/>
                     </FrameLayout>
                 </LinearLayout>
-            </FrameLayout>
+            </eightbitlab.com.blurview.BlurView>
 
-            <FrameLayout
+            <eightbitlab.com.blurview.BlurView
                 android:id="@+id/blurSmartBanner"
                 android:layout_width="match_parent"
                 android:layout_height="34dp"
                 android:layout_marginBottom="12dp"
-                android:background="#80A8BFB1"
+                android:background="@drawable/bg_glass_capsule"
                 android:clipToOutline="true"
+                app:blurOverlayColor="#00000000"
                 android:visibility="visible">
 
                 <LinearLayout
@@ -363,7 +368,7 @@
                         android:textSize="13sp"
                         android:layout_marginStart="4dp"/>
                 </LinearLayout>
-            </FrameLayout>
+            </eightbitlab.com.blurview.BlurView>
 
             <!-- عنوان قسم مجموعات السيتات (بدون أي أزرار أو أحداث نقر) -->
             <LinearLayout
@@ -392,13 +397,14 @@
                     android:gravity="start" />
             </LinearLayout>
 
-            <FrameLayout
+            <eightbitlab.com.blurview.BlurView
                 android:id="@+id/blurNewSetExclusive"
                 android:layout_width="match_parent"
                 android:layout_height="90dp"
                 android:layout_marginBottom="10dp"
-                android:background="#80A8BFB1"
-                android:clipToOutline="true">
+                android:background="@drawable/bg_glass_border"
+                android:clipToOutline="true"
+                app:blurOverlayColor="#00000000">
 
                 <FrameLayout
                     android:id="@+id/btnNewSetExclusive"
@@ -468,7 +474,7 @@
                             android:src="@drawable/ic_arrow_card" />
                     </FrameLayout>
                 </FrameLayout>
-            </FrameLayout>
+            </eightbitlab.com.blurview.BlurView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -477,14 +483,15 @@
                 android:weightSum="2"
                 android:layout_marginBottom="10dp">
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat2"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat2"
                         android:layout_width="match_parent"
@@ -551,16 +558,17 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat3"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat3"
                         android:layout_width="match_parent"
@@ -627,7 +635,7 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
             </LinearLayout>
 
             <LinearLayout
@@ -637,14 +645,15 @@
                 android:weightSum="2"
                 android:layout_marginBottom="10dp">
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat5"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat5"
                         android:layout_width="match_parent"
@@ -711,16 +720,17 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat6"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat6"
                         android:layout_width="match_parent"
@@ -787,7 +797,7 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
             </LinearLayout>
 
             <LinearLayout
@@ -797,14 +807,15 @@
                 android:weightSum="2"
                 android:layout_marginBottom="10dp">
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat7"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat7"
                         android:layout_width="match_parent"
@@ -871,16 +882,17 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat8"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat8"
                         android:layout_width="match_parent"
@@ -947,7 +959,7 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
             </LinearLayout>
 
             <LinearLayout
@@ -957,14 +969,15 @@
                 android:weightSum="2"
                 android:layout_marginBottom="10dp">
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat9"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat9"
                         android:layout_width="match_parent"
@@ -1031,16 +1044,17 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat10"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat10"
                         android:layout_width="match_parent"
@@ -1107,7 +1121,7 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
             </LinearLayout>
 
             <LinearLayout
@@ -1117,14 +1131,15 @@
                 android:weightSum="2"
                 android:layout_marginBottom="14dp">
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat11"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat11"
                         android:layout_width="match_parent"
@@ -1191,16 +1206,17 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurSetat12"
                     android:layout_width="0dp"
                     android:layout_height="96dp"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnSetat12"
                         android:layout_width="match_parent"
@@ -1267,7 +1283,7 @@
                                 android:src="@drawable/ic_arrow_card" />
                         </FrameLayout>
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
             </LinearLayout>
 
             <!-- ==================== و. قسم الأكثر شعبية والشروحات (بدون أي أزرار أو أحداث نقر) ==================== -->
@@ -1306,14 +1322,15 @@
                 android:gravity="center">
 
                 <!-- 1. زر إضافة السيت -->
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurHowToAddBtn"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginEnd="4dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnHowToAddClick"
                         android:layout_width="match_parent"
@@ -1349,17 +1366,18 @@
                             android:shadowDy="1"
                             android:shadowRadius="2" />
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
                 <!-- 2. زر تحميل السيتات -->
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurHowToDownloadBtn"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginHorizontal="4dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnHowToDownloadClick"
                         android:layout_width="match_parent"
@@ -1395,17 +1413,18 @@
                             android:shadowDy="1"
                             android:shadowRadius="2" />
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
 
                 <!-- 3. زر الأكثر انتشاراً (رائج) -->
-                <FrameLayout
+                <eightbitlab.com.blurview.BlurView
                     android:id="@+id/blurPopularBtn"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_marginStart="4dp"
-                    android:background="#80A8BFB1"
-                    android:clipToOutline="true">
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true"
+                    app:blurOverlayColor="#00000000">
                     <FrameLayout
                         android:id="@+id/btnPopularClick"
                         android:layout_width="match_parent"
@@ -1441,21 +1460,22 @@
                             android:shadowDy="1"
                             android:shadowRadius="2" />
                     </FrameLayout>
-                </FrameLayout>
+                </eightbitlab.com.blurview.BlurView>
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 
     <!-- ==================== 3. الشريط السفلي الثابت (عائم) ==================== -->
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurBottomNavBar"
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="16dp"
-        android:background="#80A8BFB1"
+        android:background="@drawable/bg_glass_capsule"
         android:clipToOutline="true"
+        app:blurOverlayColor="#00000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -1607,6 +1627,6 @@
                     android:shadowRadius="2" />
             </LinearLayout>
         </LinearLayout>
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,13 +6,14 @@
     android:layout_height="wrap_content"
     android:paddingBottom="12dp">
 
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurButtonContainer"
         android:layout_width="220dp"
         android:layout_height="45dp"
         android:layout_gravity="center"
-        android:background="#80A8BFB1"
-        android:clipToOutline="true">
+        android:background="@drawable/bg_glass_capsule"
+        android:clipToOutline="true"
+        app:blurOverlayColor="#15FFFFFF">
 
         <TextView
             android:id="@+id/tvButtonText"
@@ -29,5 +30,5 @@
             android:clickable="false"
             android:focusable="false"/>
 
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurView>
 </FrameLayout>

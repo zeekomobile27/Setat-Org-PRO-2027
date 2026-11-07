@@ -18,15 +18,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurSkipBtn"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginLeft="25dp"
         android:layout_marginTop="25dp"
-        android:background="#80A8BFB1"
+        android:background="@drawable/bg_glass_circle_border"
         android:clipToOutline="true"
         android:visibility="gone"
+        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"> 
         
@@ -47,6 +48,6 @@
                 android:textStyle="bold"
                 android:paddingBottom="2dp" />
         </LinearLayout>
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

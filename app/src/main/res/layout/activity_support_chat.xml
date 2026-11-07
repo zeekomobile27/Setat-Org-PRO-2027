@@ -9,7 +9,7 @@
     android:layoutDirection="locale">
 
     <!-- 🌟 الهدف الساطع للزجاج 🌟 -->
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurTarget
         android:id="@+id/brightBackgroundTarget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/vntrocreen" />
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurTarget>
 
     <!-- 🌟 التعتيم 70% 🌟 -->
     <View
@@ -33,14 +33,15 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- 🌟 الشريط العلوي الزجاجي الموحد 🌟 -->
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurTopBar"
         android:layout_width="match_parent"
         android:layout_height="65dp"
         android:layout_marginHorizontal="15dp"
         android:layout_marginTop="25dp"
-        android:background="#80A8BFB1"
+        android:background="@drawable/bg_glass_capsule"
         android:clipToOutline="true"
+        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -165,7 +166,7 @@
                 android:paddingHorizontal="8dp"
                 android:visibility="gone"/>
         </LinearLayout>
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerChat"
@@ -191,15 +192,16 @@
         app:layout_constraintBottom_toTopOf="@id/blurBottomBar"/>
 
     <!-- 🌟 شريط الإرسال السفلي الزجاجي 🌟 -->
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurBottomBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="65dp"
         android:layout_marginHorizontal="15dp"
         android:layout_marginBottom="25dp"
-        android:background="#80A8BFB1"
+        android:background="@drawable/bg_glass_capsule"
         android:clipToOutline="true"
+        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -252,7 +254,7 @@
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"/>
         </LinearLayout>
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurView>
 
     <!-- 🌟 رسالة الحظر السفلية (تظهر مكان شريط الإرسال عند الحظر) 🌟 -->
     <TextView

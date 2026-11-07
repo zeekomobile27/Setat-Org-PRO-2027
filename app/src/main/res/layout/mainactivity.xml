@@ -58,12 +58,13 @@
             android:indeterminate="true"
             android:indeterminateTint="#00FFFF" />
 
-        <FrameLayout
+        <eightbitlab.com.blurview.BlurView
             android:id="@+id/blurBtnRetry"
             android:layout_width="220dp"
             android:layout_height="50dp"
-            android:background="#80A8BFB1"
+            android:background="@drawable/bg_glass_capsule"
             android:clipToOutline="true"
+            app:blurOverlayColor="#1AFFFFFF"
             android:visibility="gone">
             
             <LinearLayout
@@ -88,7 +89,7 @@
                     android:shadowDy="1"
                     android:shadowRadius="2" />
             </LinearLayout>
-        </FrameLayout>
+        </eightbitlab.com.blurview.BlurView>
 
     </LinearLayout>
 

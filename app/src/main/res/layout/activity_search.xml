@@ -8,7 +8,7 @@
     android:background="#000000"
     android:layoutDirection="locale">
 
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurTarget
         android:id="@+id/brightBackgroundTarget"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             android:src="@drawable/zeeko40" />
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurTarget>
 
     <View
         android:layout_width="match_parent"
@@ -39,14 +39,15 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- شريط البحث العلوي الزجاجي -->
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurTopBarNew"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_marginHorizontal="25dp"
         android:layout_marginTop="35dp"
-        android:background="#80A8BFB1"
+        android:background="@drawable/bg_glass_capsule"
         android:clipToOutline="true"
+        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -94,7 +95,7 @@
                 android:visibility="gone"
                 app:tint="#FFFFFF"/>
         </LinearLayout>
-    </FrameLayout>
+    </eightbitlab.com.blurview.BlurView>
 
     <!-- شاشة التحميل الأولية للمحرك -->
     <ProgressBar

@@ -8,10 +8,11 @@
     android:layout_marginTop="45dp"
     android:layoutDirection="locale">
 
-    <FrameLayout
+    <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurViewPopup"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" android:background="#80A8BFB1" />
+        android:layout_height="match_parent"
+        app:blurOverlayColor="#1AFFFFFF" />
 
     <LinearLayout
         android:layout_width="match_parent"
