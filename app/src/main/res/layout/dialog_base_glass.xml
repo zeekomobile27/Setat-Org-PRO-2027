@@ -11,7 +11,7 @@
         android:id="@+id/blurCenterWindow"
         android:layout_width="320dp"
         android:layout_height="0dp"
-        android:background="@drawable/bg_popup_surface"
+        android:background="@drawable/bg_popup_window"
         android:clipToOutline="true"
         app:layout_constraintTop_toTopOf="@+id/mainContentWrapper"
         app:layout_constraintBottom_toBottomOf="@+id/mainContentWrapper"

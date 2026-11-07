@@ -11,7 +11,7 @@
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/bg_popup_surface"
+        android:background="@drawable/bg_popup_window"
         android:clipToOutline="true">
 
         <com.zeekoltd.setat.pro.MovingBorderView
