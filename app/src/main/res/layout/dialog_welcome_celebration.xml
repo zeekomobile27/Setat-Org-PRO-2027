@@ -6,14 +6,13 @@
     android:layout_height="match_parent"
     android:layoutDirection="locale">
 
-    <eightbitlab.com.blurview.BlurView
+    <FrameLayout
         android:id="@+id/blurWelcomeDialog"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/bg_glass_border"
-        android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF">
+        android:background="#80A8BFB1"
+        android:clipToOutline="true">
 
         <com.zeekoltd.setat.pro.MovingBorderView
             android:id="@+id/movingBorderWelcome"
@@ -81,7 +80,7 @@
                 android:focusable="true"/>
 
         </LinearLayout>
-    </eightbitlab.com.blurview.BlurView>
+    </FrameLayout>
 
     <!-- نظام القصاصات الورقية الاحتفالية (طبقة تغطي الشاشة بالكامل) -->
     <nl.dionsegijn.konfetti.xml.KonfettiView

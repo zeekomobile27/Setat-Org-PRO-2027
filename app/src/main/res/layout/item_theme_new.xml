@@ -7,15 +7,14 @@
     android:background="@android:color/transparent"
     android:layoutDirection="locale">
 
-    <eightbitlab.com.blurview.BlurView
+    <FrameLayout
         android:id="@+id/blurCenterWindow"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="170dp" 
-        android:background="@drawable/bg_glass_border"
+        android:background="#80A8BFB1"
         android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"> 
@@ -129,17 +128,16 @@
 
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </eightbitlab.com.blurview.BlurView>
+    </FrameLayout>
 
-    <eightbitlab.com.blurview.BlurView
+    <FrameLayout
         android:id="@+id/blurBottomInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="15dp"
-        android:background="@drawable/bg_glass_border"
+        android:background="#80A8BFB1"
         android:clipToOutline="true"
-        app:blurOverlayColor="#1AFFFFFF"
         app:layout_constraintTop_toBottomOf="@id/blurCenterWindow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -176,15 +174,14 @@
                 android:maxLines="2"
                 android:ellipsize="end" />
 
-            <eightbitlab.com.blurview.BlurView
+            <FrameLayout
                 android:id="@+id/blurDownloadBtn"
                 android:layout_width="220dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="15dp"
                 android:layout_gravity="center_horizontal"
-                android:background="@drawable/bg_glass_capsule"
-                android:clipToOutline="true"
-                app:blurOverlayColor="#33FFFFFF">
+                android:background="#80A8BFB1"
+                android:clipToOutline="true">
                 
                 <LinearLayout
                     android:id="@+id/btnDownloadSet"
@@ -205,8 +202,8 @@
                         android:textSize="15sp"
                         android:textStyle="bold" />
                 </LinearLayout>
-            </eightbitlab.com.blurview.BlurView>
+            </FrameLayout>
         </LinearLayout>
-    </eightbitlab.com.blurview.BlurView>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
