@@ -78,9 +78,9 @@ public class AdMobAdsHelper {
     // 🚀 ثوابت معرفات الوحدات الإعلانية التجريبية من جوجل (Test IDs)
     // لا يتم جلبها من فايربيس نهائياً حسب طلبك
     // ============================================================
-    public static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6135301066898637/1333571346";
-    public static final String REWARDED_AD_UNIT_ID = "ca-app-pub-6135301066898637/4703016895";
-    public static final String BANNER_AD_UNIT_ID = "ca-app-pub-6135301066898637/2308400800"; 
+    public static final String INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-6135301066898637/8242553065";
+    public static final String REWARDED_AD_UNIT_ID = "ca-app-pub-6135301066898637/8811343368";
+    public static final String BANNER_AD_UNIT_ID = "ca-app-pub-6135301066898637/8078901533"; 
 
     // ============================================================
     // المتغيرات العامة
