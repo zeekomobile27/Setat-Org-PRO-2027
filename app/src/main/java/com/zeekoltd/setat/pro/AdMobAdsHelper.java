@@ -43,6 +43,11 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.lang.ref.WeakReference;
 
@@ -110,6 +115,14 @@ public class AdMobAdsHelper {
     private Dialog currentAdDialog = null;
     private OnRewardEarnedListener pendingRewardListener;
 
+    // Remote rewarded-ad switch. Ads stay enabled by default to preserve the
+    // existing behavior until Firebase returns an explicit setting.
+    private static final String PREFS_AD_CONTROL = "remote_ad_control";
+    private static final String PREF_ADS_ENABLED = "ads_enabled";
+    private volatile boolean adsEnabled = true;
+    private DatabaseReference adsEnabledRef;
+    private ValueEventListener adsEnabledListener;
+
     // 🚀 متغير البانر
     private AdView mBannerAdView;
 
@@ -138,6 +151,40 @@ public class AdMobAdsHelper {
         this.activityRef = new WeakReference<>(activity);
         this.density = activity.getResources().getDisplayMetrics().density;
         this.handler = new Handler(Looper.getMainLooper());
+        initializeRemoteAdsControl(activity);
+    }
+
+    private void initializeRemoteAdsControl(Activity activity) {
+        adsEnabled = activity.getSharedPreferences(PREFS_AD_CONTROL, Context.MODE_PRIVATE)
+                .getBoolean(PREF_ADS_ENABLED, true);
+        try {
+            adsEnabledRef = FirebaseDatabase.getInstance()
+                    .getReference("app_settings")
+                    .child(PREF_ADS_ENABLED);
+            adsEnabledListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    // An absent setting keeps the legacy behavior (ads enabled).
+                    Object remoteValue = snapshot.getValue();
+                    boolean enabled = !(remoteValue instanceof Boolean) || (Boolean) remoteValue;
+                    adsEnabled = enabled;
+                    Activity currentActivity = getActivity();
+                    if (currentActivity != null) {
+                        currentActivity.getSharedPreferences(PREFS_AD_CONTROL, Context.MODE_PRIVATE)
+                                .edit().putBoolean(PREF_ADS_ENABLED, enabled).apply();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // Keep the last cached setting; a missing/unavailable value
+                    // must not unexpectedly change the current ad flow.
+                }
+            };
+            adsEnabledRef.addValueEventListener(adsEnabledListener);
+        } catch (Exception ignored) {
+            // Firebase setup/read failures preserve the current cached/default state.
+        }
     }
 
     private String tr(String arabicText, String englishText) {
@@ -527,6 +574,13 @@ public class AdMobAdsHelper {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
 
+        // When disabled remotely, skip the ad dialog and continue through the
+        // same caller callback used after a successful reward.
+        if (!adsEnabled) {
+            if (rewardListener != null) rewardListener.onRewardEarned(url);
+            return;
+        }
+
         isShowingAdDialog = true;
         pendingUrlAfterAd = url;
         this.pendingRewardListener = rewardListener;
@@ -785,6 +839,10 @@ public class AdMobAdsHelper {
     public void onDestroy() { dismissAdDialog(); }
 
     private void destroyAll() {
+        if (adsEnabledRef != null && adsEnabledListener != null) {
+            adsEnabledRef.removeEventListener(adsEnabledListener);
+            adsEnabledListener = null;
+        }
         destroyBanner(); 
         mInterstitialAd = null; isInterstitialLoaded = false; isInterstitialLoading = false;
         mRewardedAd = null; isRewardLoaded = false; isRewardedLoading = false; pendingRewardListener = null; 
