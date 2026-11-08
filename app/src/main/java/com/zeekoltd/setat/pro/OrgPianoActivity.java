@@ -48,6 +48,12 @@ import java.util.LinkedList;
 
 public class OrgPianoActivity extends AppCompatActivity {
 
+    // Track the piano screen and its asynchronous sample loads together. The native
+    // engine must stay alive until every worker has finished calling JNI.
+    private static final Object AUDIO_LIFECYCLE_LOCK = new Object();
+    private static int activePianoActivities = 0;
+    private static int pendingAudioLoadBatches = 0;
+
     public String currentLang = "ar";
     
     public NativeAudioEngine audioEngine;
@@ -114,6 +120,9 @@ public class OrgPianoActivity extends AppCompatActivity {
     private Handler eqHandler = new Handler(Looper.getMainLooper());
     private Runnable eqRunnable;
 
+    private final Handler audioInitHandler = new Handler(Looper.getMainLooper());
+    private Runnable audioInitRunnable;
+
     private Handler uiSyncHandler = new Handler(Looper.getMainLooper());
     private Runnable uiSyncRunnable = new Runnable() {
         @Override
@@ -147,14 +156,47 @@ public class OrgPianoActivity extends AppCompatActivity {
         if (audioEngine != null) {
             for (int i = 0; i < 24; i++) audioEngine.releasePoly(i);
             audioEngine.releaseMono();
+            audioEngine.stopRhythm();
         }
-        startActivity(new Intent(OrgPianoActivity.this, MainActivity.class));
+        // MainActivity is already below this screen in the task stack.
         finish();
+    }
+
+    private static void registerPianoActivity() {
+        synchronized (AUDIO_LIFECYCLE_LOCK) {
+            activePianoActivities++;
+        }
+    }
+
+    private static void finishAudioLoad(NativeAudioEngine engine) {
+        synchronized (AUDIO_LIFECYCLE_LOCK) {
+            if (pendingAudioLoadBatches > 0) pendingAudioLoadBatches--;
+            destroyAudioEngineIfIdle(engine);
+        }
+    }
+
+    private static void destroyAudioEngineIfIdle(NativeAudioEngine engine) {
+        if (activePianoActivities == 0 && pendingAudioLoadBatches == 0 && engine != null) {
+            engine.destroy();
+        }
+    }
+
+    private void loadAudioSetTracked(NativeAudioEngine engine, String s1, String s2,
+                                    String r1, String r2, boolean preferPackaged,
+                                    Runnable onLoaded) {
+        synchronized (AUDIO_LIFECYCLE_LOCK) {
+            pendingAudioLoadBatches++;
+        }
+        engine.loadFullSetAsync(this, s1, s2, r1, r2, preferPackaged, () -> {
+            finishAudioLoad(engine);
+            if (onLoaded != null) onLoaded.run();
+        });
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        registerPianoActivity();
         applyLanguage();
         applyPianoOrientationForCurrentWindow();
         EdgeToEdgeHelper.enable(getWindow());
@@ -246,11 +288,13 @@ public class OrgPianoActivity extends AppCompatActivity {
         super.onDestroy();
         uiSyncHandler.removeCallbacksAndMessages(null);
         eqHandler.removeCallbacksAndMessages(null);
+        audioInitHandler.removeCallbacksAndMessages(null);
         if (pianoView != null) {
             pianoView.clearAllTouches();
         }
-        if (audioEngine != null) {
-            audioEngine.destroy();
+        synchronized (AUDIO_LIFECYCLE_LOCK) {
+            if (activePianoActivities > 0) activePianoActivities--;
+            destroyAudioEngineIfIdle(audioEngine);
             audioEngine = null;
         }
         if (adMobAdsHelper != null) {
@@ -527,8 +571,10 @@ public class OrgPianoActivity extends AppCompatActivity {
         String r2 = activeSetIsDefault ? "salo" : resolveExternalSamplePrefix("rhythm2", "_a.ogg", 1, externalRhythmFallback());
         
         showLoading(tr("جاري قراءة الأصوات وتركيب السيت...", "Reading sounds and installing set..."));
-        audioEngine.loadFullSetAsync(this, s1, s2, r1, r2, activeSetIsDefault, () -> {
-            if (!audioEngine.isAudioReady()) {
+        NativeAudioEngine loadingEngine = audioEngine;
+        loadAudioSetTracked(loadingEngine, s1, s2, r1, r2, activeSetIsDefault, () -> {
+            if (isFinishing() || isDestroyed() || audioEngine != loadingEngine) return;
+            if (!loadingEngine.isAudioReady()) {
                 engineReady = false;
                 if (pianoView != null) pianoView.setTouchEnabled(false);
                 hideLoading();
@@ -554,11 +600,14 @@ public class OrgPianoActivity extends AppCompatActivity {
 
         SetInstaller.installFromZip(zipFile, setsFolderPath, currentLang, new SetInstaller.InstallListener() {
             @Override
-            public void onProgress(String message) { showLoading(message); }
+            public void onProgress(String message) {
+                if (!isFinishing() && !isDestroyed()) showLoading(message);
+            }
 
             @Override
             public void onSuccess(String soundPrefix, String rhythmPrefix) {
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     activeSetIsDefault = false;
                     activeExternalSoundPrefix = soundPrefix;
                     activeExternalRhythmPrefix = rhythmPrefix;
@@ -569,6 +618,7 @@ public class OrgPianoActivity extends AppCompatActivity {
             @Override
             public void onError(String error) {
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     hideLoading();
                     engineReady = true;
                     Toast.makeText(OrgPianoActivity.this, error, Toast.LENGTH_SHORT).show();
@@ -596,9 +646,13 @@ public class OrgPianoActivity extends AppCompatActivity {
                 out.close();
                 
                 // بعد نسخ الملف بأمان، نرسله إلى نظام التركيب القديم الخاص بك دون أي تعديل عليه
-                runOnUiThread(() -> handleSelectedSetZipFromFile(tempFile));
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    handleSelectedSetZipFromFile(tempFile);
+                });
             } catch (Exception e) {
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     hideLoading();
                     engineReady = true;
                     Toast.makeText(OrgPianoActivity.this, tr("حدث خطأ أثناء قراءة الملف!", "Error reading file!"), Toast.LENGTH_SHORT).show();
@@ -623,11 +677,14 @@ public class OrgPianoActivity extends AppCompatActivity {
 
         SetInstaller.downloadAndInstall(fileUrl, setName, setsFolderPath, currentLang, new SetInstaller.InstallListener() {
             @Override
-            public void onProgress(String message) { showLoading(message); }
+            public void onProgress(String message) {
+                if (!isFinishing() && !isDestroyed()) showLoading(message);
+            }
 
             @Override
             public void onSuccess(String soundPrefix, String rhythmPrefix) {
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     activeSetIsDefault = false;
                     activeExternalSoundPrefix = soundPrefix;
                     activeExternalRhythmPrefix = rhythmPrefix;
@@ -638,6 +695,7 @@ public class OrgPianoActivity extends AppCompatActivity {
             @Override
             public void onError(String error) {
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     hideLoading();
                     engineReady = true;
                     Toast.makeText(OrgPianoActivity.this, error, Toast.LENGTH_LONG).show();
@@ -665,6 +723,7 @@ public class OrgPianoActivity extends AppCompatActivity {
             @Override
             public void onSuccess(String soundPrefix, String rhythmPrefix) {
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     activeSetIsDefault = true;
                     activeExternalSoundPrefix = null;
                     activeExternalRhythmPrefix = null;
@@ -675,6 +734,7 @@ public class OrgPianoActivity extends AppCompatActivity {
             @Override
             public void onError(String error) {
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     engineReady = true;
                     hideLoading();
                     Toast.makeText(OrgPianoActivity.this, error, Toast.LENGTH_SHORT).show();
@@ -1173,6 +1233,18 @@ public class OrgPianoActivity extends AppCompatActivity {
     }
 
     private void initNativeAudioEngine() {
+        synchronized (AUDIO_LIFECYCLE_LOCK) {
+            if (pendingAudioLoadBatches > 0) {
+                showLoading(tr("جاري إنهاء تحميل الصوت السابق...", "Finishing previous audio load..."));
+                if (audioInitRunnable == null) {
+                    audioInitRunnable = this::initNativeAudioEngine;
+                }
+                audioInitHandler.removeCallbacks(audioInitRunnable);
+                audioInitHandler.postDelayed(audioInitRunnable, 100);
+                return;
+            }
+        }
+
         audioEngine = NativeAudioEngine.getInstance(); 
         
         showLoading(tr("يرجى الانتظار...", "Please Wait..."));
@@ -1183,8 +1255,10 @@ public class OrgPianoActivity extends AppCompatActivity {
         String r1 = activeSetIsDefault ? "dj27" : getDisplayNameFromJson("rhythm1", externalRhythmFallback());
         String r2 = activeSetIsDefault ? "salo" : getDisplayNameFromJson("rhythm2", externalRhythmFallback());
         
-        audioEngine.loadFullSetAsync(this, s1, s2, r1, r2, activeSetIsDefault, () -> {
-            if (!audioEngine.isAudioReady()) {
+        NativeAudioEngine loadingEngine = audioEngine;
+        loadAudioSetTracked(loadingEngine, s1, s2, r1, r2, activeSetIsDefault, () -> {
+            if (isFinishing() || isDestroyed() || audioEngine != loadingEngine) return;
+            if (!loadingEngine.isAudioReady()) {
                 engineReady = false;
                 if (pianoView != null) pianoView.setTouchEnabled(false);
                 hideLoading();

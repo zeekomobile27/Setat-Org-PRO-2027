@@ -112,7 +112,6 @@ public class SearchActivity extends AppCompatActivity {
             exoPlayer.release();
             exoPlayer = null;
         }
-        startActivity(new Intent(SearchActivity.this, MainActivity.class));
         finish();
     }
 

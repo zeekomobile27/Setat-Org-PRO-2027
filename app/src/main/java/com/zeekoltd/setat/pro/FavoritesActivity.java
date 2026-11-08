@@ -121,7 +121,6 @@ public class FavoritesActivity extends AppCompatActivity {
             exoPlayer = null;
         }
         // تم حذف الإعلان البيني من زر الرجوع حفاظاً على سياسات جوجل 2026 🚨
-        startActivity(new Intent(FavoritesActivity.this, MainActivity.class));
         finish();
     }
 

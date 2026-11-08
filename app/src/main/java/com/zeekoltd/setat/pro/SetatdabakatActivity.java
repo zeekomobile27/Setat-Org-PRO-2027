@@ -123,7 +123,6 @@ public class SetatdabakatActivity extends AppCompatActivity {
             exoPlayer = null;
         }
         // تم حذف الإعلان البيني من زر الرجوع حفاظاً على سياسات جوجل 2026 🚨
-        startActivity(new Intent(SetatdabakatActivity.this, MainActivity.class));
         finish();
     }
 

@@ -122,7 +122,6 @@ public class NewActivity extends AppCompatActivity {
             exoPlayer.release();
             exoPlayer = null;
         }
-        startActivity(new Intent(NewActivity.this, MainActivity.class));
         finish();
     }
 

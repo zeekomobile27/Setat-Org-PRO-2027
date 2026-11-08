@@ -123,7 +123,6 @@ public class DzirActivity extends AppCompatActivity {
             exoPlayer = null;
         }
         // تم حذف الإعلان من زر الرجوع حفاظاً على سياسات جوجل 2026 🚨
-        startActivity(new Intent(DzirActivity.this, MainActivity.class));
         finish();
     }
 

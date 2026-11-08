@@ -343,7 +343,11 @@ public class AlertActivity extends AppCompatActivity {
                     NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
                     boolean isConnected = activeNetworkInfo != null && activeNetworkInfo.isConnected();
                     if (!isConnected) {
-                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        if (isTaskRoot()) {
+                            Intent homeIntent = new Intent(AlertActivity.this, MainActivity.class);
+                            homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            startActivity(homeIntent);
+                        }
                         finish();
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }

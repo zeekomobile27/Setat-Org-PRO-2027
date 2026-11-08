@@ -100,7 +100,6 @@ public class Them2026Activity extends AppCompatActivity {
 
     private void goBackToMain() {
         // تم حذف الإعلان من زر الرجوع حفاظاً على سياسات جوجل 2026 🚨
-        startActivity(new Intent(Them2026Activity.this, MainActivity.class));
         finish();
     }
 

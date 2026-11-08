@@ -118,7 +118,6 @@ public class PopularActivity extends AppCompatActivity {
             exoPlayer.release();
             exoPlayer = null;
         }
-        startActivity(new Intent(PopularActivity.this, MainActivity.class));
         finish();
     }
 
