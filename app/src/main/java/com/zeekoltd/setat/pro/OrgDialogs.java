@@ -712,7 +712,7 @@ public class OrgDialogs {
                     final String finalTitle = title;
                     btnDownload.setOnClickListener(v -> {
                         dialog.dismiss();
-                        activity.requestRewardedSetDownload(finalUrl, finalTitle);
+                        activity.requestSetDownloadWithAd(finalUrl, finalTitle);
                     });
                     itemCard.addView(btnDownload);
 

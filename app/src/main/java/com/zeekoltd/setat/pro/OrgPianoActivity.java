@@ -646,12 +646,12 @@ public class OrgPianoActivity extends AppCompatActivity {
         });
     }
 
-    public void requestRewardedSetDownload(String fileUrl, String setName) {
-        if (adMobAdsHelper == null) {
-            adMobAdsHelper = AdMobAdsHelper.getInstance(this);
-            adMobAdsHelper.setCurrentLanguage(currentLang);
+    public void requestSetDownloadWithAd(String fileUrl, String setName) {
+        if (adMobAdsHelper == null || fileUrl == null || fileUrl.trim().isEmpty()) {
+            Toast.makeText(this, tr("تعذر تحميل السيت حالياً.", "The set cannot be downloaded right now."), Toast.LENGTH_LONG).show();
+            return;
         }
-        adMobAdsHelper.showAdDialog(fileUrl, rewardedUrl -> downloadAndInstallSet(rewardedUrl, setName));
+        adMobAdsHelper.showAdDialog(fileUrl, pendingUrl -> downloadAndInstallSet(pendingUrl, setName));
     }
 
     private void loadDefaultSet() {
