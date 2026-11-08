@@ -197,6 +197,7 @@ public class SearchActivity extends AppCompatActivity {
         btnClearSearch = findViewById(R.id.btnClearSearch);
         pbLoadingGlobal = findViewById(R.id.pbLoadingGlobal);
         tvNoResults = findViewById(R.id.tvNoResults);
+        tvNoResults.setText(tr("لا توجد نتائج مطابقة لبحثك 🔍", "No matching results found 🔍"));
         
         etSearchInput.setHint(tr("ابحث عن إسم السيت أو الوصف...", "Search for set name or description..."));
         
@@ -533,7 +534,7 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         class SetViewHolder extends RecyclerView.ViewHolder {
-            TextView tvSetTitle, tvSetDescription, tvLikesCount, tvPlayStatus;
+            TextView tvSetTitle, tvSetDescription, tvLikesCount, tvPlayStatus, tvPreviewLabel, tvDownloadLabel;
             ImageView btnLike, btnFavorite, btnPlayPause, imgDevIcon;
             View btnDownloadSet;
             ProgressBar audioLoadingBar;
@@ -552,10 +553,14 @@ public class SearchActivity extends AppCompatActivity {
                 audioLoadingBar = itemView.findViewById(R.id.audioLoadingBar);
                 centerMovingBorder = itemView.findViewById(R.id.centerMovingBorder);
                 tvPlayStatus = itemView.findViewById(R.id.tvPlayStatus);
+                tvPreviewLabel = itemView.findViewById(R.id.tvPreviewLabel);
+                tvDownloadLabel = itemView.findViewById(R.id.tvDownloadLabel);
                 imgDevIcon = itemView.findViewById(R.id.imgDevIcon);
                 smoothWave = itemView.findViewById(R.id.smoothWave);
 
                 if(tvPlayStatus != null) tvPlayStatus.setText(tr("تشغيل", "Play"));
+                if(tvPreviewLabel != null) tvPreviewLabel.setText(tr("معاينة السيت", "Set preview"));
+                if(tvDownloadLabel != null) tvDownloadLabel.setText(tr("تحميل السيت", "Download set"));
 
                 FirebaseDatabase.getInstance().getReference("user_avatars").child(DEV_UID).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

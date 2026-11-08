@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.*;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -103,6 +104,10 @@ public class MainActivity extends AppCompatActivity {
 
     public ActivityResultLauncher<String> pickImageLauncher; 
     private ActivityResultLauncher<String> requestPermissionLauncher;
+    private ActivityResultLauncher<IntentSenderRequest> playUpdateLauncher;
+    private PlayStoreExperience playStoreExperience;
+    private final Handler playStoreHandler = new Handler(Looper.getMainLooper());
+    private Runnable reviewPromptRunnable;
     
     public Dialog googleSignInLoadingDialog = null; 
     private Dialog pianoLoadingDialog = null;
@@ -121,9 +126,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main);
         
         initActivityResultLaunchers();
+        playStoreExperience = new PlayStoreExperience(this, playUpdateLauncher);
         initializeLogic();
         checkAndShowWelcomeCelebration();
         checkAndShowSmartPopupDialog(); 
+        playStoreExperience.onNewSession();
     }
 
     @Override
@@ -421,6 +428,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initActivityResultLaunchers() {
+        playUpdateLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartIntentSenderForResult(),
+            result -> {
+                if (playStoreExperience != null) playStoreExperience.onUpdateFlowResult();
+            }
+        );
         pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> { if (uri != null) launchUCrop(uri); }
@@ -1382,8 +1395,24 @@ public class MainActivity extends AppCompatActivity {
             refreshLanguageSmoothly();
         }
         if(adMobAdsHelper != null) adMobAdsHelper.onResume();
+        if (playStoreExperience != null) {
+            playStoreExperience.checkForRequiredUpdate();
+            scheduleEligibleReviewRequest();
+        }
         // Initial account UI is loaded in initializeLogic(); auth changes are handled
         // by authStateListener, avoiding duplicate image/database work on every resume.
+    }
+
+    private void scheduleEligibleReviewRequest() {
+        if (reviewPromptRunnable != null) playStoreHandler.removeCallbacks(reviewPromptRunnable);
+        reviewPromptRunnable = () -> {
+            if (isFinishing() || isDestroyed() || playStoreExperience == null) return;
+            if (currentSmartDialog != null && currentSmartDialog.isShowing()) return;
+            if (!playStoreExperience.isUpdateFlowActive()) {
+                playStoreExperience.requestInAppReviewIfEligible();
+            }
+        };
+        playStoreHandler.postDelayed(reviewPromptRunnable, 20000);
     }
     
     @Override 
@@ -1401,6 +1430,7 @@ public class MainActivity extends AppCompatActivity {
     @Override 
     protected void onDestroy() { 
         super.onDestroy();
+        if (reviewPromptRunnable != null) playStoreHandler.removeCallbacks(reviewPromptRunnable);
         hideGoogleAuthBlocker();
         dismissGoogleLoadingDialog();
         if (mAuth != null && authStateListener != null) {
