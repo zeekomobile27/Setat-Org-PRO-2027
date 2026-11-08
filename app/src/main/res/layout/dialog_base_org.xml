@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:background="@drawable/bg_dialog_gradient"
+        android:background="@drawable/bg_popup_vntrocreen_org"
         android:clipToOutline="true"
         android:paddingTop="30dp"
         android:paddingBottom="15dp"
