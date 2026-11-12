@@ -7,12 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.text.InputType;
-import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -628,8 +626,7 @@ public class DialogHelper {
                     if (base64 != null && !base64.isEmpty()) {
                         executorService.execute(() -> {
                             try {
-                                byte[] decoded = Base64.decode(base64, Base64.NO_WRAP);
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                                Bitmap bitmap = BitmapDecodeUtils.decodeBase64Sampled(base64, 256);
                                 if (bitmap != null) {
                                     File localFile = new File(context.getFilesDir(), "avatar_" + uid + ".jpg");
                                     FileOutputStream fos = new FileOutputStream(localFile);

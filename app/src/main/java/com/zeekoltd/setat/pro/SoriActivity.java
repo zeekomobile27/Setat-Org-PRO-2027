@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -964,20 +963,7 @@ public class SoriActivity extends AppCompatActivity {
                 if(tvDownloadLabel != null) tvDownloadLabel.setText(tr("تحميل السيت", "Download Set"));
                 if(tvPlayStatus != null) tvPlayStatus.setText(tr("تشغيل", "Play"));
 
-                FirebaseDatabase.getInstance().getReference("user_avatars").child(DEV_UID).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            try {
-                                String base64 = snapshot.getValue(String.class);
-                                byte[] decoded = android.util.Base64.decode(base64, android.util.Base64.DEFAULT);
-                                Bitmap bmp = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
-                                imgDevIcon.setImageBitmap(bmp);
-                            } catch (Exception e) { imgDevIcon.setImageResource(R.drawable.ic_default_user); }
-                        }
-                    }
-                    @Override public void onCancelled(@NonNull DatabaseError error) {}
-                });
+                DeveloperAvatarLoader.load(imgDevIcon);
 
                 FrameLayout blurCenter = itemView.findViewById(R.id.blurCenterWindow);
                 FrameLayout blurDev = itemView.findViewById(R.id.blurDevIcon);

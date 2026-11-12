@@ -6,14 +6,12 @@ import android.content.Intent;
 import android.content.ClipboardManager;
 import android.content.ClipData;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -539,8 +537,7 @@ public class SupportChatActivity extends AppCompatActivity {
                     if (base64 != null && !base64.isEmpty()) {
                         executorService.execute(() -> {
                             try {
-                                byte[] decoded = Base64.decode(base64, Base64.NO_WRAP);
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                                Bitmap bitmap = BitmapDecodeUtils.decodeBase64Sampled(base64, 256);
                                 if (bitmap != null) {
                                     File localFile = new File(getFilesDir(), "avatar_" + uid + ".jpg");
                                     FileOutputStream fos = new FileOutputStream(localFile);
@@ -860,8 +857,7 @@ public class SupportChatActivity extends AppCompatActivity {
                             if (base64 != null && !base64.isEmpty()) {
                                 executorService.execute(() -> {
                                     try {
-                                        byte[] decoded = Base64.decode(base64, Base64.NO_WRAP);
-                                        Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
+                                                Bitmap bitmap = BitmapDecodeUtils.decodeBase64Sampled(base64, 256);
                                         if (bitmap != null) {
                                             File file = new File(getFilesDir(), "avatar_" + uid + ".jpg");
                                             FileOutputStream fos = new FileOutputStream(file);

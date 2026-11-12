@@ -2,11 +2,8 @@ package com.zeekoltd.setat.pro;
 
 import android.content.Intent;
 import android.widget.FrameLayout;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -179,19 +176,9 @@ public class AdminChatsListActivity extends AppCompatActivity {
                 holder.dotUnread.setVisibility(View.GONE);
             }
 
-            if (room.userProfileImage != null && !room.userProfileImage.isEmpty()) {
-                try {
-                    byte[] decoded = Base64.decode(room.userProfileImage, Base64.DEFAULT);
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
-                    Glide.with(AdminChatsListActivity.this).load(bitmap).circleCrop().into(holder.imgUserAvatar);
-                } catch (Exception e) {
-                    holder.imgUserAvatar.setImageResource(R.drawable.ic_default_user);
-                    holder.imgUserAvatar.clearColorFilter();
-                }
-            } else {
-                holder.imgUserAvatar.setImageResource(R.drawable.ic_default_user);
-                holder.imgUserAvatar.clearColorFilter();
-            }
+            SafeBase64ImageLoader.load(holder.imgUserAvatar, "support-room-avatar:" + room.uid,
+                    room.userProfileImage, R.drawable.ic_default_user);
+            holder.imgUserAvatar.clearColorFilter();
 
             holder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(AdminChatsListActivity.this, SupportChatActivity.class);

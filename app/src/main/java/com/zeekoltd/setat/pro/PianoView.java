@@ -19,9 +19,9 @@ import java.util.Map;
 public class PianoView extends View {
 
     private Paint strokePaint, textGreenPaint, textRedPaint, dotPaint;
+    private Paint bitmapPaint, whiteFallbackPaint, blackFallbackPaint;
     
     private Bitmap whiteKeyNormal, whiteKeyPressed, blackKeyNormal, blackKeyPressed;
-    private Bitmap scaledWhiteNormal, scaledWhitePressed, scaledBlackNormal, scaledBlackPressed;
     
     private List<Key> whiteKeys = new ArrayList<>();
     private List<Key> blackKeys = new ArrayList<>();
@@ -68,10 +68,16 @@ public class PianoView extends View {
     }
 
     private void initPaintsAndBitmaps() {
-        whiteKeyNormal = BitmapFactory.decodeResource(getResources(), R.drawable.zeeko10);
-        whiteKeyPressed = BitmapFactory.decodeResource(getResources(), R.drawable.zeeko11);
-        blackKeyNormal = BitmapFactory.decodeResource(getResources(), R.drawable.zeeko12);
-        blackKeyPressed = BitmapFactory.decodeResource(getResources(), R.drawable.zeeko13);
+        whiteKeyNormal = decodeKeyBitmap(R.drawable.zeeko10, Bitmap.Config.RGB_565);
+        whiteKeyPressed = decodeKeyBitmap(R.drawable.zeeko11, Bitmap.Config.RGB_565);
+        blackKeyNormal = decodeKeyBitmap(R.drawable.zeeko12, Bitmap.Config.ARGB_8888);
+        blackKeyPressed = decodeKeyBitmap(R.drawable.zeeko13, Bitmap.Config.ARGB_8888);
+
+        bitmapPaint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
+        whiteFallbackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        whiteFallbackPaint.setColor(Color.WHITE);
+        blackFallbackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        blackFallbackPaint.setColor(Color.BLACK);
 
         strokePaint = new Paint();
         strokePaint.setColor(Color.parseColor("#1A1A1A"));
@@ -93,6 +99,20 @@ public class PianoView extends View {
         dotPaint.setStyle(Paint.Style.FILL);
     }
 
+    private Bitmap decodeKeyBitmap(int resourceId, Bitmap.Config config) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        // The source key artwork is 451–712 x 3264 px, far larger than its on-screen
+        // key. Sampling by four preserves detail while avoiding four full-size bitmaps.
+        options.inSampleSize = 4;
+        options.inScaled = false;
+        options.inPreferredConfig = config;
+        try {
+            return BitmapFactory.decodeResource(getResources(), resourceId, options);
+        } catch (OutOfMemoryError ignored) {
+            return null;
+        }
+    }
+
     @Override
     public boolean hasOverlappingRendering() {
         return false;
@@ -110,17 +130,7 @@ public class PianoView extends View {
 
         float whiteKeyWidth = (float) width / WHITE_KEYS_COUNT;
         float blackKeyWidth = whiteKeyWidth * 0.90f; 
-        float blackKeyHeight = height * 0.50f; 
-
-        if (width > 0 && height > 0) {
-            int wWhite = (int) Math.ceil(whiteKeyWidth);
-            int wBlack = (int) Math.ceil(blackKeyWidth);
-            
-            scaledWhiteNormal = Bitmap.createScaledBitmap(whiteKeyNormal, wWhite, height, true);
-            scaledWhitePressed = Bitmap.createScaledBitmap(whiteKeyPressed, wWhite, height, true);
-            scaledBlackNormal = Bitmap.createScaledBitmap(blackKeyNormal, wBlack, (int) blackKeyHeight, true);
-            scaledBlackPressed = Bitmap.createScaledBitmap(blackKeyPressed, wBlack, (int) blackKeyHeight, true);
-        }
+        float blackKeyHeight = height * 0.50f;
 
         int noteIndex = 0; 
         int whiteNoteLabelIndex = 0;
@@ -153,9 +163,11 @@ public class PianoView extends View {
         super.onDraw(canvas);
 
         for (Key key : whiteKeys) {
-            Bitmap bmp = (key.pressedCount > 0) ? scaledWhitePressed : scaledWhiteNormal;
+            Bitmap bmp = (key.pressedCount > 0) ? whiteKeyPressed : whiteKeyNormal;
             if (bmp != null) {
-                canvas.drawBitmap(bmp, key.rect.left, key.rect.top, null);
+                canvas.drawBitmap(bmp, null, key.rect, bitmapPaint);
+            } else {
+                canvas.drawRect(key.rect, whiteFallbackPaint);
             }
             
             canvas.drawRect(key.rect, strokePaint);
@@ -169,9 +181,11 @@ public class PianoView extends View {
         }
 
         for (Key key : blackKeys) {
-            Bitmap bmp = (key.pressedCount > 0) ? scaledBlackPressed : scaledBlackNormal;
+            Bitmap bmp = (key.pressedCount > 0) ? blackKeyPressed : blackKeyNormal;
             if (bmp != null) {
-                canvas.drawBitmap(bmp, key.rect.left, key.rect.top, null);
+                canvas.drawBitmap(bmp, null, key.rect, bitmapPaint);
+            } else {
+                canvas.drawRect(key.rect, blackFallbackPaint);
             }
             
             if (detunedNotes[key.noteIndex % 12]) {
