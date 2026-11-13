@@ -1198,13 +1198,13 @@ public class MainActivity extends AppCompatActivity {
         View btnHowToDownloadClick = findViewById(R.id.btnHowToDownloadClick);
         if (btnHowToDownloadClick != null) {
             btnHowToDownloadClick.setOnTouchListener(getTouchListener());
-            btnHowToDownloadClick.setOnClickListener(v -> openUrlInBrowser("https://youtube.com/shorts/HhbkHfp3Rjw?feature=share"));
+            btnHowToDownloadClick.setOnClickListener(v -> openUrlInBrowser("https://youtube.com/shorts/VErvTNSe6CU?feature=share"));
         }
         
         View btnHowToAddClick = findViewById(R.id.btnHowToAddClick);
         if (btnHowToAddClick != null) {
             btnHowToAddClick.setOnTouchListener(getTouchListener());
-            btnHowToAddClick.setOnClickListener(v -> openUrlInBrowser("https://youtu.be/zzMtxeyvoT0"));
+            btnHowToAddClick.setOnClickListener(v -> openUrlInBrowser("https://youtu.be/esckr4PCDiw"));
         }
 
         View btnHero = findViewById(R.id.btnNewSetExclusive);
