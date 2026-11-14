@@ -76,7 +76,7 @@ public class FavoritesActivity extends AppCompatActivity {
     
     private String currentLang = "ar";
     private SharedPreferences langPrefs;
-    private AdMobAdsHelper adMobAdsHelper;
+    private YandexAdsHelper yandexAdsHelper;
     
     private DatabaseReference favRef;
     private DatabaseReference likesRef;
@@ -158,7 +158,7 @@ public class FavoritesActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (adMobAdsHelper != null && adMobAdsHelper.isShowingAdDialog()) return;
+                if (yandexAdsHelper != null && yandexAdsHelper.isShowingAdDialog()) return;
                 goBackToMain();
             }
         });
@@ -216,8 +216,8 @@ public class FavoritesActivity extends AppCompatActivity {
             ViewCompat.requestApplyInsets(appRootView);
         }
         
-        adMobAdsHelper = AdMobAdsHelper.getInstance(this);
-        adMobAdsHelper.setCurrentLanguage(currentLang);
+        yandexAdsHelper = YandexAdsHelper.getInstance(this);
+        yandexAdsHelper.setCurrentLanguage(currentLang);
         
         setsList = new ArrayList<>();
         viewPagerSets = findViewById(R.id.viewPagerSets);
@@ -268,7 +268,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
         loadSetsFromCache();
 
-        adMobAdsHelper.initialize(() -> runOnUiThread(() -> {}));
+        yandexAdsHelper.initialize(() -> runOnUiThread(() -> {}));
     }
 
     private void setupGlobalFrameLayouts() {}
@@ -709,7 +709,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
             holder.btnDownloadSet.setOnClickListener(v -> {
                 if (exoPlayer != null && exoPlayer.isPlaying()) toggleAudioPlayback(position);
-                adMobAdsHelper.showAdDialog(set.download_url, pendingUrl -> adMobAdsHelper.openDownloadUrl(pendingUrl));
+                yandexAdsHelper.showAdDialog(set.download_url, pendingUrl -> yandexAdsHelper.openDownloadUrl(pendingUrl));
             });
 
             holder.btnPlayPause.setOnClickListener(v -> toggleAudioPlayback(position));

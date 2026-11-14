@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private String currentLang = "ar";
     private View mainContentView;
     
-    private AdMobAdsHelper adMobAdsHelper;
+    private YandexAdsHelper yandexAdsHelper;
     private static int adSkipCounter = 0;
 
     public FirebaseAuth mAuth; 
@@ -140,8 +140,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void refreshLanguageSmoothly() {
         applyLanguage();
-        if (adMobAdsHelper != null) {
-            adMobAdsHelper.setCurrentLanguage(currentLang);
+        if (yandexAdsHelper != null) {
+            yandexAdsHelper.setCurrentLanguage(currentLang);
         }
         int layoutDir = "en".equals(currentLang) ? View.LAYOUT_DIRECTION_LTR : View.LAYOUT_DIRECTION_RTL;
         getWindow().getDecorView().setLayoutDirection(layoutDir);
@@ -468,9 +468,9 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         
-        adMobAdsHelper = AdMobAdsHelper.getInstance(this);
-        adMobAdsHelper.setCurrentLanguage(currentLang);
-        adMobAdsHelper.initialize(() -> runOnUiThread(() -> adMobAdsHelper.loadInterstitialAdSilent()));
+        yandexAdsHelper = YandexAdsHelper.getInstance(this);
+        yandexAdsHelper.setCurrentLanguage(currentLang);
+        yandexAdsHelper.initialize(() -> runOnUiThread(() -> yandexAdsHelper.loadInterstitialAdSilent()));
         
         setupUI();
         setupFirebaseAndNetwork();
@@ -1330,20 +1330,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void navigateWithAd(Class<?> targetActivity) {
         Intent intent = new Intent(this, targetActivity);
-        if (adSkipCounter == 0 && adMobAdsHelper != null && adMobAdsHelper.isInterstitialReady()) {
-            adMobAdsHelper.showInterstitialAd(() -> {
+        if (adSkipCounter == 0 && yandexAdsHelper != null && yandexAdsHelper.isInterstitialReady()) {
+            yandexAdsHelper.showInterstitialAd(() -> {
                 adSkipCounter = 1; 
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                adMobAdsHelper.loadInterstitialAdSilent();
+                yandexAdsHelper.loadInterstitialAdSilent();
             });
         } else {
             adSkipCounter++;
             if (adSkipCounter > 2) adSkipCounter = 0; 
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-            if (adMobAdsHelper != null && !adMobAdsHelper.isInterstitialReady()) {
-                adMobAdsHelper.loadInterstitialAdSilent();
+            if (yandexAdsHelper != null && !yandexAdsHelper.isInterstitialReady()) {
+                yandexAdsHelper.loadInterstitialAdSilent();
             }
         }
     }
@@ -1394,7 +1394,7 @@ public class MainActivity extends AppCompatActivity {
         if (!savedLang.equals(currentLang)) {
             refreshLanguageSmoothly();
         }
-        if(adMobAdsHelper != null) adMobAdsHelper.onResume();
+        if(yandexAdsHelper != null) yandexAdsHelper.onResume();
         if (playStoreExperience != null) {
             playStoreExperience.checkForRequiredUpdate();
             scheduleEligibleReviewRequest();
@@ -1436,7 +1436,7 @@ public class MainActivity extends AppCompatActivity {
         if (mAuth != null && authStateListener != null) {
             mAuth.removeAuthStateListener(authStateListener);
         }
-        if(adMobAdsHelper != null) adMobAdsHelper.onDestroy(); 
+        if(yandexAdsHelper != null) yandexAdsHelper.onDestroy(); 
         if(executorService != null) executorService.shutdown();
     }
     

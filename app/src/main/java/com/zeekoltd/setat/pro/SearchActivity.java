@@ -57,7 +57,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private String currentLang = "ar";
     private SharedPreferences langPrefs;
-    private AdMobAdsHelper adMobAdsHelper;
+    private YandexAdsHelper yandexAdsHelper;
 
     private DatabaseReference likesRef;
     private FirebaseAuth mAuth;
@@ -133,7 +133,7 @@ public class SearchActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (adMobAdsHelper != null && adMobAdsHelper.isShowingAdDialog()) return;
+                if (yandexAdsHelper != null && yandexAdsHelper.isShowingAdDialog()) return;
                 goBackToMain();
             }
         });
@@ -159,9 +159,9 @@ public class SearchActivity extends AppCompatActivity {
             ViewCompat.requestApplyInsets(appRootView);
         }
 
-        adMobAdsHelper = AdMobAdsHelper.getInstance(this);
-        adMobAdsHelper.setCurrentLanguage(currentLang);
-        adMobAdsHelper.initialize(() -> runOnUiThread(() -> adMobAdsHelper.loadInterstitialAdSilent()));
+        yandexAdsHelper = YandexAdsHelper.getInstance(this);
+        yandexAdsHelper.setCurrentLanguage(currentLang);
+        yandexAdsHelper.initialize(() -> runOnUiThread(() -> yandexAdsHelper.loadInterstitialAdSilent()));
 
         viewPagerSets = findViewById(R.id.viewPagerSets);
         viewPagerSets.setOrientation(ViewPager2.ORIENTATION_VERTICAL);
@@ -504,7 +504,7 @@ public class SearchActivity extends AppCompatActivity {
 
             holder.btnDownloadSet.setOnClickListener(v -> {
                 if (exoPlayer != null && exoPlayer.isPlaying()) toggleAudioPlayback(position);
-                adMobAdsHelper.showAdDialog(set.download_url, pendingUrl -> adMobAdsHelper.openDownloadUrl(pendingUrl));
+                yandexAdsHelper.showAdDialog(set.download_url, pendingUrl -> yandexAdsHelper.openDownloadUrl(pendingUrl));
             });
 
             holder.btnPlayPause.setOnClickListener(v -> toggleAudioPlayback(position));

@@ -8,8 +8,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-// استيراد Firebase فقط
+// Firebase and Yandex AppMetrica SDK imports
 import com.google.firebase.FirebaseApp;
+import io.appmetrica.analytics.AppMetrica;
+import io.appmetrica.analytics.AppMetricaConfig;
 
 public class MyApplication extends Application {
 
@@ -25,11 +27,12 @@ public class MyApplication extends Application {
         
         updateResources(this);
 
-        // 🌟 تهيئة Firebase فقط (آمن ويعمل في الخلفية) 🌟
         FirebaseApp.initializeApp(this);
-        
-        // 🚨 تم إزالة MobileAds.initialize من هنا للامتثال لسياسات GDPR 🚨
-        // تتم تهيئته من خلال AdMobAdsHelper بعد اكتمال تدفق موافقة UMP.
+
+        AppMetricaConfig metricaConfig = AppMetricaConfig.newConfigBuilder(
+                "c1c6c67b-db6a-48e8-942b-5fbe9a8692c7").build();
+        AppMetrica.activate(getApplicationContext(), metricaConfig);
+        AppMetrica.enableActivityAutoTracking(this);
 
         // مراقب دورة حياة الشاشات
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {

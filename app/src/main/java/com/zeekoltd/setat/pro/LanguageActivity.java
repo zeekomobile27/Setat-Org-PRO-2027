@@ -48,6 +48,7 @@ public class LanguageActivity extends AppCompatActivity {
     private static final String PREFS_LANG_KEY = "app_language";
     private static final String LANGUAGE_SELECTED_KEY = "language_selected";
     private static final String PRIVACY_ACCEPTED_KEY = "privacy_accepted";
+    private static final String YANDEX_ADS_CONSENT_KEY = "yandex_ads_consent";
     private String currentLang = "ar";
 
     private String tr(String arabicText, String englishText) {
@@ -128,21 +129,14 @@ public class LanguageActivity extends AppCompatActivity {
 
         if (isLanguageSelected && !savedLanguage.isEmpty()) {
             applyLanguage(savedLanguage);
-            if (isPrivacyAccepted) {
-                // استدعاء فحص موافقة جوجل قبل الانتقال
-                checkGoogleConsentAndProceed();
+            if (isPrivacyAccepted && prefs.contains(YANDEX_ADS_CONSENT_KEY)) {
+                startInternetCheckActivity();
             } else {
                 new Handler(Looper.getMainLooper()).postDelayed(this::showPrivacyPolicyDialog, 500);
             }
         } else {
             new Handler(Looper.getMainLooper()).postDelayed(this::showLanguageSelectionDialog, 500);
         }
-    }
-
-    // موافقة إعلانات Google تُدار مركزياً قبل تهيئة الإعلانات في AdMobAdsHelper.
-    // لا نربط عرض نموذج UMP بشاشة اللغة حتى يظهر أيضاً للمستخدمين الحاليين.
-    private void checkGoogleConsentAndProceed() {
-        startInternetCheckActivity();
     }
 
     // 🌟 تحويل نافذة اللغة للزجاج الموحد 🌟
@@ -268,7 +262,7 @@ public class LanguageActivity extends AppCompatActivity {
         TextView tvTitle = baseView.findViewById(R.id.tvDialogTitle);
         if (tvTitle != null) {
             tvTitle.setVisibility(View.VISIBLE);
-            tvTitle.setText(tr("سياسة الخصوصية", "Privacy Policy"));
+            tvTitle.setText(tr("خصوصية البيانات والإعلانات", "Data and ads privacy"));
         }
 
         LinearLayout dynamicContainer = baseView.findViewById(R.id.dialogDynamicContainer);
@@ -280,8 +274,8 @@ public class LanguageActivity extends AppCompatActivity {
             msgParams.setMargins(0, 0, 0, (int) (20 * density));
             messageView.setLayoutParams(msgParams);
             messageView.setText(tr(
-                    "مرحباً بك في الإصدار الاحترافي (سيتات أورج PRO). نلتزم بأعلى معايير الأمان لحماية بياناتك، يرجى قراءة سياسة الخصوصية والموافقة عليها للمتابعة.",
-                    "Welcome to the professional edition (Setat Org PRO). We are committed to the highest security standards to protect your data. Please read and agree to our privacy policy to continue."
+                    "يستخدم التطبيق ياندكس وشبكات إعلانية وسيطة لعرض الإعلانات. اختر ما إذا كنت توافق على معالجة بيانات الاستخدام ومعرّف الإعلان لأغراض الإعلانات. يمكنك قراءة سياسة الخصوصية، وسيظل التطبيق متاحاً عند الرفض.",
+                    "This app uses Yandex and mediated ad networks to show ads. Choose whether you consent to processing usage data and the advertising ID for advertising. You can read the privacy policy, and the app remains available if you decline."
             ));
             messageView.setTextColor(Color.WHITE);
             messageView.setTextSize(14);
@@ -308,17 +302,29 @@ public class LanguageActivity extends AppCompatActivity {
             View btnAgreeView = LayoutInflater.from(this).inflate(R.layout.item_dialog_button, dynamicContainer, false);
             TextView tvAgreeText = btnAgreeView.findViewById(R.id.tvButtonText);
             if (tvAgreeText != null) {
-                tvAgreeText.setText(tr("موافق", "Agree"));
+                tvAgreeText.setText(tr("موافقة على معالجة بيانات الإعلانات", "Allow ad data processing"));
                 tvAgreeText.setTextColor(Color.parseColor("#00FFFF"));
             }
             btnAgreeView.setOnClickListener(v -> {
                 editor.putBoolean(PRIVACY_ACCEPTED_KEY, true);
+                editor.putBoolean(YANDEX_ADS_CONSENT_KEY, true);
                 editor.apply();
                 privacyDialog.dismiss();
-                // استدعاء فحص موافقة جوجل بدلاً من الانتقال المباشر
-                checkGoogleConsentAndProceed();
+                startInternetCheckActivity();
             });
             dynamicContainer.addView(btnAgreeView);
+
+            View btnDeclineView = LayoutInflater.from(this).inflate(R.layout.item_dialog_button, dynamicContainer, false);
+            TextView tvDeclineText = btnDeclineView.findViewById(R.id.tvButtonText);
+            if (tvDeclineText != null) tvDeclineText.setText(tr("رفض معالجة بيانات الإعلانات والمتابعة", "Decline ad data processing and continue"));
+            btnDeclineView.setOnClickListener(v -> {
+                editor.putBoolean(PRIVACY_ACCEPTED_KEY, true);
+                editor.putBoolean(YANDEX_ADS_CONSENT_KEY, false);
+                editor.apply();
+                privacyDialog.dismiss();
+                startInternetCheckActivity();
+            });
+            dynamicContainer.addView(btnDeclineView);
         }
 
         privacyDialog.setCancelable(false);

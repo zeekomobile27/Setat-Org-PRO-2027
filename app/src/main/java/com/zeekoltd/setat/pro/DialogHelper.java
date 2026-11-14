@@ -100,7 +100,7 @@ public class DialogHelper {
         return dialog;
     }
 
-    public static void showLanguageDialog(final MainActivity activity, final String lang, final AdMobAdsHelper ads) {
+    public static void showLanguageDialog(final MainActivity activity, final String lang, final YandexAdsHelper ads) {
         float d = activity.getResources().getDisplayMetrics().density;
         
         RadioGroup group = new RadioGroup(activity);
@@ -150,44 +150,30 @@ public class DialogHelper {
     }
 
     public static void showPrivacyOptionsDialog(final MainActivity activity, final String lang,
-                                                final Runnable onPolicySelected,
-                                                final Runnable onGooglePrivacySelected) {
+                                                final Runnable onPolicySelected) {
         View policyButton = LayoutInflater.from(activity).inflate(R.layout.item_dialog_button, null);
         TextView policyText = policyButton.findViewById(R.id.tvButtonText);
         if (policyText != null) {
             policyText.setText(tr(lang, "سياسة خصوصية التطبيق", "App privacy policy"));
         }
 
-        View googleButton = LayoutInflater.from(activity).inflate(R.layout.item_dialog_button, null);
-        TextView googleText = googleButton.findViewById(R.id.tvButtonText);
-        if (googleText != null) {
-            googleText.setText(tr(lang, "خيارات خصوصية إعلانات Google", "Google ads privacy choices"));
-        }
-
         View closeButton = LayoutInflater.from(activity).inflate(R.layout.item_dialog_button, null);
         TextView closeText = closeButton.findViewById(R.id.tvButtonText);
-        if (closeText != null) {
-            closeText.setText(tr(lang, "إغلاق", "Close"));
-        }
+        if (closeText != null) closeText.setText(tr(lang, "إغلاق", "Close"));
 
         LinearLayout container = new LinearLayout(activity);
         container.setOrientation(LinearLayout.VERTICAL);
         container.setGravity(Gravity.CENTER_HORIZONTAL);
         container.addView(policyButton);
-        container.addView(googleButton);
         container.addView(closeButton);
 
         final Dialog dialog = createBaseGlassDialog(
                 activity, container,
-                tr(lang, "خيارات الخصوصية", "Privacy options"), null);
+                tr(lang, "الخصوصية", "Privacy"), null);
 
         policyButton.setOnClickListener(v -> {
             dialog.dismiss();
             if (onPolicySelected != null) onPolicySelected.run();
-        });
-        googleButton.setOnClickListener(v -> {
-            dialog.dismiss();
-            if (onGooglePrivacySelected != null) onGooglePrivacySelected.run();
         });
         closeButton.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
@@ -233,7 +219,7 @@ public class DialogHelper {
             tvYesText.setText(tr(lang, "نعم", "Yes"));
             tvYesText.setTextColor(Color.parseColor("#FF4C4C"));
         }
-        btnYesView.setOnClickListener(v -> { AdMobAdsHelper.destroyInstance(); activity.finish(); });
+        btnYesView.setOnClickListener(v -> { YandexAdsHelper.destroyInstance(); activity.finish(); });
 
         View btnNoView = LayoutInflater.from(activity).inflate(R.layout.item_dialog_button, null);
         TextView tvNoText = btnNoView.findViewById(R.id.tvButtonText);
@@ -363,7 +349,7 @@ public class DialogHelper {
         btnChangeLangLogin.setOnClickListener(v -> {
             if (context instanceof MainActivity) {
                 dialog.dismiss();
-                AdMobAdsHelper ads = AdMobAdsHelper.getInstance((MainActivity) context);
+                YandexAdsHelper ads = YandexAdsHelper.getInstance((MainActivity) context);
                 showLanguageDialog((MainActivity) context, lang, ads);
             }
         });

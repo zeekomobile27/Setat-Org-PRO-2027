@@ -70,7 +70,7 @@ public class SupportChatActivity extends AppCompatActivity {
     private ViewGroup appRootView;
     
     // 🌟 مساعد إعلانات أدموب الجديد 🌟
-    private AdMobAdsHelper adMobAdsHelper;
+    private YandexAdsHelper yandexAdsHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,9 +93,9 @@ public class SupportChatActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         
         // 🌟 تهيئة وتجهيز مساعد الإعلانات 🌟
-        adMobAdsHelper = AdMobAdsHelper.getInstance(this);
-        adMobAdsHelper.setCurrentLanguage(currentLang);
-        adMobAdsHelper.initialize(() -> runOnUiThread(() -> {}));
+        yandexAdsHelper = YandexAdsHelper.getInstance(this);
+        yandexAdsHelper.setCurrentLanguage(currentLang);
+        yandexAdsHelper.initialize(() -> runOnUiThread(() -> {}));
 
         if (roomUid == null || roomUid.isEmpty()) {
             if (user != null) {
@@ -586,7 +586,7 @@ public class SupportChatActivity extends AppCompatActivity {
         super.onResume();
         resetUnreadCount();
         currentActiveRoom = roomUid; // تسجيل الدخول للمحادثة
-        if (adMobAdsHelper != null) adMobAdsHelper.onResume();
+        if (yandexAdsHelper != null) yandexAdsHelper.onResume();
     }
 
     @Override
@@ -605,8 +605,8 @@ public class SupportChatActivity extends AppCompatActivity {
         if (executorService != null) {
             executorService.shutdown();
         }
-        if (adMobAdsHelper != null) {
-            adMobAdsHelper.onDestroy();
+        if (yandexAdsHelper != null) {
+            yandexAdsHelper.onDestroy();
         }
     }
 
@@ -713,8 +713,8 @@ public class SupportChatActivity extends AppCompatActivity {
                         if (isAdmin) { // إذا كنت أنت المدير افتح الرابط فوراً
                             openUrlInBrowser(finalUrl);
                         } else { // المستخدم العادي يجبر على مشاهدة الإعلان
-                            if (adMobAdsHelper != null) {
-                                adMobAdsHelper.showAdDialog(finalUrl, pendingUrl -> openUrlInBrowser(pendingUrl));
+                            if (yandexAdsHelper != null) {
+                                yandexAdsHelper.showAdDialog(finalUrl, pendingUrl -> openUrlInBrowser(pendingUrl));
                             } else {
                                 openUrlInBrowser(finalUrl);
                             }
@@ -785,8 +785,8 @@ public class SupportChatActivity extends AppCompatActivity {
                         if (isAdmin) { // إذا كنت أنت المدير افتح الرابط فوراً
                             openUrlInBrowser(finalUrl);
                         } else { // المستخدم العادي يجبر على مشاهدة الإعلان
-                            if (adMobAdsHelper != null) {
-                                adMobAdsHelper.showAdDialog(finalUrl, pendingUrl -> openUrlInBrowser(pendingUrl));
+                            if (yandexAdsHelper != null) {
+                                yandexAdsHelper.showAdDialog(finalUrl, pendingUrl -> openUrlInBrowser(pendingUrl));
                             } else {
                                 openUrlInBrowser(finalUrl);
                             }

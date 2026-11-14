@@ -65,7 +65,7 @@ public class Them2026Activity extends AppCompatActivity {
 
     private String currentLang = "ar";
     private SharedPreferences langPrefs;
-    private AdMobAdsHelper adMobAdsHelper;
+    private YandexAdsHelper yandexAdsHelper;
 
     private DatabaseReference setsRef;
     private FirebaseAuth mAuth;
@@ -126,7 +126,7 @@ public class Them2026Activity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (adMobAdsHelper != null && adMobAdsHelper.isShowingAdDialog()) return;
+                if (yandexAdsHelper != null && yandexAdsHelper.isShowingAdDialog()) return;
                 goBackToMain();
             }
         });
@@ -236,8 +236,8 @@ public class Them2026Activity extends AppCompatActivity {
             ViewCompat.requestApplyInsets(appRootView);
         }
 
-        adMobAdsHelper = AdMobAdsHelper.getInstance(this);
-        adMobAdsHelper.setCurrentLanguage(currentLang);
+        yandexAdsHelper = YandexAdsHelper.getInstance(this);
+        yandexAdsHelper.setCurrentLanguage(currentLang);
 
         themesList = new ArrayList<>();
         viewPagerSets = findViewById(R.id.viewPagerSets);
@@ -292,9 +292,9 @@ public class Them2026Activity extends AppCompatActivity {
         loadThemesFromCache();
         loadThemesFromFirebase();
 
-        adMobAdsHelper.initialize(() -> {
+        yandexAdsHelper.initialize(() -> {
             runOnUiThread(() -> {
-                adMobAdsHelper.loadInterstitialAdSilent();
+                yandexAdsHelper.loadInterstitialAdSilent();
             });
         });
     }
@@ -657,7 +657,7 @@ public class Them2026Activity extends AppCompatActivity {
             }
 
             holder.btnDownloadSet.setOnClickListener(v -> {
-                adMobAdsHelper.showAdDialog(theme.download_url, pendingUrl -> adMobAdsHelper.openDownloadUrl(pendingUrl));
+                yandexAdsHelper.showAdDialog(theme.download_url, pendingUrl -> yandexAdsHelper.openDownloadUrl(pendingUrl));
             });
         }
 

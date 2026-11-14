@@ -224,16 +224,7 @@ public class ProfileDialogHelper {
         btnPrivacy.setOnClickListener(v -> DialogHelper.showPrivacyOptionsDialog(
                 activity,
                 currentLang,
-                () -> activity.openUrlInBrowser("https://www.zeekoltd.com/privacy.html"),
-                () -> AdMobConsentManager.showPrivacyOptionsForm(activity, (shown, errorMessage) -> {
-                    if (!shown) {
-                        String message = errorMessage != null && !errorMessage.isEmpty()
-                                ? activity.tr("تعذر فتح خيارات إعلانات Google: ", "Could not open Google ads privacy choices: ") + errorMessage
-                                : activity.tr("لا تتطلب إعدادات الإعلانات الحالية نموذج خيارات إضافياً.",
-                                        "No additional ad privacy form is currently required.");
-                        Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
-                    }
-                })));
+                () -> activity.openUrlInBrowser("https://www.zeekoltd.com/privacy.html")));
 
         btnAbout.setOnClickListener(v -> {
             DialogHelper.showAboutDialog(activity, currentLang);

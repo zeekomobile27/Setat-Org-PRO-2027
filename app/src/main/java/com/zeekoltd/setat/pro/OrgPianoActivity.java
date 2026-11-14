@@ -60,7 +60,7 @@ public class OrgPianoActivity extends AppCompatActivity {
     public boolean engineReady = false;
     
     // 🚀 تهيئة الاعلانات
-    private AdMobAdsHelper adMobAdsHelper;
+    private YandexAdsHelper yandexAdsHelper;
 
     // 🚀 المتغيرات النصية لتخزين العناوين (Caching) للحفاظ عليها بعد مسح الملفات وتسريع التنقل
     private String cachedSound1Name = "string";
@@ -211,14 +211,14 @@ public class OrgPianoActivity extends AppCompatActivity {
         createGoldenFolder();
 
         // 🚀 تهيئة نظام الإعلانات وتحميل البانر فقط
-        adMobAdsHelper = AdMobAdsHelper.getInstance(this);
-        adMobAdsHelper.setCurrentLanguage(currentLang);
-        adMobAdsHelper.initialize(() -> {
+        yandexAdsHelper = YandexAdsHelper.getInstance(this);
+        yandexAdsHelper.setCurrentLanguage(currentLang);
+        yandexAdsHelper.initialize(() -> {
             runOnUiThread(() -> {
                 FrameLayout bannerContainer = findViewById(R.id.adBannerContainer);
                 if (bannerContainer != null && bannerContainer.getChildCount() > 0) {
                     ImageView placeholder = (ImageView) bannerContainer.getChildAt(0);
-                    adMobAdsHelper.loadBannerAd(bannerContainer, placeholder, true);
+                    yandexAdsHelper.loadBannerAd(bannerContainer, placeholder, true);
                 }
             });
         });
@@ -227,7 +227,7 @@ public class OrgPianoActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (adMobAdsHelper != null && adMobAdsHelper.isShowingAdDialog()) return;
+                if (yandexAdsHelper != null && yandexAdsHelper.isShowingAdDialog()) return;
                 goBackToMain();
             }
         });
@@ -297,8 +297,8 @@ public class OrgPianoActivity extends AppCompatActivity {
             destroyAudioEngineIfIdle(audioEngine);
             audioEngine = null;
         }
-        if (adMobAdsHelper != null) {
-            adMobAdsHelper.destroyBanner();
+        if (yandexAdsHelper != null) {
+            yandexAdsHelper.destroyBanner();
         }
         engineReady = false;
     }
@@ -705,11 +705,11 @@ public class OrgPianoActivity extends AppCompatActivity {
     }
 
     public void requestRewardedSetDownload(String fileUrl, String setName) {
-        if (adMobAdsHelper == null) {
-            adMobAdsHelper = AdMobAdsHelper.getInstance(this);
-            adMobAdsHelper.setCurrentLanguage(currentLang);
+        if (yandexAdsHelper == null) {
+            yandexAdsHelper = YandexAdsHelper.getInstance(this);
+            yandexAdsHelper.setCurrentLanguage(currentLang);
         }
-        adMobAdsHelper.showAdDialog(fileUrl, rewardedUrl -> downloadAndInstallSet(rewardedUrl, setName));
+        yandexAdsHelper.showAdDialog(fileUrl, rewardedUrl -> downloadAndInstallSet(rewardedUrl, setName));
     }
 
     private void loadDefaultSet() {
