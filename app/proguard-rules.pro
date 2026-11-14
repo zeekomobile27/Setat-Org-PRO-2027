@@ -12,10 +12,11 @@
 -keep class com.zeekoltd.setat.pro.NativeAudioEngine { *; }
 
 # ==========================================
-# 3. إعلانات جوجل (AdMob / UMP)
+# 3. Yandex Mobile Ads, mediation adapters, and AppMetrica
 # ==========================================
--keep class com.google.android.gms.ads.** { *; }
--keep class com.google.android.ump.** { *; }
+-keep class com.yandex.mobile.ads.** { *; }
+-keep class com.yandex.ads.mediation.** { *; }
+-keep class io.appmetrica.analytics.** { *; }
 -keep class com.google.android.gms.common.** { *; }
 
 # ==========================================
