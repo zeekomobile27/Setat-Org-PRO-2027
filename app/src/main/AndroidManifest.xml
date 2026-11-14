@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     
-    <!-- 3. صلاحية معرّف الإعلانات الإلزامية لأندرويد 13+ (AdMob) -->
+    <!-- Advertising identifier permission used by the Yandex mediation adapters. -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
     
     <!-- 4. صلاحيات التخزين الآمنة (متوافقة مع سياسات Scoped Storage من جوجل) -->
@@ -118,7 +118,7 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@android:color/holo_blue_bright" />
             
-        <!-- معرف حساب إعلانات جوجل AdMob التجريبي -->
+        <!-- Required Google App ID for AdMob as a Yandex mediation adapter. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-6135301066898637~2191182433" />
