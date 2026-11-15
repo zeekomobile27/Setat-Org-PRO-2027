@@ -82,17 +82,7 @@ dependencies {
 
     // Yandex Easy Monetization mediation (includes the supported ad network adapters).
     implementation 'com.yandex.android:mobileads-mediation:8.6.0.0'
-
-    // Chartboost and Moloco mediation code references legacy ExoPlayer 2 classes.
-    // Media3 remains separate and does not provide com.google.android.exoplayer2.*.
-    implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
-
-    // Keep the Pangle SDK on the adapter's verified version to avoid binary API drift.
-    constraints {
-        implementation('com.pangle.global:pag-sdk') {
-            version { strictly '8.3.0.3' }
-        }
-    }
+    implementation 'com.yandex.ads.mediation:mobileads-extras:8.6.0.0'
 
     // Yandex AppMetrica analytics.
     implementation 'io.appmetrica.analytics:analytics:8.6.0'
