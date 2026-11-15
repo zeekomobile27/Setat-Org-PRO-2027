@@ -218,7 +218,7 @@ public class OrgPianoActivity extends AppCompatActivity {
                 FrameLayout bannerContainer = findViewById(R.id.adBannerContainer);
                 if (bannerContainer != null && bannerContainer.getChildCount() > 0) {
                     ImageView placeholder = (ImageView) bannerContainer.getChildAt(0);
-                    yandexAdsHelper.loadBannerAd(bannerContainer, placeholder, true);
+                    yandexAdsHelper.loadBannerAd(bannerContainer, placeholder);
                 }
             });
         });

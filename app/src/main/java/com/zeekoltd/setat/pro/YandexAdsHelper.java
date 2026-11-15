@@ -41,11 +41,6 @@ import com.yandex.mobile.ads.rewarded.RewardedAd;
 import com.yandex.mobile.ads.rewarded.RewardedAdEventListener;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoader;
 import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -98,13 +93,10 @@ public class YandexAdsHelper {
     private boolean isShowingAdDialog;
     private Dialog currentAdDialog;
     private OnRewardEarnedListener pendingRewardListener;
-    private static final String PREFS_AD_CONTROL = "remote_ad_control";
-    private static final String PREF_ADS_ENABLED = "ads_enabled";
-    private volatile boolean adsEnabled = true;
-    private DatabaseReference adsEnabledRef;
-    private ValueEventListener adsEnabledListener;
     private BannerAdView mBannerAdView;
     private FrameLayout bannerContainer;
+    private Runnable bannerRetryRunnable;
+    private int bannerRetryCount;
     private boolean isDialogLoading;
     private boolean isDialogTimedOut;
     private Dialog blockingOverlay;
@@ -116,27 +108,6 @@ public class YandexAdsHelper {
         activityRef = new WeakReference<>(activity);
         density = activity.getResources().getDisplayMetrics().density;
         handler = new Handler(Looper.getMainLooper());
-        initializeRemoteAdsControl(activity);
-    }
-
-    private void initializeRemoteAdsControl(Activity activity) {
-        adsEnabled = activity.getSharedPreferences(PREFS_AD_CONTROL, Context.MODE_PRIVATE)
-                .getBoolean(PREF_ADS_ENABLED, true);
-        try {
-            adsEnabledRef = FirebaseDatabase.getInstance().getReference("app_settings").child(PREF_ADS_ENABLED);
-            adsEnabledListener = new ValueEventListener() {
-                @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Object value = snapshot.getValue();
-                    boolean enabled = !(value instanceof Boolean) || (Boolean) value;
-                    adsEnabled = enabled;
-                    Activity current = getActivity();
-                    if (current != null) current.getSharedPreferences(PREFS_AD_CONTROL, Context.MODE_PRIVATE)
-                            .edit().putBoolean(PREF_ADS_ENABLED, enabled).apply();
-                }
-                @Override public void onCancelled(@NonNull DatabaseError error) { }
-            };
-            adsEnabledRef.addValueEventListener(adsEnabledListener);
-        } catch (Exception ignored) { }
     }
 
     private String tr(String arabic, String english) { return "en".equals(currentLang) ? english : arabic; }
@@ -184,9 +155,11 @@ public class YandexAdsHelper {
         interstitialAdLoader.loadAd(new AdRequest.Builder(INTERSTITIAL_AD_UNIT_ID).build(), new InterstitialAdLoadListener() {
             @Override public void onAdLoaded(@NonNull InterstitialAd ad) {
                 mInterstitialAd = ad; isInterstitialLoaded = true; isInterstitialLoading = false;
+                android.util.Log.d("YandexAds", "Interstitial loaded successfully");
             }
             @Override public void onAdFailedToLoad(@NonNull AdRequestError error) {
                 mInterstitialAd = null; isInterstitialLoaded = false; isInterstitialLoading = false;
+                android.util.Log.e("YandexAds", "Interstitial failed to load: " + error.getDescription());
             }
         });
     }
@@ -206,7 +179,10 @@ public class YandexAdsHelper {
                 if (onAdClosed != null) onAdClosed.run();
             }
             @Override public void onAdShown() { mInterstitialAd = null; isInterstitialLoaded = false; }
-            @Override public void onAdFailedToShow(@NonNull AdError error) { finish(); }
+            @Override public void onAdFailedToShow(@NonNull AdError error) {
+                android.util.Log.e("YandexAds", "Interstitial failed to show: " + error.getDescription());
+                finish();
+            }
             @Override public void onAdDismissed() { finish(); }
             @Override public void onAdClicked() { }
             @Override public void onAdImpression(@Nullable ImpressionData data) { }
@@ -299,19 +275,39 @@ public class YandexAdsHelper {
         rewardedAdLoader = null; pendingRewardListener = null; isDialogLoading = false; isDialogTimedOut = false;
     }
 
-    public void loadBannerAd(FrameLayout container, ImageView placeholder, boolean enabled) {
+    public void loadBannerAd(FrameLayout container, ImageView placeholder) {
         Activity activity = getActivity();
         if (activity == null || !isSdkInitialized || container == null) return;
-        if (!enabled) { destroyBanner(); if (placeholder != null) placeholder.setVisibility(View.VISIBLE); return; }
         destroyBanner();
+        bannerRetryCount = 0;
         mBannerAdView = new BannerAdView(activity);
         bannerContainer = container;
-        int widthDp = Math.max(1, Math.round(container.getWidth() / density));
-        if (container.getWidth() == 0) widthDp = Math.max(1, Math.round(activity.getResources().getDisplayMetrics().widthPixels / density));
-        mBannerAdView.setAdSize(BannerAdSize.sticky(activity, widthDp));
+        // Match the reference app's adaptive inline banner size and the existing 350x50dp slot.
+        mBannerAdView.setAdSize(BannerAdSize.inline(activity, 350, 50));
         mBannerAdView.setBannerAdEventListener(new BannerAdEventListener() {
-            @Override public void onAdLoaded() { if (placeholder != null) placeholder.setVisibility(View.GONE); }
-            @Override public void onAdFailedToLoad(@NonNull AdRequestError error) { if (placeholder != null) placeholder.setVisibility(View.VISIBLE); }
+            @Override public void onAdLoaded() {
+                if (placeholder != null) placeholder.setVisibility(View.GONE);
+                bannerRetryCount = 0;
+                if (bannerRetryRunnable != null) handler.removeCallbacks(bannerRetryRunnable);
+                android.util.Log.d("YandexAds", "Banner loaded successfully");
+            }
+            @Override public void onAdFailedToLoad(@NonNull AdRequestError error) {
+                if (placeholder != null) placeholder.setVisibility(View.VISIBLE);
+                android.util.Log.e("YandexAds", "Banner failed to load: " + error.getDescription());
+                if (bannerRetryRunnable != null) handler.removeCallbacks(bannerRetryRunnable);
+                if (bannerRetryCount < 2) {
+                    long delay = bannerRetryCount == 0 ? 60_000L : 120_000L;
+                    bannerRetryCount++;
+                    bannerRetryRunnable = () -> {
+                        if (mBannerAdView != null && isActivityValid()) {
+                            mBannerAdView.loadAd(new AdRequest.Builder(BANNER_AD_UNIT_ID).build());
+                        }
+                    };
+                    handler.postDelayed(bannerRetryRunnable, delay);
+                } else {
+                    bannerRetryCount = 0;
+                }
+            }
             @Override public void onAdClicked() { }
             @Override public void onImpression(@Nullable ImpressionData data) { }
         });
@@ -320,6 +316,10 @@ public class YandexAdsHelper {
     }
 
     public void destroyBanner() {
+        if (bannerRetryRunnable != null) {
+            handler.removeCallbacks(bannerRetryRunnable);
+            bannerRetryRunnable = null;
+        }
         if (mBannerAdView != null) {
             if (bannerContainer != null) bannerContainer.removeView(mBannerAdView);
             mBannerAdView.setBannerAdEventListener(null);
@@ -389,13 +389,6 @@ public class YandexAdsHelper {
     public void showAdDialog(final String url, final OnRewardEarnedListener rewardListener) {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
-
-        // When disabled remotely, skip the ad dialog and continue through the
-        // same caller callback used after a successful reward.
-        if (!adsEnabled) {
-            if (rewardListener != null) rewardListener.onRewardEarned(url);
-            return;
-        }
 
         isShowingAdDialog = true;
         pendingUrlAfterAd = url;
@@ -655,10 +648,6 @@ public class YandexAdsHelper {
     public void onDestroy() { dismissAdDialog(); }
 
     private void destroyAll() {
-        if (adsEnabledRef != null && adsEnabledListener != null) {
-            adsEnabledRef.removeEventListener(adsEnabledListener);
-            adsEnabledListener = null;
-        }
         destroyBanner();
         destroyInterstitial();
         destroyRewarded();
