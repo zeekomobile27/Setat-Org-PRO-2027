@@ -88,3 +88,7 @@
     public <init>(android.content.Context, android.util.AttributeSet);
     public <init>(android.content.Context, android.util.AttributeSet, int);
 }
+
+# R8: Pangle SDK missing-class references reported during release shrinking.
+-dontwarn com.bytedance.sdk.openadsdk.core.model.NetExtParams$RenderType
+-dontwarn com.bytedance.sdk.openadsdk.core.settings.TTSdkSettings$FETCH_REQUEST_SOURCE
