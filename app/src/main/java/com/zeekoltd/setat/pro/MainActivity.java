@@ -1329,6 +1329,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void navigateWithAd(Class<?> targetActivity) {
+        // The shared helper may still hold the Activity reference of the
+        // previously opened screen. Refresh it before trying to show a full-screen ad.
+        yandexAdsHelper = YandexAdsHelper.getInstance(this);
         Intent intent = new Intent(this, targetActivity);
         if (adSkipCounter == 0 && yandexAdsHelper != null && yandexAdsHelper.isInterstitialReady()) {
             yandexAdsHelper.showInterstitialAd(() -> {
@@ -1390,6 +1393,12 @@ public class MainActivity extends AppCompatActivity {
     @Override 
     protected void onResume() { 
         super.onResume(); 
+        // Restore MainActivity as the host when returning from a category screen,
+        // then preload the next interstitial without changing the existing frequency.
+        yandexAdsHelper = YandexAdsHelper.getInstance(this);
+        if (!yandexAdsHelper.isInterstitialReady() && !yandexAdsHelper.isInterstitialLoading()) {
+            yandexAdsHelper.loadInterstitialAdSilent();
+        }
         String savedLang = getSharedPreferences("app_prefs", MODE_PRIVATE).getString("app_language", "ar");
         if (!savedLang.equals(currentLang)) {
             refreshLanguageSmoothly();
