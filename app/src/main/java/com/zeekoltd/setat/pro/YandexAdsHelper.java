@@ -284,6 +284,15 @@ public class YandexAdsHelper {
     }
 
     public boolean isRewardedReady() { return isRewardLoaded && mRewardedAd != null; }
+
+    public void destroyInterstitial() {
+        if (mInterstitialAd != null) mInterstitialAd.setAdEventListener(null);
+        mInterstitialAd = null;
+        isInterstitialLoaded = false;
+        isInterstitialLoading = false;
+        interstitialAdLoader = null;
+    }
+
     public void destroyRewarded() {
         if (mRewardedAd != null) mRewardedAd.setAdEventListener(null);
         mRewardedAd = null; isRewardLoaded = false; isRewardedLoading = false;
