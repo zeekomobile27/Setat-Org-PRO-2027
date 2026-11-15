@@ -113,6 +113,10 @@ dependencies {
     implementation "androidx.media3:media3-datasource:$media3_version"
     implementation "androidx.media3:media3-database:$media3_version"
 
+    // Legacy ExoPlayer 2 APIs required by Chartboost/Moloco mediation adapters.
+    // This is separate from Media3 and does not replace the app's Media3 player.
+    implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
+
     // Native audio
     implementation 'com.google.oboe:oboe:1.11.0'
 }
