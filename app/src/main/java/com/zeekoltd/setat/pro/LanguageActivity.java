@@ -48,7 +48,6 @@ public class LanguageActivity extends AppCompatActivity {
     private static final String PREFS_LANG_KEY = "app_language";
     private static final String LANGUAGE_SELECTED_KEY = "language_selected";
     private static final String PRIVACY_ACCEPTED_KEY = "privacy_accepted";
-    private static final String YANDEX_ADS_CONSENT_KEY = "yandex_ads_consent";
     private String currentLang = "ar";
 
     private String tr(String arabicText, String englishText) {
@@ -129,7 +128,7 @@ public class LanguageActivity extends AppCompatActivity {
 
         if (isLanguageSelected && !savedLanguage.isEmpty()) {
             applyLanguage(savedLanguage);
-            if (isPrivacyAccepted && prefs.contains(YANDEX_ADS_CONSENT_KEY)) {
+            if (isPrivacyAccepted) {
                 startInternetCheckActivity();
             } else {
                 new Handler(Looper.getMainLooper()).postDelayed(this::showPrivacyPolicyDialog, 500);
@@ -262,7 +261,7 @@ public class LanguageActivity extends AppCompatActivity {
         TextView tvTitle = baseView.findViewById(R.id.tvDialogTitle);
         if (tvTitle != null) {
             tvTitle.setVisibility(View.VISIBLE);
-            tvTitle.setText(tr("خصوصية البيانات والإعلانات", "Data and ads privacy"));
+            tvTitle.setText(tr("سياسة خصوصية التطبيق", "App privacy policy"));
         }
 
         LinearLayout dynamicContainer = baseView.findViewById(R.id.dialogDynamicContainer);
@@ -274,8 +273,8 @@ public class LanguageActivity extends AppCompatActivity {
             msgParams.setMargins(0, 0, 0, (int) (20 * density));
             messageView.setLayoutParams(msgParams);
             messageView.setText(tr(
-                    "يستخدم التطبيق ياندكس وشبكات إعلانية وسيطة لعرض الإعلانات. اختر ما إذا كنت توافق على معالجة بيانات الاستخدام ومعرّف الإعلان لأغراض الإعلانات. يمكنك قراءة سياسة الخصوصية، وسيظل التطبيق متاحاً عند الرفض.",
-                    "This app uses Yandex and mediated ad networks to show ads. Choose whether you consent to processing usage data and the advertising ID for advertising. You can read the privacy policy, and the app remains available if you decline."
+                    "يرجى قراءة سياسة خصوصية التطبيق. بالضغط على موافق، تؤكد أنك قرأت السياسة وتتابع استخدام التطبيق.",
+                    "Please read the app privacy policy. By tapping Agree, you confirm that you have read it and wish to continue using the app."
             ));
             messageView.setTextColor(Color.WHITE);
             messageView.setTextSize(14);
@@ -283,11 +282,11 @@ public class LanguageActivity extends AppCompatActivity {
             messageView.setGravity(Gravity.CENTER);
             dynamicContainer.addView(messageView);
 
-            // زر قراءة السياسة
+            // رابط سياسة خصوصية التطبيق
             View btnReadView = LayoutInflater.from(this).inflate(R.layout.item_dialog_button, dynamicContainer, false);
             TextView tvReadText = btnReadView.findViewById(R.id.tvButtonText);
             if (tvReadText != null) {
-                tvReadText.setText(tr("السياسة", "Privacy policy"));
+                tvReadText.setText(tr("قراءة سياسة الخصوصية", "Read privacy policy"));
             }
             btnReadView.setOnClickListener(v -> {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.zeekoltd.com/privacy.html"));
@@ -298,33 +297,20 @@ public class LanguageActivity extends AppCompatActivity {
             btnReadParams.bottomMargin = (int)(10 * density);
             dynamicContainer.addView(btnReadView, btnReadParams);
 
-            // زر الموافقة
+            // الموافقة والمتابعة بعد قراءة سياسة التطبيق
             View btnAgreeView = LayoutInflater.from(this).inflate(R.layout.item_dialog_button, dynamicContainer, false);
             TextView tvAgreeText = btnAgreeView.findViewById(R.id.tvButtonText);
             if (tvAgreeText != null) {
-                tvAgreeText.setText(tr("موافقة", "Agree"));
+                tvAgreeText.setText(tr("موافق، قرأت السياسة وأتابع", "Agree, I have read the policy and continue"));
                 tvAgreeText.setTextColor(Color.parseColor("#00FFFF"));
             }
             btnAgreeView.setOnClickListener(v -> {
                 editor.putBoolean(PRIVACY_ACCEPTED_KEY, true);
-                editor.putBoolean(YANDEX_ADS_CONSENT_KEY, true);
                 editor.apply();
                 privacyDialog.dismiss();
                 startInternetCheckActivity();
             });
             dynamicContainer.addView(btnAgreeView);
-
-            View btnDeclineView = LayoutInflater.from(this).inflate(R.layout.item_dialog_button, dynamicContainer, false);
-            TextView tvDeclineText = btnDeclineView.findViewById(R.id.tvButtonText);
-            if (tvDeclineText != null) tvDeclineText.setText(tr("رفض", "Decline"));
-            btnDeclineView.setOnClickListener(v -> {
-                editor.putBoolean(PRIVACY_ACCEPTED_KEY, true);
-                editor.putBoolean(YANDEX_ADS_CONSENT_KEY, false);
-                editor.apply();
-                privacyDialog.dismiss();
-                startInternetCheckActivity();
-            });
-            dynamicContainer.addView(btnDeclineView);
         }
 
         privacyDialog.setCancelable(false);

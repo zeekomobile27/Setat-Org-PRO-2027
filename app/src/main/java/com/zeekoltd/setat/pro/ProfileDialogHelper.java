@@ -108,6 +108,8 @@ public class ProfileDialogHelper {
         
         View btnLogout = dialog.findViewById(R.id.dialogBtnLogout);
         TextView tvLogout = dialog.findViewById(R.id.dialogTvLogout);
+        View btnAdPrivacy = dialog.findViewById(R.id.dialogBtnAdPrivacy);
+        TextView tvAdPrivacy = dialog.findViewById(R.id.dialogTvAdPrivacy);
         View btnDeleteAccount = dialog.findViewById(R.id.dialogBtnDeleteAccount);
         currentLogoutButton = btnLogout;
         currentDeleteButton = btnDeleteAccount;
@@ -126,6 +128,7 @@ public class ProfileDialogHelper {
         tvPrivacy.setText(activity.tr("الخصوصية", "Privacy"));
         tvAbout.setText(activity.tr("حول التطبيق", "About"));
         tvLogout.setText(activity.tr("تسجيل الخروج", "Logout"));
+        if (tvAdPrivacy != null) tvAdPrivacy.setText(activity.tr("سياسة خصوصية الإعلانات", "Ads privacy policy"));
         tvDeleteAccount.setText(activity.tr("حذف الحساب نهائياً", "Delete Account Permanently"));
         tvDev.setText(activity.tr("تطوير : ZEEKO ORG APPS LTD", "Developer: ZEEKO ORG APPS LTD"));
         tvRights.setText(activity.tr("جميع الحقوق محفوظة © 2027", "All rights reserved © 2027"));
@@ -223,6 +226,12 @@ public class ProfileDialogHelper {
 
         btnPrivacy.setOnClickListener(v ->
                 activity.openUrlInBrowser("https://www.zeekoltd.com/privacy.html"));
+
+        if (btnAdPrivacy != null) {
+            btnAdPrivacy.setOnClickListener(v ->
+                    activity.openUrlInBrowser("https://www.zeekoltd.com/privacy.html"));
+        }
+
 
         btnAbout.setOnClickListener(v -> {
             DialogHelper.showAboutDialog(activity, currentLang);
