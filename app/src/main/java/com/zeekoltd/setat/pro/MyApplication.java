@@ -30,7 +30,7 @@ public class MyApplication extends Application {
         FirebaseApp.initializeApp(this);
 
         AppMetricaConfig metricaConfig = AppMetricaConfig.newConfigBuilder(
-                "c1c6c67b-db6a-48e8-942b-5fbe9a8692c7").build();
+                "5454e1a6-df0d-4d74-baa4-34d0c1fcb221").build();
         AppMetrica.activate(getApplicationContext(), metricaConfig);
         AppMetrica.enableActivityAutoTracking(this);
 
