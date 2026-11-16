@@ -1416,7 +1416,11 @@ public class MainActivity extends AppCompatActivity {
         if (reviewPromptRunnable != null) playStoreHandler.removeCallbacks(reviewPromptRunnable);
         reviewPromptRunnable = () -> {
             if (isFinishing() || isDestroyed() || playStoreExperience == null) return;
-            if (currentSmartDialog != null && currentSmartDialog.isShowing()) return;
+            if (currentSmartDialog != null && currentSmartDialog.isShowing()) {
+                // Wait for the active message to close, then retry in this session.
+                scheduleEligibleReviewRequest();
+                return;
+            }
             if (!playStoreExperience.isUpdateFlowActive()) {
                 playStoreExperience.requestInAppReviewIfEligible();
             }

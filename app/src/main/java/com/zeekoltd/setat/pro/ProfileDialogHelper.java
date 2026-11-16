@@ -221,10 +221,8 @@ public class ProfileDialogHelper {
             });
         }
 
-        btnPrivacy.setOnClickListener(v -> DialogHelper.showPrivacyOptionsDialog(
-                activity,
-                currentLang,
-                () -> activity.openUrlInBrowser("https://www.zeekoltd.com/privacy.html")));
+        btnPrivacy.setOnClickListener(v ->
+                activity.openUrlInBrowser("https://www.zeekoltd.com/privacy.html"));
 
         btnAbout.setOnClickListener(v -> {
             DialogHelper.showAboutDialog(activity, currentLang);

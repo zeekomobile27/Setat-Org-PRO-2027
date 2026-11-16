@@ -1,7 +1,9 @@
 package com.zeekoltd.setat.pro;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,14 +29,15 @@ final class PlayStoreExperience {
     private static final String PREFS = "app_prefs";
     private static final String KEY_SESSION_COUNT = "play_experience_session_count";
     private static final String KEY_FIRST_SESSION = "play_experience_first_session";
-    private static final String KEY_REVIEW_ATTEMPTED = "play_review_attempted";
-    private static final int HIGH_PRIORITY_THRESHOLD = 4;
-    private static final int MIN_SESSIONS_FOR_REVIEW = 5;
-    private static final long MIN_AGE_FOR_REVIEW_MS = TimeUnit.DAYS.toMillis(7);
+    private static final String KEY_REVIEW_REQUESTED_AT = "play_review_requested_at";
+    private static final int MIN_SESSIONS_FOR_REVIEW = 3;
+    private static final long MIN_AGE_FOR_REVIEW_MS = TimeUnit.DAYS.toMillis(2);
+    private static final long REVIEW_COOLDOWN_MS = TimeUnit.DAYS.toMillis(60);
 
     private final Activity activity;
     private final ActivityResultLauncher<IntentSenderRequest> updateLauncher;
     private final AppUpdateManager appUpdateManager;
+    private boolean updateCheckInProgress;
     private boolean updateFlowActive;
 
     PlayStoreExperience(Activity activity,
@@ -55,10 +58,18 @@ final class PlayStoreExperience {
     }
 
     void checkForRequiredUpdate() {
-        if (activity.isFinishing() || activity.isDestroyed() || updateFlowActive) return;
+        if (activity.isFinishing() || activity.isDestroyed() || updateFlowActive || updateCheckInProgress) return;
+        updateCheckInProgress = true;
         appUpdateManager.getAppUpdateInfo()
-            .addOnSuccessListener(info -> handleUpdateInfo(info))
-            .addOnFailureListener(error -> Log.w(TAG, "Unable to check Google Play update", error));
+            .addOnCompleteListener(task -> {
+                updateCheckInProgress = false;
+                if (activity.isFinishing() || activity.isDestroyed()) return;
+                if (task.isSuccessful()) {
+                    handleUpdateInfo(task.getResult());
+                } else {
+                    Log.w(TAG, "Unable to check Google Play update", task.getException());
+                }
+            });
     }
 
     private void handleUpdateInfo(AppUpdateInfo info) {
@@ -70,11 +81,14 @@ final class PlayStoreExperience {
         }
         if (availability != UpdateAvailability.UPDATE_AVAILABLE) return;
 
-        // Google Play's guidance reserves immediate updates for critical changes.
-        // Ordinary releases remain available through Google Play's normal update flow.
-        if (info.updatePriority() >= HIGH_PRIORITY_THRESHOLD
-                && info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+        // This app requires users to update before continuing. Request the official
+        // blocking flow whenever Play allows it, independent of release priority.
+        if (info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
             startUpdateFlow(info, AppUpdateType.IMMEDIATE);
+        } else if (info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+            // Keep the Play update prompt available if an immediate flow is not
+            // eligible for this specific update/device.
+            startUpdateFlow(info, AppUpdateType.FLEXIBLE);
         }
     }
 
@@ -106,22 +120,50 @@ final class PlayStoreExperience {
         SharedPreferences prefs = activity.getSharedPreferences(PREFS, Activity.MODE_PRIVATE);
         long firstSession = prefs.getLong(KEY_FIRST_SESSION, 0L);
         int sessions = prefs.getInt(KEY_SESSION_COUNT, 0);
-        if (prefs.getBoolean(KEY_REVIEW_ATTEMPTED, false)
-                || sessions < MIN_SESSIONS_FOR_REVIEW
+        long lastRequest = prefs.getLong(KEY_REVIEW_REQUESTED_AT, 0L);
+        long now = System.currentTimeMillis();
+        if (sessions < MIN_SESSIONS_FOR_REVIEW
                 || firstSession == 0L
-                || System.currentTimeMillis() - firstSession < MIN_AGE_FOR_REVIEW_MS) {
+                || now - firstSession < MIN_AGE_FOR_REVIEW_MS
+                || (lastRequest > 0L && now - lastRequest < REVIEW_COOLDOWN_MS)) {
             return;
         }
 
-        ReviewManager reviewManager = ReviewManagerFactory.create(activity);
-        reviewManager.requestReviewFlow().addOnCompleteListener(request -> {
-            if (!request.isSuccessful() || activity.isFinishing() || activity.isDestroyed()) return;
-            reviewManager.launchReviewFlow(activity, request.getResult())
-                .addOnCompleteListener(flow -> {
-                    // Google Play decides whether to display its review card and does not
-                    // reveal whether a review was submitted.
-                    prefs.edit().putBoolean(KEY_REVIEW_ATTEMPTED, true).apply();
-                });
-        });
+        try {
+            ReviewManager reviewManager = ReviewManagerFactory.create(activity);
+            reviewManager.requestReviewFlow().addOnCompleteListener(request -> {
+                if (activity.isFinishing() || activity.isDestroyed()) return;
+                if (!request.isSuccessful()) {
+                    Log.w(TAG, "Unable to request Google Play review", request.getException());
+                    openPlayStoreListing();
+                    prefs.edit().putLong(KEY_REVIEW_REQUESTED_AT, System.currentTimeMillis()).apply();
+                    return;
+                }
+
+                prefs.edit().putLong(KEY_REVIEW_REQUESTED_AT, System.currentTimeMillis()).apply();
+                try {
+                    reviewManager.launchReviewFlow(activity, request.getResult())
+                        .addOnFailureListener(error ->
+                            Log.w(TAG, "Unable to launch Google Play review flow", error));
+                } catch (RuntimeException error) {
+                    Log.w(TAG, "Unable to launch Google Play review flow", error);
+                    openPlayStoreListing();
+                }
+            });
+        } catch (RuntimeException error) {
+            Log.w(TAG, "Google Play review API is unavailable", error);
+            openPlayStoreListing();
+        }
+    }
+
+    private void openPlayStoreListing() {
+        if (activity.isFinishing() || activity.isDestroyed()) return;
+        Uri listing = Uri.parse("https://play.google.com/store/apps/details?id=" + activity.getPackageName());
+        Intent intent = new Intent(Intent.ACTION_VIEW, listing);
+        try {
+            activity.startActivity(intent);
+        } catch (Exception error) {
+            Log.w(TAG, "Unable to open Google Play listing", error);
+        }
     }
 }

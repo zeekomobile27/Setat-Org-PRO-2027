@@ -287,7 +287,7 @@ public class LanguageActivity extends AppCompatActivity {
             View btnReadView = LayoutInflater.from(this).inflate(R.layout.item_dialog_button, dynamicContainer, false);
             TextView tvReadText = btnReadView.findViewById(R.id.tvButtonText);
             if (tvReadText != null) {
-                tvReadText.setText(tr("قراءة السياسة", "Read Policy"));
+                tvReadText.setText(tr("السياسة", "Privacy policy"));
             }
             btnReadView.setOnClickListener(v -> {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.zeekoltd.com/privacy.html"));
@@ -302,7 +302,7 @@ public class LanguageActivity extends AppCompatActivity {
             View btnAgreeView = LayoutInflater.from(this).inflate(R.layout.item_dialog_button, dynamicContainer, false);
             TextView tvAgreeText = btnAgreeView.findViewById(R.id.tvButtonText);
             if (tvAgreeText != null) {
-                tvAgreeText.setText(tr("موافقة على معالجة بيانات الإعلانات", "Allow ad data processing"));
+                tvAgreeText.setText(tr("موافقة", "Agree"));
                 tvAgreeText.setTextColor(Color.parseColor("#00FFFF"));
             }
             btnAgreeView.setOnClickListener(v -> {
@@ -316,7 +316,7 @@ public class LanguageActivity extends AppCompatActivity {
 
             View btnDeclineView = LayoutInflater.from(this).inflate(R.layout.item_dialog_button, dynamicContainer, false);
             TextView tvDeclineText = btnDeclineView.findViewById(R.id.tvButtonText);
-            if (tvDeclineText != null) tvDeclineText.setText(tr("رفض معالجة بيانات الإعلانات والمتابعة", "Decline ad data processing and continue"));
+            if (tvDeclineText != null) tvDeclineText.setText(tr("رفض", "Decline"));
             btnDeclineView.setOnClickListener(v -> {
                 editor.putBoolean(PRIVACY_ACCEPTED_KEY, true);
                 editor.putBoolean(YANDEX_ADS_CONSENT_KEY, false);
