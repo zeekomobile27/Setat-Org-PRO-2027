@@ -68,9 +68,9 @@ public class YandexAdsHelper {
 
     // Official Yandex demo placements for testing the Yandex SDK integration.
     // Replace these with the production R-M-... placements supplied by Yandex Easy Monetization.
-    public static final String INTERSTITIAL_AD_UNIT_ID = "R-M-20422556-2";
-    public static final String REWARDED_AD_UNIT_ID = "R-M-20422556-3";
-    public static final String BANNER_AD_UNIT_ID = "R-M-20422556-1";
+    public static final String INTERSTITIAL_AD_UNIT_ID = "R-M-20430033-2";
+    public static final String REWARDED_AD_UNIT_ID = "R-M-20430033-3";
+    public static final String BANNER_AD_UNIT_ID = "R-M-20430033-1";
 
     private WeakReference<Activity> activityRef;
     private float density;
