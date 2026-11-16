@@ -478,7 +478,7 @@ public class YandexAdsHelper {
             loadRewardedAd();
         }
 
-        // 🚀 مؤقت الإلغاء النهائي (Timeout) بعد 10 ثواني بالضبط
+        // 🚀 مؤقت الإلغاء النهائي (Timeout) بعد 25 ثواني بالضبط
         final Runnable timeoutRunnable = new Runnable() {
             @Override
             public void run() {
@@ -494,7 +494,7 @@ public class YandexAdsHelper {
                 }
             }
         };
-        handler.postDelayed(timeoutRunnable, 15000); 
+        handler.postDelayed(timeoutRunnable, 25000); 
 
         // الفاحص المستمر لمعرفة ما إذا كان الإعلان قد أصبح جاهزاً
         final Runnable checkRunnable = new Runnable() {
