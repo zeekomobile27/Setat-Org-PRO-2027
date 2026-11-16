@@ -418,6 +418,42 @@
                 <FrameLayout
                     android:layout_width="200dp"
                     android:layout_height="40dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_glass_border"
+                    android:clipToOutline="true">
+                    <LinearLayout
+                        android:id="@+id/dialogBtnAdPrivacy"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/icon_privacy"
+                            app:tint="#FFFFFF"
+                            android:layout_marginEnd="8dp"/>
+                        <TextView
+                            android:id="@+id/dialogTvAdPrivacy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="سياسة خصوصية الإعلانات"
+                            android:textColor="#FFFFFF"
+                            android:shadowColor="#FF000000"
+                            android:shadowDx="1"
+                            android:shadowDy="1"
+                            android:shadowRadius="3"
+                            android:textSize="13sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/bg_glass_border"
                     android:clipToOutline="true">
