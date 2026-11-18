@@ -301,7 +301,7 @@ public class LanguageActivity extends AppCompatActivity {
             View btnAgreeView = LayoutInflater.from(this).inflate(R.layout.item_dialog_button, dynamicContainer, false);
             TextView tvAgreeText = btnAgreeView.findViewById(R.id.tvButtonText);
             if (tvAgreeText != null) {
-                tvAgreeText.setText(tr("موافق، قرأت السياسة وأتابع", "Agree, I have read the policy and continue"));
+                tvAgreeText.setText(tr("موافق، قرأت السياسة", "Agree"));
                 tvAgreeText.setTextColor(Color.parseColor("#00FFFF"));
             }
             btnAgreeView.setOnClickListener(v -> {
