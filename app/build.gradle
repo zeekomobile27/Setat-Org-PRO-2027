@@ -19,8 +19,8 @@ android {
         // Keep API 24 as requested.
         minSdk 24
         targetSdk 37
-        versionCode 13
-        versionName "2027.2"
+        versionCode 14
+        versionName "2027.4"
         externalNativeBuild {
             cmake {
                 cppFlags "-std=c++17"
@@ -82,7 +82,7 @@ dependencies {
 
     // Yandex Easy Monetization mediation (includes the supported ad network adapters).
     implementation 'com.yandex.android:mobileads-mediation:8.6.0.0'
-    implementation 'com.yandex.ads.mediation:mobileads-extras:8.6.0.0'
+    
 
     // Yandex AppMetrica analytics.
     implementation 'io.appmetrica.analytics:analytics:8.6.0'
