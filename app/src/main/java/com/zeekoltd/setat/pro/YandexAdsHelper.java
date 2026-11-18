@@ -1,6 +1,7 @@
 package com.zeekoltd.setat.pro;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -75,6 +76,7 @@ public class YandexAdsHelper {
     private WeakReference<Activity> activityRef;
     private float density;
     private final Handler handler;
+    private Application application;
     private volatile boolean isSdkInitialized = sdkInitialized;
     private volatile boolean isInitializing;
     private final ArrayList<Runnable> pendingInitTasks = new ArrayList<>();
@@ -88,10 +90,15 @@ public class YandexAdsHelper {
     private RewardedAd mRewardedAd;
     private boolean isRewardLoaded;
     private boolean isRewardedLoading;
+    private boolean initialRewardedPreloadAttempted;
+    private boolean waitingForRewardedAd;
+    private boolean isShowingRewardedAd;
+    private long rewardedRequestGeneration;
     private boolean userEarnedReward;
     private String pendingUrlAfterAd = "";
     private boolean isShowingAdDialog;
     private Dialog currentAdDialog;
+    private Dialog adErrorDialog;
     private OnRewardEarnedListener pendingRewardListener;
     private BannerAdView mBannerAdView;
     private FrameLayout bannerContainer;
@@ -99,7 +106,14 @@ public class YandexAdsHelper {
     private int bannerRetryCount;
     private boolean isDialogLoading;
     private boolean isDialogTimedOut;
+    private Dialog adLoadingDialog;
+    private Runnable rewardedLoadTimeoutRunnable;
     private Dialog blockingOverlay;
+    private Application.ActivityLifecycleCallbacks rewardedTransitionLifecycleCallbacks;
+    private Activity rewardedTransitionActivity;
+    private boolean waitingForRewardedExternalTransition;
+    private boolean rewardedActionPending;
+    private Runnable rewardedTransitionTimeoutRunnable;
 
     public interface OnAdsInitializedListener { void onInitialized(); }
     public interface OnRewardEarnedListener { void onRewardEarned(String pendingUrl); }
@@ -108,6 +122,7 @@ public class YandexAdsHelper {
         activityRef = new WeakReference<>(activity);
         density = activity.getResources().getDisplayMetrics().density;
         handler = new Handler(Looper.getMainLooper());
+        registerRewardedTransitionCallbacks(activity.getApplication());
     }
 
     private String tr(String arabic, String english) { return "en".equals(currentLang) ? english : arabic; }
@@ -120,6 +135,7 @@ public class YandexAdsHelper {
         if (isSdkInitialized || sdkInitialized) {
             isSdkInitialized = true;
             executePendingTasks();
+            preloadRewardedOnce();
             return;
         }
         if (isInitializing) return;
@@ -133,7 +149,10 @@ public class YandexAdsHelper {
             sdkInitialized = true;
             isSdkInitialized = true;
             isInitializing = false;
-            handler.post(this::executePendingTasks);
+            handler.post(() -> {
+                executePendingTasks();
+                preloadRewardedOnce();
+            });
         });
     }
 
@@ -141,6 +160,21 @@ public class YandexAdsHelper {
         ArrayList<Runnable> tasks = new ArrayList<>(pendingInitTasks);
         pendingInitTasks.clear();
         for (Runnable task : tasks) task.run();
+    }
+
+    private void dismissCurrentAdPrompt() {
+        if (currentAdDialog != null) {
+            safeDismissDialog(currentAdDialog);
+            currentAdDialog = null;
+        }
+        isShowingAdDialog = false;
+    }
+
+    private void preloadRewardedOnce() {
+        if (initialRewardedPreloadAttempted || !isSdkInitialized) return;
+        if (!isActivityValid()) return;
+        initialRewardedPreloadAttempted = true;
+        startRewardedAdLoad();
     }
 
     public boolean isInterstitialLoading() { return isInterstitialLoading; }
@@ -192,68 +226,180 @@ public class YandexAdsHelper {
 
     public boolean isInterstitialReady() { return isInterstitialLoaded && mInterstitialAd != null; }
 
-    private void loadRewardedAd() {
-        if (!isSdkInitialized) { initialize(this::loadRewardedAd); return; }
+    private void startRewardedAdLoad() {
+        if (!isSdkInitialized) {
+            initialize(this::startRewardedAdLoad);
+            return;
+        }
+        // A single shared loader/request is kept alive across all set and theme screens.
         if (isRewardLoaded || isRewardedLoading) return;
         Activity activity = getActivity();
-        if (activity == null) return;
-        if (rewardedAdLoader == null) rewardedAdLoader = new RewardedAdLoader(activity.getApplicationContext());
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        if (rewardedAdLoader == null) {
+            rewardedAdLoader = new RewardedAdLoader(activity.getApplicationContext());
+        }
         isRewardedLoading = true;
-        rewardedAdLoader.loadAd(new AdRequest.Builder(REWARDED_AD_UNIT_ID).build(), new RewardedAdLoadListener() {
+        final long requestGeneration = ++rewardedRequestGeneration;
+        try {
+            rewardedAdLoader.loadAd(new AdRequest.Builder(REWARDED_AD_UNIT_ID).build(), new RewardedAdLoadListener() {
             @Override public void onAdLoaded(@NonNull RewardedAd ad) {
-                if (isDialogTimedOut) { isRewardLoaded = false; isRewardedLoading = false; return; }
-                mRewardedAd = ad; isRewardLoaded = true; isRewardedLoading = false;
+                handler.post(() -> {
+                    if (requestGeneration != rewardedRequestGeneration || !isRewardedLoading) {
+                        ad.setAdEventListener(null);
+                        return;
+                    }
+                    mRewardedAd = ad;
+                    isRewardLoaded = true;
+                    isRewardedLoading = false;
+                    if (waitingForRewardedAd) presentLoadedRewardedAd();
+                });
             }
+
             @Override public void onAdFailedToLoad(@NonNull AdRequestError error) {
-                mRewardedAd = null; isRewardLoaded = false; isRewardedLoading = false;
+                handler.post(() -> {
+                    if (requestGeneration != rewardedRequestGeneration || !isRewardedLoading) return;
+                    isRewardedLoading = false;
+                    isRewardLoaded = false;
+                    mRewardedAd = null;
+                    android.util.Log.e("YandexAds", "Rewarded failed to load: " + error.getDescription());
+                    if (waitingForRewardedAd) {
+                        waitingForRewardedAd = false;
+                        dismissAdLoadingDialog();
+                        showAdLoadErrorDialog();
+                    }
+                });
             }
-        });
+            });
+        } catch (RuntimeException error) {
+            if (requestGeneration == rewardedRequestGeneration) {
+                isRewardedLoading = false;
+                isRewardLoaded = false;
+                android.util.Log.e("YandexAds", "Rewarded request could not start", error);
+                if (waitingForRewardedAd) {
+                    waitingForRewardedAd = false;
+                    dismissAdLoadingDialog();
+                    showAdLoadErrorDialog();
+                }
+            }
+        }
     }
 
     public void showRewardedAd(OnRewardEarnedListener rewardListener) {
+        if (isShowingRewardedAd || isDialogLoading) return;
         pendingRewardListener = rewardListener;
-        Activity activity = getActivity();
-        if (mRewardedAd == null || !isRewardLoaded) {
-            if (activity != null) activity.runOnUiThread(this::showAdLoadingDialog);
+        if (isRewardLoaded && mRewardedAd != null) {
+            waitingForRewardedAd = true;
+            showAdLoadingDialog();
+            presentLoadedRewardedAd();
             return;
         }
+
+        Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
+        waitingForRewardedAd = true;
+        showAdLoadingDialog();
+
+        // Join an existing preload if one is active; only make a fresh request after
+        // an explicit user action and only when no request is currently in flight.
+        if (!isRewardedLoading) startRewardedAdLoad();
+        scheduleRewardedWaitTimeout();
+    }
+
+    private void presentLoadedRewardedAd() {
+        Activity activity = getActivity();
         RewardedAd ad = mRewardedAd;
-        ad.setAdEventListener(new RewardedAdEventListener() {
-            @Override public void onAdShown() { mRewardedAd = null; isRewardLoaded = false; }
-            @Override public void onAdFailedToShow(@NonNull AdError error) {
-                clearRewarded(ad);
-                Activity current = getActivity();
-                if (current != null) current.runOnUiThread(YandexAdsHelper.this::showAdLoadErrorDialog);
+        if (activity == null || !isActivityValid() || ad == null || !isRewardLoaded || isShowingRewardedAd) {
+            if (waitingForRewardedAd && (activity == null || !isActivityValid())) {
+                waitingForRewardedAd = false;
+                dismissAdLoadingDialog();
             }
-            @Override public void onAdDismissed() {
-                Activity current = getActivity();
-                if (current != null) current.runOnUiThread(YandexAdsHelper.this::showBlockingOverlay);
-                if (userEarnedReward) {
-                    handler.postDelayed(() -> {
-                        Activity a = getActivity();
-                        if (a != null && pendingRewardListener != null) {
-                            pendingRewardListener.onRewardEarned(pendingUrlAfterAd);
-                            handler.postDelayed(YandexAdsHelper.this::hideBlockingOverlay, 300);
-                        }
-                    }, 250);
-                    userEarnedReward = false;
-                } else hideBlockingOverlay();
-                clearRewarded(ad);
-                Activity a = getActivity();
-                if (a != null) a.runOnUiThread(() -> {
-                    safeDismissDialog(currentAdDialog); currentAdDialog = null; isShowingAdDialog = false;
+            return;
+        }
+
+        waitingForRewardedAd = false;
+        cancelRewardedWaitTimeout();
+        // Lock before calling the SDK so a fast second tap cannot call show() twice.
+        isShowingRewardedAd = true;
+        userEarnedReward = false;
+        ad.setAdEventListener(new RewardedAdEventListener() {
+            @Override public void onAdShown() {
+                handler.post(() -> {
+                    isShowingRewardedAd = true;
+                    if (mRewardedAd == ad) mRewardedAd = null;
+                    isRewardLoaded = false;
+                    dismissAdLoadingDialog();
                 });
             }
+
+            @Override public void onAdFailedToShow(@NonNull AdError error) {
+                handler.post(() -> {
+                    android.util.Log.e("YandexAds", "Rewarded failed to show: " + error.getDescription());
+                    clearRewarded(ad);
+                    isShowingRewardedAd = false;
+                    waitingForRewardedAd = false;
+                    dismissAdLoadingDialog();
+                    showAdLoadErrorDialog();
+                    dismissCurrentAdPrompt();
+                });
+            }
+
+            @Override public void onAdDismissed() {
+                handler.post(() -> finishRewardedAd(ad));
+            }
+
             @Override public void onAdClicked() { }
             @Override public void onAdImpression(@Nullable ImpressionData data) { }
-            @Override public void onRewarded(@NonNull Reward reward) { userEarnedReward = true; }
+            @Override public void onRewarded(@NonNull Reward reward) {
+                handler.post(() -> userEarnedReward = true);
+            }
         });
-        ad.show(activity);
+
+        try {
+            ad.show(activity);
+        } catch (RuntimeException error) {
+            android.util.Log.e("YandexAds", "Rewarded show threw an exception", error);
+            clearRewarded(ad);
+            isShowingRewardedAd = false;
+            dismissAdLoadingDialog();
+            showAdLoadErrorDialog();
+            dismissCurrentAdPrompt();
+        }
+    }
+
+    private void finishRewardedAd(RewardedAd ad) {
+        clearRewarded(ad);
+        isShowingRewardedAd = false;
+        dismissAdLoadingDialog();
+        dismissCurrentAdPrompt();
+
+        boolean earned = userEarnedReward;
+        userEarnedReward = false;
+        OnRewardEarnedListener listener = pendingRewardListener;
+        String url = pendingUrlAfterAd;
+        pendingRewardListener = null;
+        pendingUrlAfterAd = "";
+
+        if (!earned || listener == null || url == null || url.trim().isEmpty()) {
+            hideBlockingOverlay();
+            return;
+        }
+
+        showBlockingOverlay();
+        beginRewardedActionTransition();
+        try {
+            listener.onRewardEarned(url);
+        } catch (RuntimeException error) {
+            android.util.Log.e("YandexAds", "Rewarded action failed", error);
+            finishRewardedActionWithoutExternalLaunch();
+        }
+
+        // Only a successfully completed rewarded ad triggers the next preload.
+        // A failed/no-fill request is never retried in the background.
+        startRewardedAdLoad();
     }
 
     private void clearRewarded(RewardedAd ad) {
-        ad.setAdEventListener(null);
+        if (ad != null) ad.setAdEventListener(null);
         if (mRewardedAd == ad) mRewardedAd = null;
         isRewardLoaded = false;
         isRewardedLoading = false;
@@ -272,7 +418,14 @@ public class YandexAdsHelper {
     public void destroyRewarded() {
         if (mRewardedAd != null) mRewardedAd.setAdEventListener(null);
         mRewardedAd = null; isRewardLoaded = false; isRewardedLoading = false;
-        rewardedAdLoader = null; pendingRewardListener = null; isDialogLoading = false; isDialogTimedOut = false;
+        rewardedAdLoader = null;
+        pendingRewardListener = null;
+        waitingForRewardedAd = false;
+        isShowingRewardedAd = false;
+        rewardedRequestGeneration++;
+        dismissAdLoadingDialog();
+        isDialogLoading = false;
+        isDialogTimedOut = false;
     }
 
     public void loadBannerAd(FrameLayout container, ImageView placeholder) {
@@ -389,6 +542,7 @@ public class YandexAdsHelper {
     public void showAdDialog(final String url, final OnRewardEarnedListener rewardListener) {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
+        if (isShowingAdDialog || isShowingRewardedAd || isDialogLoading) return;
 
         isShowingAdDialog = true;
         pendingUrlAfterAd = url;
@@ -448,81 +602,68 @@ public class YandexAdsHelper {
     }
 
     // ============================================================
-    // 5. نافذة جاري تحميل الإعلان (مؤقت 10 ثواني كحد أقصى)
+    // 5. نافذة انتظار الإعلان المكافئ
     // ============================================================
     private void showAdLoadingDialog() {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
+        if (adLoadingDialog != null && adLoadingDialog.isShowing()) return;
 
-        final Dialog loadingDialog = createBaseGlassDialog(activity, null, tr("جاري تـحـميل الإعـــلان...", "Loading ad..."));
-        loadingDialog.setCancelable(false);
+        adLoadingDialog = createBaseGlassDialog(activity, null,
+                tr("جاري تـحـميل الإعـــلان...", "Loading ad..."));
+        adLoadingDialog.setCancelable(false);
+        adLoadingDialog.setCanceledOnTouchOutside(false);
 
-        LinearLayout dynamicContainer = loadingDialog.findViewById(R.id.dialogDynamicContainer);
-
+        LinearLayout dynamicContainer = adLoadingDialog.findViewById(R.id.dialogDynamicContainer);
+        if (dynamicContainer == null) {
+            adLoadingDialog = null;
+            waitingForRewardedAd = false;
+            showAdLoadErrorDialog();
+            return;
+        }
         ProgressBar progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleLarge);
-        LinearLayout.LayoutParams pbParams = new LinearLayout.LayoutParams((int)(50 * density), (int)(50 * density));
-        pbParams.topMargin = (int)(10 * density);
+        LinearLayout.LayoutParams pbParams = new LinearLayout.LayoutParams((int) (50 * density), (int) (50 * density));
+        pbParams.topMargin = (int) (10 * density);
         progressBar.setLayoutParams(pbParams);
         progressBar.setIndeterminate(true);
-        progressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor("#00FFFF"), android.graphics.PorterDuff.Mode.SRC_IN);
-        
+        if (progressBar.getIndeterminateDrawable() != null) {
+            progressBar.getIndeterminateDrawable().setColorFilter(Color.parseColor("#00FFFF"), android.graphics.PorterDuff.Mode.SRC_IN);
+        }
         dynamicContainer.addView(progressBar);
 
-        safeShowDialog(loadingDialog);
-        
+        safeShowDialog(adLoadingDialog);
         isDialogTimedOut = false;
-        isDialogLoading = true;
-        
-        // 🚀 بدء تحميل الإعلان الآن
-        if (!isRewardLoaded && !isRewardedLoading) {
-            loadRewardedAd();
+        isDialogLoading = adLoadingDialog.isShowing();
+    }
+
+    private void scheduleRewardedWaitTimeout() {
+        cancelRewardedWaitTimeout();
+        rewardedLoadTimeoutRunnable = () -> {
+            if (!waitingForRewardedAd || !isDialogLoading) return;
+            isDialogTimedOut = true;
+            waitingForRewardedAd = false;
+            dismissAdLoadingDialog();
+            showAdLoadErrorDialog();
+            // Keep isRewardedLoading true until the SDK responds. Starting another
+            // request here could overlap a request that is still active in the SDK.
+        };
+        handler.postDelayed(rewardedLoadTimeoutRunnable, 25_000L);
+    }
+
+    private void cancelRewardedWaitTimeout() {
+        if (rewardedLoadTimeoutRunnable != null) {
+            handler.removeCallbacks(rewardedLoadTimeoutRunnable);
+            rewardedLoadTimeoutRunnable = null;
         }
+    }
 
-        // 🚀 مؤقت الإلغاء النهائي (Timeout) بعد 25 ثواني بالضبط
-        final Runnable timeoutRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (!isActivityValid()) return;
-                
-                if (loadingDialog.isShowing() && isRewardedLoading && !isRewardLoaded) {
-                    isDialogTimedOut = true;
-                    isRewardedLoading = false;
-                    isDialogLoading = false;
-                    
-                    safeDismissDialog(loadingDialog);
-                    showAdLoadErrorDialog();
-                }
-            }
-        };
-        handler.postDelayed(timeoutRunnable, 25000); 
-
-        // الفاحص المستمر لمعرفة ما إذا كان الإعلان قد أصبح جاهزاً
-        final Runnable checkRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (!isActivityValid() || isDialogTimedOut) return;
-
-                if (loadingDialog.isShowing()) {
-                    if (isRewardLoaded) {
-                        handler.removeCallbacks(timeoutRunnable);
-                        safeDismissDialog(loadingDialog);
-                        isDialogLoading = false;
-                        showRewardedAd(pendingRewardListener);
-                    } else if (!isRewardedLoading) { 
-                        handler.removeCallbacks(timeoutRunnable);
-                        safeDismissDialog(loadingDialog);
-                        isDialogLoading = false;
-                        showAdLoadErrorDialog();
-                    } else {
-                        handler.postDelayed(this, 1000); 
-                    }
-                } else {
-                    handler.removeCallbacks(timeoutRunnable);
-                    isDialogLoading = false;
-                }
-            }
-        };
-        handler.postDelayed(checkRunnable, 1000);
+    private void dismissAdLoadingDialog() {
+        cancelRewardedWaitTimeout();
+        if (adLoadingDialog != null) {
+            safeDismissDialog(adLoadingDialog);
+            adLoadingDialog = null;
+        }
+        isDialogLoading = false;
     }
 
     // ============================================================
@@ -531,12 +672,12 @@ public class YandexAdsHelper {
     private void showAdLoadErrorDialog() {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
-        
         isDialogLoading = false;
-        isDialogTimedOut = false;
+        if (adErrorDialog != null && adErrorDialog.isShowing()) return;
 
-        final Dialog errorDialog = createBaseGlassDialog(activity, null, 
+        final Dialog errorDialog = createBaseGlassDialog(activity, null,
             tr("فـشــل تـحـمـيـل الإعــلان 😥\nحاول مرة أخرى لاحقاً", "Failed to load ad 😥\nPlease try again later"));
+        adErrorDialog = errorDialog;
         errorDialog.setCancelable(true);
 
         LinearLayout dynamicContainer = errorDialog.findViewById(R.id.dialogDynamicContainer);
@@ -548,6 +689,7 @@ public class YandexAdsHelper {
 
         okBtnView.setOnClickListener(v -> {
             safeDismissDialog(errorDialog);
+            if (adErrorDialog == errorDialog) adErrorDialog = null;
             
             if (currentAdDialog != null && currentAdDialog.isShowing()) {
                 safeDismissDialog(currentAdDialog);
@@ -557,6 +699,8 @@ public class YandexAdsHelper {
             currentAdDialog = null;
             pendingUrlAfterAd = "";
             pendingRewardListener = null;
+            waitingForRewardedAd = false;
+            isDialogTimedOut = false;
         });
 
         safeShowDialog(errorDialog);
@@ -568,18 +712,22 @@ public class YandexAdsHelper {
     private void showBlockingOverlay() {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
-        
+        if (blockingOverlay != null && blockingOverlay.isShowing()) return;
+
         blockingOverlay = new Dialog(activity, android.R.style.Theme_Translucent_NoTitleBar);
-        blockingOverlay.getWindow().setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-        );
-        blockingOverlay.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        Window window = blockingOverlay.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
         blockingOverlay.setCancelable(false);
+        blockingOverlay.setCanceledOnTouchOutside(false);
         
         FrameLayout overlayLayout = new FrameLayout(activity);
         overlayLayout.setBackgroundColor(Color.parseColor("#E6000000"));
         overlayLayout.setClickable(true);
+        overlayLayout.setFocusable(true);
         overlayLayout.setOnTouchListener((v, event) -> true);
         
         ProgressBar spinningCircle = new ProgressBar(activity, null, android.R.attr.progressBarStyleLarge);
@@ -588,14 +736,16 @@ public class YandexAdsHelper {
         circleParams.gravity = Gravity.CENTER;
         spinningCircle.setLayoutParams(circleParams);
         spinningCircle.setIndeterminate(true);
-        spinningCircle.getIndeterminateDrawable().setColorFilter(
-            Color.parseColor("#00FFFF"), 
-            android.graphics.PorterDuff.Mode.SRC_IN
-        );
+        if (spinningCircle.getIndeterminateDrawable() != null) {
+            spinningCircle.getIndeterminateDrawable().setColorFilter(
+                Color.parseColor("#00FFFF"),
+                android.graphics.PorterDuff.Mode.SRC_IN
+            );
+        }
         
         overlayLayout.addView(spinningCircle);
         blockingOverlay.setContentView(overlayLayout);
-        
+        if (window != null) window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         safeShowDialog(blockingOverlay);
     }
 
@@ -606,9 +756,92 @@ public class YandexAdsHelper {
         }
     }
 
+    private void beginRewardedActionTransition() {
+        rewardedActionPending = true;
+        rewardedTransitionActivity = getActivity();
+        waitingForRewardedExternalTransition = false;
+        cancelRewardedTransitionTimeout();
+        rewardedTransitionTimeoutRunnable = () -> {
+            if (rewardedActionPending) finishRewardedActionWithoutExternalLaunch();
+        };
+        handler.postDelayed(rewardedTransitionTimeoutRunnable, 15_000L);
+    }
+
+    /** Marks that the rewarded action is opening an external browser or app. */
+    public void markRewardedExternalLaunchStarted() {
+        if (!rewardedActionPending) return;
+        rewardedTransitionActivity = getActivity();
+        waitingForRewardedExternalTransition = true;
+    }
+
+    /** Use for an earned reward that starts an in-app action instead of leaving the Activity. */
+    public void onRewardedInternalActionStarted() {
+        finishRewardedActionWithoutExternalLaunch();
+    }
+
+    public void onRewardedExternalLaunchFailed() {
+        finishRewardedActionWithoutExternalLaunch();
+    }
+
+    private void finishRewardedActionWithoutExternalLaunch() {
+        rewardedActionPending = false;
+        waitingForRewardedExternalTransition = false;
+        rewardedTransitionActivity = null;
+        cancelRewardedTransitionTimeout();
+        hideBlockingOverlay();
+    }
+
+    private void cancelRewardedTransitionTimeout() {
+        if (rewardedTransitionTimeoutRunnable != null) {
+            handler.removeCallbacks(rewardedTransitionTimeoutRunnable);
+            rewardedTransitionTimeoutRunnable = null;
+        }
+    }
+
+    private void registerRewardedTransitionCallbacks(Application application) {
+        this.application = application;
+        rewardedTransitionLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
+            @Override public void onActivityCreated(Activity activity, android.os.Bundle state) { }
+            @Override public void onActivityStarted(Activity activity) { }
+            @Override public void onActivityResumed(Activity activity) { }
+            @Override public void onActivityPaused(Activity activity) {
+                if (waitingForRewardedExternalTransition && activity == rewardedTransitionActivity) {
+                    handler.post(YandexAdsHelper.this::finishRewardedActionWithoutExternalLaunch);
+                }
+            }
+            @Override public void onActivityStopped(Activity activity) { }
+            @Override public void onActivitySaveInstanceState(Activity activity, android.os.Bundle state) { }
+            @Override public void onActivityDestroyed(Activity activity) {
+                if (activity == getActivity()) {
+                    handler.post(() -> {
+                        if (activity != getActivity()) return;
+                        dismissAdLoadingDialog();
+                        if (currentAdDialog != null) safeDismissDialog(currentAdDialog);
+                        currentAdDialog = null;
+                        if (adErrorDialog != null) safeDismissDialog(adErrorDialog);
+                        adErrorDialog = null;
+                        hideBlockingOverlay();
+                        isShowingAdDialog = false;
+                        isDialogLoading = false;
+                        waitingForRewardedAd = false;
+                        pendingRewardListener = null;
+                        pendingUrlAfterAd = "";
+                        finishRewardedActionWithoutExternalLaunch();
+                        activityRef = new WeakReference<>(null);
+                    });
+                }
+            }
+        };
+        application.registerActivityLifecycleCallbacks(rewardedTransitionLifecycleCallbacks);
+    }
+
     public void openDownloadUrl(String url) {
         Activity activity = getActivity();
-        if (activity == null || !isActivityValid()) return;
+        if (activity == null || !isActivityValid() || url == null || url.trim().isEmpty()) {
+            onRewardedExternalLaunchFailed();
+            return;
+        }
+        markRewardedExternalLaunchStarted();
         try {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setToolbarColor(Color.parseColor("#012638"));
@@ -622,6 +855,7 @@ public class YandexAdsHelper {
                 Intent downloadIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 activity.startActivity(downloadIntent);
             } catch (Exception ex) {
+                onRewardedExternalLaunchFailed();
                 Toast.makeText(activity, tr("خطأ في فتح رابط التحميل", "Error opening download link"), Toast.LENGTH_SHORT).show();
             }
         }
@@ -632,13 +866,12 @@ public class YandexAdsHelper {
     }
 
     public void dismissAdDialog() {
-        if (currentAdDialog != null) {
-            safeDismissDialog(currentAdDialog);
-            currentAdDialog = null;
-        }
-        isShowingAdDialog = false;
+        dismissCurrentAdPrompt();
+        waitingForRewardedAd = false;
+        dismissAdLoadingDialog();
         pendingUrlAfterAd = "";
         pendingRewardListener = null;
+        isDialogTimedOut = false;
     }
 
     // ============================================================
@@ -656,6 +889,10 @@ public class YandexAdsHelper {
         handler.removeCallbacksAndMessages(null);
         hideBlockingOverlay();
         dismissAdDialog();
+        if (application != null && rewardedTransitionLifecycleCallbacks != null) {
+            application.unregisterActivityLifecycleCallbacks(rewardedTransitionLifecycleCallbacks);
+            rewardedTransitionLifecycleCallbacks = null;
+        }
         isSdkInitialized = false;
         isInitializing = false;
         pendingInitTasks.clear();

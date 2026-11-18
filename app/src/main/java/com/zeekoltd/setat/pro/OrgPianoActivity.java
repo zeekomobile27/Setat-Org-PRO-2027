@@ -709,7 +709,10 @@ public class OrgPianoActivity extends AppCompatActivity {
             yandexAdsHelper = YandexAdsHelper.getInstance(this);
             yandexAdsHelper.setCurrentLanguage(currentLang);
         }
-        yandexAdsHelper.showAdDialog(fileUrl, rewardedUrl -> downloadAndInstallSet(rewardedUrl, setName));
+        yandexAdsHelper.showAdDialog(fileUrl, rewardedUrl -> {
+            downloadAndInstallSet(rewardedUrl, setName);
+            yandexAdsHelper.onRewardedInternalActionStarted();
+        });
     }
 
     private void loadDefaultSet() {

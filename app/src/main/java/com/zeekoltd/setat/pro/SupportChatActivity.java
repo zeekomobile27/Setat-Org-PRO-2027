@@ -250,6 +250,7 @@ public class SupportChatActivity extends AppCompatActivity {
     
     // 🌟 دالة لفتح الرابط في المتصفح الداخلي 🌟
     public void openUrlInBrowser(String url) {
+        if (yandexAdsHelper != null) yandexAdsHelper.markRewardedExternalLaunchStarted();
         try {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setToolbarColor(Color.parseColor("#0A0F14"));
@@ -259,6 +260,7 @@ public class SupportChatActivity extends AppCompatActivity {
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             } catch (Exception ex) {
+                if (yandexAdsHelper != null) yandexAdsHelper.onRewardedExternalLaunchFailed();
                 Toast.makeText(this, tr("خطأ في فتح الرابط", "Error opening link"), Toast.LENGTH_SHORT).show();
             }
         }
