@@ -89,7 +89,6 @@ public class YandexAdsHelper {
     private boolean isRewardLoaded;
     private boolean isRewardedLoading;
     private boolean userEarnedReward;
-    private boolean isRewardedShowPending;
     private String pendingUrlAfterAd = "";
     private boolean isShowingAdDialog;
     private Dialog currentAdDialog;
@@ -202,158 +201,55 @@ public class YandexAdsHelper {
         isRewardedLoading = true;
         rewardedAdLoader.loadAd(new AdRequest.Builder(REWARDED_AD_UNIT_ID).build(), new RewardedAdLoadListener() {
             @Override public void onAdLoaded(@NonNull RewardedAd ad) {
-                handler.post(() -> {
-                    if (isDialogTimedOut) {
-                        isRewardLoaded = false;
-                        isRewardedLoading = false;
-                        return;
-                    }
-                    mRewardedAd = ad;
-                    isRewardLoaded = true;
-                    isRewardedLoading = false;
-                    CrashDiagnostics.recordAdEvent("rewarded_loaded");
-                });
+                if (isDialogTimedOut) { isRewardLoaded = false; isRewardedLoading = false; return; }
+                mRewardedAd = ad; isRewardLoaded = true; isRewardedLoading = false;
             }
             @Override public void onAdFailedToLoad(@NonNull AdRequestError error) {
-                handler.post(() -> {
-                    android.util.Log.e("YandexAds", "Rewarded failed to load: " + error.getDescription());
-                    CrashDiagnostics.recordAdEvent("rewarded_load_failed: " + error.getDescription());
-                    mRewardedAd = null;
-                    isRewardLoaded = false;
-                    isRewardedLoading = false;
-                });
+                mRewardedAd = null; isRewardLoaded = false; isRewardedLoading = false;
             }
         });
     }
 
     public void showRewardedAd(OnRewardEarnedListener rewardListener) {
-        // Yandex requires every SDK call to run on the main thread. Normalize
-        // the thread before touching either the SDK or its surrounding UI.
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            handler.post(() -> showRewardedAd(rewardListener));
-            return;
-        }
         pendingRewardListener = rewardListener;
         Activity activity = getActivity();
         if (mRewardedAd == null || !isRewardLoaded) {
             if (activity != null) activity.runOnUiThread(this::showAdLoadingDialog);
             return;
         }
-        if (activity == null || !isActivityValid() || isRewardedShowPending) return;
+        if (activity == null || !isActivityValid()) return;
         RewardedAd ad = mRewardedAd;
-        isRewardedShowPending = true;
-        userEarnedReward = false;
-        CrashDiagnostics.recordAdEvent("rewarded_show_requested; selected network not reported yet");
-
-        // Both app dialogs use full-screen windows. Detach them before asking
-        // the SDK to launch its full-screen ad Activity.
-        dismissRewardedFlowDialogs();
-        isShowingAdDialog = true;
-        handler.postDelayed(() -> {
-            Activity current = getActivity();
-            if (!isActivityValid() || current == null || mRewardedAd != ad) {
-                isRewardedShowPending = false;
-                isShowingAdDialog = false;
-                return;
+        ad.setAdEventListener(new RewardedAdEventListener() {
+            @Override public void onAdShown() { mRewardedAd = null; isRewardLoaded = false; }
+            @Override public void onAdFailedToShow(@NonNull AdError error) {
+                clearRewarded(ad);
+                Activity current = getActivity();
+                if (current != null) current.runOnUiThread(YandexAdsHelper.this::showAdLoadErrorDialog);
             }
-            showLoadedRewardedAd(ad, current);
-        }, 250L);
-    }
-
-    private void showLoadedRewardedAd(RewardedAd ad, Activity activity) {
-        try {
-            ad.setAdEventListener(new RewardedAdEventListener() {
-                @Override public void onAdShown() {
-                    CrashDiagnostics.recordAdEvent("rewarded_onAdShown");
-                    handler.post(() -> {
-                        isRewardedShowPending = false;
-                        if (mRewardedAd == ad) mRewardedAd = null;
-                        isRewardLoaded = false;
-                    });
-                }
-
-                @Override public void onAdFailedToShow(@NonNull AdError error) {
-                    CrashDiagnostics.recordAdEvent("rewarded_failed_to_show: " + error.getDescription());
-                    handler.post(() -> {
-                        android.util.Log.e("YandexAds", "Rewarded failed to show: " + error.getDescription());
-                        clearRewarded(ad);
-                        userEarnedReward = false;
-                        isRewardedShowPending = false;
-                        isShowingAdDialog = false;
-                        if (isActivityValid()) showAdLoadErrorDialog();
-                    });
-                }
-
-                @Override public void onAdDismissed() {
-                    CrashDiagnostics.recordAdEvent("rewarded_dismissed");
-                    handler.post(() -> {
-                        if (userEarnedReward) {
-                            showBlockingOverlay();
-                            handler.postDelayed(() -> {
-                                if (isActivityValid() && pendingRewardListener != null) {
-                                    OnRewardEarnedListener listener = pendingRewardListener;
-                                    String rewardedUrl = pendingUrlAfterAd;
-                                    pendingRewardListener = null;
-                                    listener.onRewardEarned(rewardedUrl);
-                                }
-                                handler.postDelayed(YandexAdsHelper.this::hideBlockingOverlay, 300L);
-                            }, 250L);
-                        } else {
-                            hideBlockingOverlay();
-                            pendingRewardListener = null;
+            @Override public void onAdDismissed() {
+                Activity current = getActivity();
+                if (current != null) current.runOnUiThread(YandexAdsHelper.this::showBlockingOverlay);
+                if (userEarnedReward) {
+                    handler.postDelayed(() -> {
+                        Activity a = getActivity();
+                        if (a != null && pendingRewardListener != null) {
+                            pendingRewardListener.onRewardEarned(pendingUrlAfterAd);
+                            handler.postDelayed(YandexAdsHelper.this::hideBlockingOverlay, 300);
                         }
-                        userEarnedReward = false;
-                        clearRewarded(ad);
-                        isRewardedShowPending = false;
-                        isShowingAdDialog = false;
-                        safeDismissDialog(currentAdDialog);
-                        currentAdDialog = null;
-                    });
-                }
-
-                @Override public void onAdClicked() { }
-                @Override public void onAdImpression(@Nullable ImpressionData data) {
-                    String networkName = "unknown";
-                    String networkAdUnit = "unknown";
-                    try {
-                        if (data != null && data.getRawData() != null) {
-                            org.json.JSONObject json = new org.json.JSONObject(data.getRawData());
-                            org.json.JSONObject network = json.optJSONObject("network");
-                            if (network != null) {
-                                networkName = network.optString("name", "unknown");
-                                networkAdUnit = network.optString("ad_unit_id", "unknown");
-                            }
-                        }
-                    } catch (Exception ignored) { }
-                    CrashDiagnostics.recordAdEvent("rewarded_impression; network=" + networkName
-                            + "; network_ad_unit_id=" + networkAdUnit);
-                }
-
-                @Override public void onRewarded(@NonNull Reward reward) {
-                    CrashDiagnostics.recordAdEvent("rewarded_reward_callback");
-                    handler.post(() -> userEarnedReward = true);
-                }
-            });
-            CrashDiagnostics.recordAdEvent("calling_rewarded_ad_show; selected network may appear in stack or impression callback");
-            ad.show(activity);
-        } catch (RuntimeException e) {
-            android.util.Log.e("YandexAds", "Could not start rewarded ad", e);
-            CrashDiagnostics.saveHandledException("RewardedAd.show(activity)", e);
-            clearRewarded(ad);
-            userEarnedReward = false;
-            isRewardedShowPending = false;
-            isShowingAdDialog = false;
-            if (isActivityValid()) showAdLoadErrorDialog();
-        }
-    }
-
-    private void dismissRewardedFlowDialogs() {
-        if (currentAdDialog != null) {
-            safeDismissDialog(currentAdDialog);
-            currentAdDialog = null;
-        }
-        isDialogLoading = false;
-        if (blockingOverlay != null) hideBlockingOverlay();
+                    }, 250);
+                    userEarnedReward = false;
+                } else hideBlockingOverlay();
+                clearRewarded(ad);
+                Activity a = getActivity();
+                if (a != null) a.runOnUiThread(() -> {
+                    safeDismissDialog(currentAdDialog); currentAdDialog = null; isShowingAdDialog = false;
+                });
+            }
+            @Override public void onAdClicked() { }
+            @Override public void onAdImpression(@Nullable ImpressionData data) { }
+            @Override public void onRewarded(@NonNull Reward reward) { userEarnedReward = true; }
+        });
+        ad.show(activity);
     }
 
     private void clearRewarded(RewardedAd ad) {
@@ -377,7 +273,6 @@ public class YandexAdsHelper {
         if (mRewardedAd != null) mRewardedAd.setAdEventListener(null);
         mRewardedAd = null; isRewardLoaded = false; isRewardedLoading = false;
         rewardedAdLoader = null; pendingRewardListener = null; isDialogLoading = false; isDialogTimedOut = false;
-        isRewardedShowPending = false;
     }
 
     public void loadBannerAd(FrameLayout container, ImageView placeholder) {
