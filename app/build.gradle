@@ -33,7 +33,9 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            shrinkResources true
+            // Keep resources from every dynamically loaded mediation SDK.
+            // R8 code shrinking/minification stays enabled below.
+            shrinkResources false
 
             proguardFiles getDefaultProguardFile(
                 'proguard-android-optimize.txt'
