@@ -647,7 +647,7 @@ public class YandexAdsHelper {
             // Keep isRewardedLoading true until the SDK responds. Starting another
             // request here could overlap a request that is still active in the SDK.
         };
-        handler.postDelayed(rewardedLoadTimeoutRunnable, 25_000L);
+        handler.postDelayed(rewardedLoadTimeoutRunnable, 30_000L);
     }
 
     private void cancelRewardedWaitTimeout() {
