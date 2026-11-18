@@ -211,11 +211,13 @@ public class YandexAdsHelper {
                     mRewardedAd = ad;
                     isRewardLoaded = true;
                     isRewardedLoading = false;
+                    CrashDiagnostics.recordAdEvent("rewarded_loaded");
                 });
             }
             @Override public void onAdFailedToLoad(@NonNull AdRequestError error) {
                 handler.post(() -> {
                     android.util.Log.e("YandexAds", "Rewarded failed to load: " + error.getDescription());
+                    CrashDiagnostics.recordAdEvent("rewarded_load_failed: " + error.getDescription());
                     mRewardedAd = null;
                     isRewardLoaded = false;
                     isRewardedLoading = false;
@@ -241,6 +243,7 @@ public class YandexAdsHelper {
         RewardedAd ad = mRewardedAd;
         isRewardedShowPending = true;
         userEarnedReward = false;
+        CrashDiagnostics.recordAdEvent("rewarded_show_requested; selected network not reported yet");
 
         // Both app dialogs use full-screen windows. Detach them before asking
         // the SDK to launch its full-screen ad Activity.
@@ -261,6 +264,7 @@ public class YandexAdsHelper {
         try {
             ad.setAdEventListener(new RewardedAdEventListener() {
                 @Override public void onAdShown() {
+                    CrashDiagnostics.recordAdEvent("rewarded_onAdShown");
                     handler.post(() -> {
                         isRewardedShowPending = false;
                         if (mRewardedAd == ad) mRewardedAd = null;
@@ -269,6 +273,7 @@ public class YandexAdsHelper {
                 }
 
                 @Override public void onAdFailedToShow(@NonNull AdError error) {
+                    CrashDiagnostics.recordAdEvent("rewarded_failed_to_show: " + error.getDescription());
                     handler.post(() -> {
                         android.util.Log.e("YandexAds", "Rewarded failed to show: " + error.getDescription());
                         clearRewarded(ad);
@@ -280,6 +285,7 @@ public class YandexAdsHelper {
                 }
 
                 @Override public void onAdDismissed() {
+                    CrashDiagnostics.recordAdEvent("rewarded_dismissed");
                     handler.post(() -> {
                         if (userEarnedReward) {
                             showBlockingOverlay();
@@ -306,15 +312,33 @@ public class YandexAdsHelper {
                 }
 
                 @Override public void onAdClicked() { }
-                @Override public void onAdImpression(@Nullable ImpressionData data) { }
+                @Override public void onAdImpression(@Nullable ImpressionData data) {
+                    String networkName = "unknown";
+                    String networkAdUnit = "unknown";
+                    try {
+                        if (data != null && data.getRawData() != null) {
+                            org.json.JSONObject json = new org.json.JSONObject(data.getRawData());
+                            org.json.JSONObject network = json.optJSONObject("network");
+                            if (network != null) {
+                                networkName = network.optString("name", "unknown");
+                                networkAdUnit = network.optString("ad_unit_id", "unknown");
+                            }
+                        }
+                    } catch (Exception ignored) { }
+                    CrashDiagnostics.recordAdEvent("rewarded_impression; network=" + networkName
+                            + "; network_ad_unit_id=" + networkAdUnit);
+                }
 
                 @Override public void onRewarded(@NonNull Reward reward) {
+                    CrashDiagnostics.recordAdEvent("rewarded_reward_callback");
                     handler.post(() -> userEarnedReward = true);
                 }
             });
+            CrashDiagnostics.recordAdEvent("calling_rewarded_ad_show; selected network may appear in stack or impression callback");
             ad.show(activity);
         } catch (RuntimeException e) {
             android.util.Log.e("YandexAds", "Could not start rewarded ad", e);
+            CrashDiagnostics.saveHandledException("RewardedAd.show(activity)", e);
             clearRewarded(ad);
             userEarnedReward = false;
             isRewardedShowPending = false;

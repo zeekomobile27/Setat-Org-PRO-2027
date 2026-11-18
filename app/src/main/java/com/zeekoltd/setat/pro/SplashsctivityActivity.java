@@ -67,6 +67,12 @@ public class SplashsctivityActivity extends AppCompatActivity {
         EdgeToEdgeHelper.enable(getWindow());
         
         setContentView(R.layout.splashsctivity);
+
+        String pendingCrashReport = CrashDiagnostics.getPendingReport(this);
+        if (pendingCrashReport != null) {
+            showCrashReport(pendingCrashReport);
+            return;
+        }
         
         videoView1 = findViewById(R.id.videoView1);
         blurSkipBtn = findViewById(R.id.blurSkipBtn);
@@ -152,6 +158,48 @@ public class SplashsctivityActivity extends AppCompatActivity {
                 blurSkipBtn.getChildAt(0).setOnClickListener(skipListener);
             }
         }
+    }
+
+    private void showCrashReport(String report) {
+        android.widget.ScrollView scrollView = new android.widget.ScrollView(this);
+        int padding = (int) (16 * getResources().getDisplayMetrics().density);
+        scrollView.setPadding(padding, padding, padding, padding);
+        TextView reportView = new TextView(this);
+        reportView.setText(report);
+        reportView.setTextIsSelectable(true);
+        reportView.setTextSize(12);
+        reportView.setTypeface(android.graphics.Typeface.MONOSPACE);
+        scrollView.addView(reportView, new android.widget.ScrollView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        int maxHeight = (int) (getResources().getDisplayMetrics().heightPixels * 0.58f);
+        scrollView.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, maxHeight));
+
+        androidx.appcompat.app.AlertDialog dialog = new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("تم تسجيل توقف سابق للتطبيق")
+                .setMessage("التقرير محفوظ على الهاتف. انسخه وأرسله لي لمعرفة سبب الانهيار والشبكة المتسببة إن ظهرت في الأثر.")
+                .setView(scrollView)
+                .setCancelable(false)
+                .setPositiveButton("نسخ التقرير وفتح التطبيق", (d, which) -> {
+                    boolean copied = CrashDiagnostics.copyToClipboard(this, report);
+                    CrashDiagnostics.clearPendingReport(this);
+                    android.widget.Toast.makeText(this,
+                            copied ? "تم نسخ تقرير الانهيار" : "تعذر نسخ التقرير",
+                            android.widget.Toast.LENGTH_LONG).show();
+                    continueAfterCrashReport();
+                })
+                .setNegativeButton("فتح التطبيق", (d, which) -> {
+                    CrashDiagnostics.clearPendingReport(this);
+                    continueAfterCrashReport();
+                })
+                .create();
+        dialog.show();
+    }
+
+    private void continueAfterCrashReport() {
+        Intent intent = new Intent(SplashsctivityActivity.this, LanguageActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void setupVideo() {

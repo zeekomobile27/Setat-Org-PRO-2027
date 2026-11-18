@@ -24,6 +24,9 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Install before SDK initialization so uncaught ad-SDK crashes are saved.
+        CrashDiagnostics.install(this);
         
         updateResources(this);
 
