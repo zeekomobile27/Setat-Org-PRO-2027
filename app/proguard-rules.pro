@@ -32,6 +32,10 @@
 # ==========================================
 # 5. الحماية الشاملة المانعة للانهيار (حماية الشاشات واللغات)
 # ==========================================
+# Keep the ad and crash-diagnostic frames readable in crash reports.
+-keep class com.zeekoltd.setat.pro.YandexAdsHelper { *; }
+-keep class com.zeekoltd.setat.pro.CrashDiagnostics { *; }
+
 # حماية جميع الأنشطة (Activities) من إعادة التوجيه الخاطئ عند تغيير اللغة
 -keep public class * extends androidx.appcompat.app.AppCompatActivity {
     public void *(android.view.View);
