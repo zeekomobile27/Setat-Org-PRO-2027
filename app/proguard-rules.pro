@@ -6,9 +6,7 @@
 # ==========================================
 # 2. حماية محرك الصوت C++ (JNI)
 # ==========================================
--keepclasseswithmembernames class * {
-    native <methods>;
-}
+# NativeAudioEngine is kept in full below so JNI method names remain unchanged.
 -keep class com.zeekoltd.setat.pro.NativeAudioEngine { *; }
 
 # ==========================================
