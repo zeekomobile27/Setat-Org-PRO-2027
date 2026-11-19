@@ -95,6 +95,33 @@ jobs:
 
           echo "نجح توقيع APK و AAB والتحقق منهما."
 
+      # Read the actual optimization metadata from the signed App Bundle.
+      # This reports the three Play metrics without running the memory-heavy HTML analyzer.
+      - name: Report R8 metrics from AAB
+        run: |
+          AAB_PATH=$(find app/build/outputs/bundle/release -name "*.aab" -print -quit)
+          python3 - "$AAB_PATH" "$GITHUB_STEP_SUMMARY" <<'PYTHON'
+          import json, sys, zipfile
+          from pathlib import Path
+
+          aab_path, summary_path = sys.argv[1], sys.argv[2]
+          with zipfile.ZipFile(aab_path) as bundle:
+              report = json.loads(bundle.read("BUNDLE-METADATA/com.android.tools/r8.json"))
+          stats = report["stats"]
+          metrics = {
+              "DEX shrinking": 100.0 - stats["noShrinkingPercentage"],
+              "DEX obfuscation": 100.0 - stats["noObfuscationPercentage"],
+              "DEX optimization": 100.0 - stats["noOptimizationPercentage"],
+          }
+          lines = ["### R8 metrics from signed AAB", ""]
+          for name, value in metrics.items():
+              status = "PASS" if value >= 25.0 else "below 25%"
+              line = f"- {name}: **{value:.2f}%** ({status})"
+              print(line)
+              lines.append(line)
+          Path(summary_path).write_text(Path(summary_path).read_text() + "\n".join(lines) + "\n")
+          PYTHON
+
       # رفع APK الموقّع
       - name: Upload Signed Release APK
         uses: actions/upload-artifact@v4
