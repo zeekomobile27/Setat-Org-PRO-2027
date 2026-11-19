@@ -111,18 +111,13 @@ jobs:
           path: app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
 
-      # Explicitly run the analyzer task; AGP 9.5 writes its HTML report here.
-      # This diagnostic step must not fail an otherwise successful app build.
-      - name: Generate R8 Configuration Analyzer Report
-        if: always()
-        continue-on-error: true
-        run: ./gradlew :app:analyzeReleaseR8Config --no-daemon
-
-      - name: Upload R8 Configuration Analyzer Report
+      # Upload R8's merged rules text; unlike the HTML analyzer, this avoids
+      # the memory-heavy report generator while preserving the successful app build.
+      - name: Upload R8 Merged Configuration
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Setat-R8-Analyzer-Report
-          path: app/build/reports/r8/r8-config-analyzer-release.html
+          name: Setat-R8-Merged-Configuration
+          path: app/build/outputs/mapping/release/r8-merged-configuration.txt
           if-no-files-found: warn
           retention-days: 7
