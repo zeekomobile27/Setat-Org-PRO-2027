@@ -19,7 +19,7 @@ android {
         // Keep API 24 as requested.
         minSdk 24
         targetSdk 37
-        versionCode 17
+        versionCode 16
         versionName "2027.4"
         externalNativeBuild {
             cmake {
@@ -84,7 +84,11 @@ dependencies {
     implementation 'nl.dionsegijn:konfetti-xml:2.2.0'
 
     // Yandex Easy Monetization mediation (includes the supported ad network adapters).
-    implementation 'com.yandex.android:mobileads-mediation:8.6.0.0'
+    // Preserve the mediation adapters while excluding optional LevelPlay Ad Quality telemetry.
+    // Unity supports this exclusion with LevelPlay 8.9+; the project resolves 9.6.0.
+    implementation('com.yandex.android:mobileads-mediation:8.6.0.0') {
+        exclude group: 'com.unity3d.ads-mediation', module: 'adquality-sdk'
+    }
 
     // Yandex AppMetrica analytics.
     implementation 'io.appmetrica.analytics:analytics:8.6.0'
