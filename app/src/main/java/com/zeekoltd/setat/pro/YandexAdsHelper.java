@@ -725,7 +725,7 @@ public class YandexAdsHelper {
         blockingOverlay.setCanceledOnTouchOutside(false);
         
         FrameLayout overlayLayout = new FrameLayout(activity);
-        overlayLayout.setBackgroundColor(Color.parseColor("#E6000000"));
+        overlayLayout.setBackgroundColor(Color.parseColor("#6600FF00"));
         overlayLayout.setClickable(true);
         overlayLayout.setFocusable(true);
         overlayLayout.setOnTouchListener((v, event) -> true);
