@@ -46,6 +46,7 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
     }
 
     externalNativeBuild {
@@ -84,7 +85,6 @@ dependencies {
 
     // Yandex Easy Monetization mediation (includes the supported ad network adapters).
     implementation 'com.yandex.android:mobileads-mediation:8.6.0.0'
-    
 
     // Yandex AppMetrica analytics.
     implementation 'io.appmetrica.analytics:analytics:8.6.0'
@@ -121,4 +121,7 @@ dependencies {
 
     // Native audio
     implementation 'com.google.oboe:oboe:1.11.0'
+
+    // Required by billing:9.2.0 through core library desugaring.
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
