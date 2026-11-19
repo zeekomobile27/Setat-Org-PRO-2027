@@ -27,3 +27,6 @@
 
 # Yandex mediation and its adapters provide their own consumer keep rules.
 # Avoid package-wide keep rules here: they prevent shrinking, optimization, and obfuscation.
+
+# Export R8 merged rules for safe diagnosis; this does not change app behavior.
+-printconfiguration build/outputs/mapping/release/r8-merged-configuration.txt
