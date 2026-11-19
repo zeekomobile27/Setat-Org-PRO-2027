@@ -110,3 +110,14 @@ jobs:
           name: Setat-Org-PRO-2027-AAB
           path: app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
+
+      # AGP 9.5 generates this report during the release R8 build.
+      # Upload it so broad app or mediation-library keep rules can be identified safely.
+      - name: Upload R8 Configuration Analyzer Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Setat-R8-Analyzer-Report
+          path: app/build/outputs/mapping/release/configanalyzer.html
+          if-no-files-found: warn
+          retention-days: 7
