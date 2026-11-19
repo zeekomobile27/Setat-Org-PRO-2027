@@ -111,13 +111,18 @@ jobs:
           path: app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
 
-      # AGP 9.5 generates this report during the release R8 build.
-      # Upload it so broad app or mediation-library keep rules can be identified safely.
+      # Explicitly run the analyzer task; AGP 9.5 writes its HTML report here.
+      # This diagnostic step must not fail an otherwise successful app build.
+      - name: Generate R8 Configuration Analyzer Report
+        if: always()
+        continue-on-error: true
+        run: ./gradlew :app:analyzeReleaseR8Config --no-daemon
+
       - name: Upload R8 Configuration Analyzer Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Setat-R8-Analyzer-Report
-          path: app/build/outputs/mapping/release/configanalyzer.html
+          path: app/build/reports/r8/r8-config-analyzer-release.html
           if-no-files-found: warn
           retention-days: 7
