@@ -6,27 +6,49 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    
+
     <!-- 2. صلاحيات إشعارات أندرويد 13+ (مهم جداً) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    
+
     <!-- Advertising identifier permission used by the Yandex mediation adapters. -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
-    
+
     <!-- 4. صلاحيات التخزين الآمنة (متوافقة مع سياسات Scoped Storage من جوجل) -->
     <!-- نطلب صلاحية القراءة العادية للإصدارات القديمة فقط (أندرويد 12 وما دون) -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
     <!-- في أندرويد 13 وما فوق، نطلب صلاحية قراءة الملفات الصوتية فقط لبرامج الموسيقى -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    
+
     <!-- 5. إبقاء الشاشة مضاءة أثناء العزف -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <!-- 6. إخبار النظام بأن التطبيق يعتمد على اللمس المتعدد (للعزف) ولكن بشكل غير إلزامي لدعم الأجهزة الضعيفة -->
-    <uses-feature android:name="android.hardware.touchscreen.multitouch" android:required="false" />
-    <uses-feature android:name="android.hardware.touchscreen.multitouch.distinct" android:required="false" />
-    <uses-feature android:name="android.hardware.touchscreen.multitouch.jazzhand" android:required="false" />
+    <!-- ميزات اختيارية لتجنب استبعاد الأجهزة التي لا تعلن عن هذه الميزات -->
+    <uses-feature
+        android:name="android.hardware.screen.landscape"
+        android:required="false"
+        tools:replace="android:required" />
+    <uses-feature
+        android:name="android.hardware.screen.portrait"
+        android:required="false"
+        tools:replace="android:required" />
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false"
+        tools:replace="android:required" />
+
+    <!-- اللمس المتعدد اختياري لدعم الأجهزة المختلفة -->
+    <uses-feature
+        android:name="android.hardware.touchscreen.multitouch"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen.multitouch.distinct"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen.multitouch.jazzhand"
+        android:required="false" />
 
     <application
         android:name=".MyApplication"
@@ -38,7 +60,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:hardwareAccelerated="true"
-        android:usesCleartextTraffic="false" 
+        android:usesCleartextTraffic="false"
         android:largeHeap="true"
         tools:targetApi="36">
 
@@ -56,32 +78,108 @@
         </activity>
 
         <!-- باقي الشاشات تم إزالة قيد الـ Portrait منها استجابةً لسياسة جوجل للتابلت و Android 16 -->
-        <activity android:name=".MainActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".MainactivityActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatshabiActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatmonwahActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".NewsetatActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatdabakatActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatiraqActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetategeptActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SetatehtrafeActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".Org2025Activity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".Them2026Activity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".AlertActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".LanguageActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".DzirActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".YemeActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".NewActivity" android:hardwareAccelerated="true" android:exported="false" />
-        
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".MainactivityActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".SetatshabiActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".SetatmonwahActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".NewsetatActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".SetatdabakatActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".SetatiraqActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".SetategeptActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".SetatehtrafeActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".Org2025Activity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".Them2026Activity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".AlertActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".LanguageActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".DzirActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".YemeActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".NewActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+
         <!-- إضافة الشاشة الشائعة الجديدة هنا -->
-        <activity android:name=".PopularActivity" android:hardwareAccelerated="true" android:exported="false" />
-        
-        <activity android:name=".SoriActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".ChatActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SupportChatActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".AdminChatsListActivity" android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".FavoritesActivity" android:hardwareAccelerated="true" android:exported="false" />
-        <activity android:name=".SearchActivity" android:hardwareAccelerated="true" android:exported="false" />
+        <activity
+            android:name=".PopularActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+
+        <activity
+            android:name=".SoriActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".ChatActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".SupportChatActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".AdminChatsListActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".FavoritesActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
+        <activity
+            android:name=".SearchActivity"
+            android:hardwareAccelerated="true"
+            android:exported="false" />
 
         <!-- شاشة العزف: الاتجاه الأفقي على الهواتف، مع السماح بالتكيّف على الشاشات الكبيرة -->
         <activity
@@ -117,7 +215,7 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@android:color/holo_blue_bright" />
-            
+
         <!-- Required Google App ID for AdMob as a Yandex mediation adapter. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
