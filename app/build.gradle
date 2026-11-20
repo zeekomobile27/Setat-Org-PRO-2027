@@ -19,7 +19,7 @@ android {
         // Keep API 24 as requested.
         minSdk 24
         targetSdk 37
-        versionCode 18
+        versionCode 16
         versionName "2027.4"
         externalNativeBuild {
             cmake {
@@ -33,20 +33,9 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            // Keep resources from every dynamically loaded mediation SDK.
-            // R8 code shrinking/minification stays enabled below.
-            shrinkResources false
-
-            // The analyzer found an overbroad consumer rule in this exact
-            // optional adapter: "-keep class androidx.** { *; }". Ignore
-            // only that adapter's bundled rules; equivalent Mintegral SDK
-            // rules are supplied by the Yandex adapter dependency below, and
-            // the narrow AndroidX entry points are retained in proguard-rules.pro.
-            optimization {
-                keepRules {
-                    ignoreFrom 'com.unity3d.ads-mediation:mintegral-adapter:5.19.0'
-                }
-            }
+            // Enable resource shrinking now that Mintegral is removed.
+            // App audio/dynamic resources remain protected by the existing res/raw/keep.xml files.
+            shrinkResources true
 
             proguardFiles getDefaultProguardFile(
                 'proguard-android-optimize.txt'
@@ -94,27 +83,15 @@ dependencies {
     implementation 'com.vanniktech:emoji-google:0.24.1'
     implementation 'nl.dionsegijn:konfetti-xml:2.2.0'
 
-    // Yandex Mobile Ads core + the same supported partner adapters used by
-    // the current 8.6.0.0 mediation bundle, declared individually.
-    // The old unified bundle also pulled the deprecated IronSource/LevelPlay
-    // adapter and its nested LevelPlay mediation stack.
+    // Yandex Mobile Ads core plus only the seven requested demand sources:
+    // Google AdMob, Unity Ads, InMobi, Yandex Ads, Pangle, BIGO Ads, AppLovin.
     implementation 'com.yandex.android:mobileads:8.6.0'
-    implementation 'com.yandex.ads.mediation:mobileads-applovin:13.6.3.3'
-    implementation 'com.yandex.ads.mediation:mobileads-appnext:2.7.6.473.26'
-    implementation 'com.yandex.ads.mediation:mobileads-bigoads:6.1.0.0'
-    implementation 'com.yandex.ads.mediation:mobileads-chartboost:9.14.0.1'
-    implementation 'com.yandex.ads.mediation:mobileads-digitalturbine:8.4.7.1'
     implementation 'com.yandex.ads.mediation:mobileads-google-nextgen:1.3.1.0'
-    implementation 'com.yandex.ads.mediation:mobileads-inmobi:11.4.1.1'
-    implementation 'com.yandex.ads.mediation:mobileads-moloco:4.12.0.0'
-    implementation 'com.yandex.ads.mediation:mobileads-pangle:8.3.0.3.0'
-    implementation 'com.yandex.ads.mediation:mobileads-startapp:5.3.1.3'
-    implementation 'com.yandex.ads.mediation:mobileads-vungle:7.7.8.1'
-    implementation 'com.yandex.ads.mediation:mobileads-mytarget:5.51.2.2'
-    implementation 'com.yandex.ads.mediation:mobileads-mintegral:17.1.81.1'
     implementation 'com.yandex.ads.mediation:mobileads-unityads:4.20.0.1'
-    implementation 'com.yandex.ads.mediation:mobileads-zmaticoo:1.8.5.17'
-    implementation 'com.yandex.ads.mediation:mobileads-extras:8.6.0.0'
+    implementation 'com.yandex.ads.mediation:mobileads-inmobi:11.4.1.1'
+    implementation 'com.yandex.ads.mediation:mobileads-pangle:8.3.0.3.0'
+    implementation 'com.yandex.ads.mediation:mobileads-bigoads:6.1.0.0'
+    implementation 'com.yandex.ads.mediation:mobileads-applovin:13.6.3.3'
 
     // Yandex AppMetrica analytics.
     implementation 'io.appmetrica.analytics:analytics:8.6.0'
@@ -144,10 +121,6 @@ dependencies {
     implementation "androidx.media3:media3-exoplayer:$media3_version"
     implementation "androidx.media3:media3-datasource:$media3_version"
     implementation "androidx.media3:media3-database:$media3_version"
-
-    // Legacy ExoPlayer 2 APIs required by Chartboost/Moloco mediation adapters.
-    // This is separate from Media3 and does not replace the app's Media3 player.
-    implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
 
     // Native audio
     implementation 'com.google.oboe:oboe:1.11.0'
