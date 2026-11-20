@@ -92,7 +92,7 @@ public class YandexAdsHelper {
     private boolean waitingForRewardedAd;
     private boolean isShowingRewardedAd;
     private long rewardedRequestGeneration;
-    private volatile boolean userEarnedReward;
+    private boolean rewardedActionDispatched;
     private String pendingUrlAfterAd = "";
     private boolean isShowingAdDialog;
     private Dialog currentAdDialog;
@@ -217,7 +217,7 @@ public class YandexAdsHelper {
             initialize(this::startRewardedAdLoad);
             return;
         }
-        // A single shared loader/request is kept alive across all set and theme screens.
+        // Reuse one loader across all set and theme screens.
         if (isRewardLoaded || isRewardedLoading) return;
         Activity activity = getActivity();
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
@@ -230,7 +230,7 @@ public class YandexAdsHelper {
             rewardedAdLoader.loadAd(new AdRequest.Builder(REWARDED_AD_UNIT_ID).build(), new RewardedAdLoadListener() {
             @Override public void onAdLoaded(@NonNull RewardedAd ad) {
                 handler.post(() -> {
-                    // Do not cache ads delivered after the user cancels or the wait times out.
+                    // A timed-out/cancelled request is invalidated. Never keep or show a late ad.
                     if (requestGeneration != rewardedRequestGeneration || !isRewardedLoading || !waitingForRewardedAd) {
                         ad.setAdEventListener(null);
                         if (requestGeneration == rewardedRequestGeneration) isRewardedLoading = false;
@@ -253,7 +253,7 @@ public class YandexAdsHelper {
                     if (waitingForRewardedAd) {
                         waitingForRewardedAd = false;
                         dismissAdLoadingDialog();
-                        showAdLoadErrorDialog();
+                        showAdLoadErrorDialog(false);
                     }
                 });
             }
@@ -266,7 +266,9 @@ public class YandexAdsHelper {
                 if (waitingForRewardedAd) {
                     waitingForRewardedAd = false;
                     dismissAdLoadingDialog();
-                    showAdLoadErrorDialog();
+                    // This is not a network no-fill response. Keep the prompt open so the user
+                    // can explicitly try again without being shown a misleading no-ad dialog.
+                    Toast.makeText(activity, tr("تعذر بدء طلب الإعلان. حاول مرة أخرى.", "Could not start the ad request. Please try again."), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -277,7 +279,11 @@ public class YandexAdsHelper {
         pendingRewardListener = rewardListener;
         if (isRewardLoaded && mRewardedAd != null) {
             waitingForRewardedAd = true;
-            showAdLoadingDialog();
+            if (!showAdLoadingDialog()) {
+                waitingForRewardedAd = false;
+                pendingRewardListener = null;
+                return;
+            }
             presentLoadedRewardedAd();
             return;
         }
@@ -285,7 +291,11 @@ public class YandexAdsHelper {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
         waitingForRewardedAd = true;
-        showAdLoadingDialog();
+        if (!showAdLoadingDialog()) {
+            waitingForRewardedAd = false;
+            pendingRewardListener = null;
+            return;
+        }
 
         // Request an ad only after the user explicitly taps Watch Ad.
         if (!isRewardedLoading) startRewardedAdLoad();
@@ -307,7 +317,7 @@ public class YandexAdsHelper {
         cancelRewardedWaitTimeout();
         // Lock before calling the SDK so a fast second tap cannot call show() twice.
         isShowingRewardedAd = true;
-        userEarnedReward = false;
+        rewardedActionDispatched = false;
         ad.setAdEventListener(new RewardedAdEventListener() {
             @Override public void onAdShown() {
                 handler.post(() -> {
@@ -325,7 +335,7 @@ public class YandexAdsHelper {
                     isShowingRewardedAd = false;
                     waitingForRewardedAd = false;
                     dismissAdLoadingDialog();
-                    showAdLoadErrorDialog();
+                    showAdLoadErrorDialog(false);
                     dismissCurrentAdPrompt();
                 });
             }
@@ -337,9 +347,8 @@ public class YandexAdsHelper {
             @Override public void onAdClicked() { }
             @Override public void onAdImpression(@Nullable ImpressionData data) { }
             @Override public void onRewarded(@NonNull Reward reward) {
-                // Store the reward immediately. The URL is only dispatched from
-                // finishRewardedAd(), after the SDK confirms the ad was dismissed.
-                userEarnedReward = true;
+                // Open the requested download action as soon as Yandex confirms the reward.
+                handler.post(() -> dispatchRewardedActionOnce());
             }
         });
 
@@ -350,7 +359,7 @@ public class YandexAdsHelper {
             clearRewarded(ad);
             isShowingRewardedAd = false;
             dismissAdLoadingDialog();
-            showAdLoadErrorDialog();
+            showAdLoadErrorDialog(false);
             dismissCurrentAdPrompt();
         }
     }
@@ -361,24 +370,22 @@ public class YandexAdsHelper {
         dismissAdLoadingDialog();
         dismissCurrentAdPrompt();
 
-        boolean earned = userEarnedReward;
-        userEarnedReward = false;
+        // Do not preload another rewarded ad after the user finishes watching.
+    }
+
+    private void dispatchRewardedActionOnce() {
+        if (rewardedActionDispatched) return;
+        rewardedActionDispatched = true;
         OnRewardEarnedListener listener = pendingRewardListener;
         String url = pendingUrlAfterAd;
         pendingRewardListener = null;
         pendingUrlAfterAd = "";
-
-        if (!earned || listener == null || url == null || url.trim().isEmpty()) {
-            return;
-        }
-
+        if (listener == null || url == null || url.trim().isEmpty()) return;
         try {
             listener.onRewardEarned(url);
         } catch (RuntimeException error) {
             android.util.Log.e("YandexAds", "Rewarded action failed", error);
         }
-
-        // Do not preload another rewarded ad after the user finishes watching.
     }
 
     private void clearRewarded(RewardedAd ad) {
@@ -587,10 +594,10 @@ public class YandexAdsHelper {
     // ============================================================
     // 5. نافذة انتظار الإعلان المكافئ
     // ============================================================
-    private void showAdLoadingDialog() {
+    private boolean showAdLoadingDialog() {
         Activity activity = getActivity();
-        if (activity == null || !isActivityValid()) return;
-        if (adLoadingDialog != null && adLoadingDialog.isShowing()) return;
+        if (activity == null || !isActivityValid()) return false;
+        if (adLoadingDialog != null && adLoadingDialog.isShowing()) return true;
 
         adLoadingDialog = createBaseGlassDialog(activity, null,
                 tr("جاري تـحـميل الإعـــلان...", "Loading ad..."));
@@ -599,10 +606,11 @@ public class YandexAdsHelper {
 
         LinearLayout dynamicContainer = adLoadingDialog.findViewById(R.id.dialogDynamicContainer);
         if (dynamicContainer == null) {
+            android.util.Log.e("YandexAds", "Rewarded loading dialog is missing dialogDynamicContainer; request was not started");
+            safeDismissDialog(adLoadingDialog);
             adLoadingDialog = null;
-            waitingForRewardedAd = false;
-            showAdLoadErrorDialog();
-            return;
+            isDialogLoading = false;
+            return false;
         }
         ProgressBar progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleLarge);
         LinearLayout.LayoutParams pbParams = new LinearLayout.LayoutParams((int) (50 * density), (int) (50 * density));
@@ -617,6 +625,7 @@ public class YandexAdsHelper {
         safeShowDialog(adLoadingDialog);
         isDialogTimedOut = false;
         isDialogLoading = adLoadingDialog.isShowing();
+        return isDialogLoading;
     }
 
     private void scheduleRewardedWaitTimeout() {
@@ -625,10 +634,14 @@ public class YandexAdsHelper {
             if (!waitingForRewardedAd || !isDialogLoading) return;
             isDialogTimedOut = true;
             waitingForRewardedAd = false;
+            // The callback API has no cancellation handle. Invalidate this request so any
+            // response arriving later is discarded and can never be shown or cached.
+            rewardedRequestGeneration++;
+            isRewardedLoading = false;
+            isRewardLoaded = false;
+            mRewardedAd = null;
             dismissAdLoadingDialog();
-            showAdLoadErrorDialog();
-            // Keep isRewardedLoading true until the SDK responds. Starting another
-            // request here could overlap a request that is still active in the SDK.
+            showAdLoadErrorDialog(true);
         };
         handler.postDelayed(rewardedLoadTimeoutRunnable, 30_000L);
     }
@@ -652,14 +665,19 @@ public class YandexAdsHelper {
     // ============================================================
     // 6. نافذة خطأ تحميل الإعلان
     // ============================================================
-    private void showAdLoadErrorDialog() {
+    private void showAdLoadErrorDialog(boolean timedOut) {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
         isDialogLoading = false;
         if (adErrorDialog != null && adErrorDialog.isShowing()) return;
 
-        final Dialog errorDialog = createBaseGlassDialog(activity, null,
-            tr("فـشــل تـحـمـيـل الإعــلان 😥\nحاول مرة أخرى لاحقاً", "Failed to load ad 😥\nPlease try again later"));
+        final String messageAr = timedOut
+                ? "الإنترنت الخاص بك ضعيف جداً، فشل تحميل الإعلان."
+                : "لا يتوفر إعلان حالياً، حاول مرة أخرى.";
+        final String messageEn = timedOut
+                ? "Your internet connection is very weak. The ad failed to load."
+                : "No ad is available right now. Please try again.";
+        final Dialog errorDialog = createBaseGlassDialog(activity, null, tr(messageAr, messageEn));
         adErrorDialog = errorDialog;
         errorDialog.setCancelable(true);
 
@@ -759,6 +777,10 @@ public class YandexAdsHelper {
     public void dismissAdDialog() {
         dismissCurrentAdPrompt();
         waitingForRewardedAd = false;
+        if (isRewardedLoading) {
+            rewardedRequestGeneration++;
+            isRewardedLoading = false;
+        }
         dismissAdLoadingDialog();
         pendingUrlAfterAd = "";
         pendingRewardListener = null;
