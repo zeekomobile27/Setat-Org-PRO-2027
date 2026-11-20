@@ -37,6 +37,17 @@ android {
             // R8 code shrinking/minification stays enabled below.
             shrinkResources false
 
+            // The analyzer found an overbroad consumer rule in this exact
+            // optional adapter: "-keep class androidx.** { *; }". Ignore
+            // only that adapter's bundled rules; equivalent Mintegral SDK
+            // rules are supplied by the Yandex adapter dependency below, and
+            // the narrow AndroidX entry points are retained in proguard-rules.pro.
+            optimization {
+                keepRules {
+                    ignoreFrom 'com.unity3d.ads-mediation:mintegral-adapter:5.19.0'
+                }
+            }
+
             proguardFiles getDefaultProguardFile(
                 'proguard-android-optimize.txt'
             ), 'proguard-rules.pro'

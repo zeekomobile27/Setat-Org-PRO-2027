@@ -43,5 +43,24 @@
 -dontwarn com.bytedance.sdk.openadsdk.core.model.NetExtParams$RenderType
 -dontwarn com.bytedance.sdk.openadsdk.core.settings.TTSdkSettings$FETCH_REQUEST_SOURCE
 
+# Narrow replacement for the broad AndroidX keep rule shipped by
+# com.unity3d.ads-mediation:mintegral-adapter:5.19.0. The analyzer showed that
+# its "-keep class androidx.** { *; }" rule retained 14,104 classes and over
+# 155,000 members. Keep the adapter's explicit AndroidX compatibility points
+# instead of every class and member in AndroidX. The Android support rule is
+# retained as it appeared in the adapter's original consumer configuration.
+-keep class android.support.v4.** { *; }
+-keep public class androidx.viewpager.widget.PagerAdapter { *; }
+-keep public class androidx.viewpager.widget.ViewPager$OnPageChangeListener { *; }
+-keep interface androidx.annotation.IntDef { *; }
+-keep interface androidx.annotation.Nullable { *; }
+-keep interface androidx.annotation.CheckResult { *; }
+-keep interface androidx.annotation.NonNull { *; }
+-keep public class androidx.fragment.app.Fragment { *; }
+-keep public class androidx.core.content.FileProvider { *; }
+-keep public class androidx.core.app.NotificationCompat { *; }
+-keep public class androidx.appcompat.widget.AppCompatImageView { *; }
+-keep public class androidx.recyclerview.* { *; }
+
 # Keep the merged rule export used by CI for diagnosis.
 -printconfiguration build/outputs/mapping/release/r8-merged-configuration.txt
