@@ -7,25 +7,32 @@
     native <methods>;
 }
 
-# Firebase Realtime Database uses these classes via getValue(Model.class).
-# Preserve only the no-argument constructors and public JSON field names.
-# Model class names and unused methods remain eligible for R8 renaming/optimization.
+# Firebase Realtime Database uses these DTOs via getValue(Model.class).
+# Preserve only their no-argument constructors and public field names. This
+# pattern covers every screen-specific SetModelV2; the earlier exact rule only
+# protected FavoritesActivity's copy, leaving other download_url fields renameable.
 -keepclassmembers,allowoptimization class com.zeekoltd.setat.pro.**$SetModelV2 {
     public <init>();
     public <fields>;
 }
 
--keepclassmembers,allowoptimization class com.zeekoltd.setat.pro.SearchActivity$SetModelSearch {
+-keepclassmembers,allowoptimization class com.zeekoltd.setat.pro.**$SetModelSearch {
     public <init>();
     public <fields>;
 }
 
--keepclassmembers,allowoptimization class com.zeekoltd.setat.pro.Them2026Activity$ThemeModel {
+-keepclassmembers,allowoptimization class com.zeekoltd.setat.pro.**$ThemeModel {
     public <init>();
     public <fields>;
 }
 
--keepclassmembers,allowoptimization class com.zeekoltd.setat.pro.SupportChatActivity$SupportChatMessage {
+-keepclassmembers,allowoptimization class com.zeekoltd.setat.pro.**$SupportChatMessage {
+    public <init>();
+    public <fields>;
+}
+
+# This Firebase DTO is used for exclusive-set records.
+-keepclassmembers,allowoptimization class com.zeekoltd.setat.pro.**$ExclusiveSet {
     public <init>();
     public <fields>;
 }
