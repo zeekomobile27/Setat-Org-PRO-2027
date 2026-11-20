@@ -122,6 +122,15 @@ jobs:
           Path(summary_path).write_text(Path(summary_path).read_text() + "\n".join(lines) + "\n")
           PYTHON
 
+      # Analyzer is intentionally run as a separate, non-blocking diagnostic.
+      # The normal signed APK/AAB build and metrics are already complete.
+      - name: Analyze R8 keep-rule impact
+        continue-on-error: true
+        run: >-
+          ./gradlew --no-daemon --max-workers=2
+          -Dorg.gradle.jvmargs="-Xmx5g -XX:+UseParallelGC"
+          :app:analyzeReleaseR8Config
+
       # رفع APK الموقّع
       - name: Upload Signed Release APK
         uses: actions/upload-artifact@v4
@@ -137,6 +146,15 @@ jobs:
           name: Setat-Org-PRO-2027-AAB
           path: app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
+
+      - name: Upload R8 Configuration Analyzer report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Setat-R8-Configuration-Analyzer
+          path: app/build/reports/r8/r8-config-analyzer-release.html
+          if-no-files-found: warn
+          retention-days: 7
 
       # Upload R8's merged rules text; unlike the HTML analyzer, this avoids
       # the memory-heavy report generator while preserving the successful app build.
