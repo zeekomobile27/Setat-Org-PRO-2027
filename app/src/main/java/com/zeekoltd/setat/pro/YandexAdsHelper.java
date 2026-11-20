@@ -89,7 +89,6 @@ public class YandexAdsHelper {
     private RewardedAd mRewardedAd;
     private boolean isRewardLoaded;
     private boolean isRewardedLoading;
-    private boolean initialRewardedPreloadAttempted;
     private boolean waitingForRewardedAd;
     private boolean isShowingRewardedAd;
     private long rewardedRequestGeneration;
@@ -129,7 +128,6 @@ public class YandexAdsHelper {
         if (isSdkInitialized || sdkInitialized) {
             isSdkInitialized = true;
             executePendingTasks();
-            preloadRewardedOnce();
             return;
         }
         if (isInitializing) return;
@@ -145,7 +143,6 @@ public class YandexAdsHelper {
             isInitializing = false;
             handler.post(() -> {
                 executePendingTasks();
-                preloadRewardedOnce();
             });
         });
     }
@@ -162,13 +159,6 @@ public class YandexAdsHelper {
             currentAdDialog = null;
         }
         isShowingAdDialog = false;
-    }
-
-    private void preloadRewardedOnce() {
-        if (initialRewardedPreloadAttempted || !isSdkInitialized) return;
-        if (!isActivityValid()) return;
-        initialRewardedPreloadAttempted = true;
-        startRewardedAdLoad();
     }
 
     public boolean isInterstitialLoading() { return isInterstitialLoading; }
@@ -221,6 +211,8 @@ public class YandexAdsHelper {
     public boolean isInterstitialReady() { return isInterstitialLoaded && mInterstitialAd != null; }
 
     private void startRewardedAdLoad() {
+        // Rewarded requests are permitted only while the user is waiting after tapping Watch Ad.
+        if (!waitingForRewardedAd) return;
         if (!isSdkInitialized) {
             initialize(this::startRewardedAdLoad);
             return;
@@ -238,8 +230,10 @@ public class YandexAdsHelper {
             rewardedAdLoader.loadAd(new AdRequest.Builder(REWARDED_AD_UNIT_ID).build(), new RewardedAdLoadListener() {
             @Override public void onAdLoaded(@NonNull RewardedAd ad) {
                 handler.post(() -> {
-                    if (requestGeneration != rewardedRequestGeneration || !isRewardedLoading) {
+                    // Do not cache ads delivered after the user cancels or the wait times out.
+                    if (requestGeneration != rewardedRequestGeneration || !isRewardedLoading || !waitingForRewardedAd) {
                         ad.setAdEventListener(null);
+                        if (requestGeneration == rewardedRequestGeneration) isRewardedLoading = false;
                         return;
                     }
                     mRewardedAd = ad;
@@ -293,8 +287,7 @@ public class YandexAdsHelper {
         waitingForRewardedAd = true;
         showAdLoadingDialog();
 
-        // Join an existing preload if one is active; only make a fresh request after
-        // an explicit user action and only when no request is currently in flight.
+        // Request an ad only after the user explicitly taps Watch Ad.
         if (!isRewardedLoading) startRewardedAdLoad();
         scheduleRewardedWaitTimeout();
     }
@@ -385,9 +378,7 @@ public class YandexAdsHelper {
             android.util.Log.e("YandexAds", "Rewarded action failed", error);
         }
 
-        // Only a successfully completed rewarded ad triggers the next preload.
-        // A failed/no-fill request is never retried in the background.
-        startRewardedAdLoad();
+        // Do not preload another rewarded ad after the user finishes watching.
     }
 
     private void clearRewarded(RewardedAd ad) {
