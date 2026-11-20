@@ -89,15 +89,10 @@ public class YandexAdsHelper {
     private RewardedAd mRewardedAd;
     private boolean isRewardLoaded;
     private boolean isRewardedLoading;
-    private boolean initialRewardedPreloadAttempted;
     private boolean waitingForRewardedAd;
     private boolean isShowingRewardedAd;
     private long rewardedRequestGeneration;
     private volatile boolean userEarnedReward;
-    private RewardedAd activeRewardedAd;
-    private boolean rewardedAdDismissed;
-    private boolean rewardedAdFinalized;
-    private Runnable rewardDismissGraceRunnable;
     private String pendingUrlAfterAd = "";
     private boolean isShowingAdDialog;
     private Dialog currentAdDialog;
@@ -133,7 +128,6 @@ public class YandexAdsHelper {
         if (isSdkInitialized || sdkInitialized) {
             isSdkInitialized = true;
             executePendingTasks();
-            preloadRewardedOnce();
             return;
         }
         if (isInitializing) return;
@@ -149,7 +143,6 @@ public class YandexAdsHelper {
             isInitializing = false;
             handler.post(() -> {
                 executePendingTasks();
-                preloadRewardedOnce();
             });
         });
     }
@@ -166,13 +159,6 @@ public class YandexAdsHelper {
             currentAdDialog = null;
         }
         isShowingAdDialog = false;
-    }
-
-    private void preloadRewardedOnce() {
-        if (initialRewardedPreloadAttempted || !isSdkInitialized) return;
-        if (!isActivityValid()) return;
-        initialRewardedPreloadAttempted = true;
-        startRewardedAdLoad();
     }
 
     public boolean isInterstitialLoading() { return isInterstitialLoading; }
@@ -225,6 +211,8 @@ public class YandexAdsHelper {
     public boolean isInterstitialReady() { return isInterstitialLoaded && mInterstitialAd != null; }
 
     private void startRewardedAdLoad() {
+        // Rewarded requests are permitted only while the user is waiting after tapping Watch Ad.
+        if (!waitingForRewardedAd) return;
         if (!isSdkInitialized) {
             initialize(this::startRewardedAdLoad);
             return;
@@ -242,8 +230,10 @@ public class YandexAdsHelper {
             rewardedAdLoader.loadAd(new AdRequest.Builder(REWARDED_AD_UNIT_ID).build(), new RewardedAdLoadListener() {
             @Override public void onAdLoaded(@NonNull RewardedAd ad) {
                 handler.post(() -> {
-                    if (requestGeneration != rewardedRequestGeneration || !isRewardedLoading) {
+                    // Do not cache ads delivered after the user cancels or the wait times out.
+                    if (requestGeneration != rewardedRequestGeneration || !isRewardedLoading || !waitingForRewardedAd) {
                         ad.setAdEventListener(null);
+                        if (requestGeneration == rewardedRequestGeneration) isRewardedLoading = false;
                         return;
                     }
                     mRewardedAd = ad;
@@ -287,6 +277,7 @@ public class YandexAdsHelper {
         pendingRewardListener = rewardListener;
         if (isRewardLoaded && mRewardedAd != null) {
             waitingForRewardedAd = true;
+            showAdLoadingDialog();
             presentLoadedRewardedAd();
             return;
         }
@@ -294,16 +285,9 @@ public class YandexAdsHelper {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
         waitingForRewardedAd = true;
-        if (!showAdLoadingDialog()) {
-            waitingForRewardedAd = false;
-            // Keep the confirmation prompt and its pending URL alive so the user
-            // can tap Watch again after the temporary dialog problem is gone.
-            Toast.makeText(activity, tr("تعذر عرض نافذة الإعلان. حاول مرة أخرى.", "Could not show the ad window. Please try again."), Toast.LENGTH_SHORT).show();
-            return;
-        }
+        showAdLoadingDialog();
 
-        // Join an existing preload if one is active; only make a fresh request after
-        // an explicit user action and only when no request is currently in flight.
+        // Request an ad only after the user explicitly taps Watch Ad.
         if (!isRewardedLoading) startRewardedAdLoad();
         scheduleRewardedWaitTimeout();
     }
@@ -321,10 +305,6 @@ public class YandexAdsHelper {
 
         waitingForRewardedAd = false;
         cancelRewardedWaitTimeout();
-        cancelRewardDismissGracePeriod();
-        activeRewardedAd = ad;
-        rewardedAdDismissed = false;
-        rewardedAdFinalized = false;
         // Lock before calling the SDK so a fast second tap cannot call show() twice.
         isShowingRewardedAd = true;
         userEarnedReward = false;
@@ -340,13 +320,7 @@ public class YandexAdsHelper {
 
             @Override public void onAdFailedToShow(@NonNull AdError error) {
                 handler.post(() -> {
-                    if (activeRewardedAd != ad || rewardedAdFinalized) return;
                     android.util.Log.e("YandexAds", "Rewarded failed to show: " + error.getDescription());
-                    rewardedAdFinalized = true;
-                    activeRewardedAd = null;
-                    rewardedAdDismissed = false;
-                    userEarnedReward = false;
-                    cancelRewardDismissGracePeriod();
                     clearRewarded(ad);
                     isShowingRewardedAd = false;
                     waitingForRewardedAd = false;
@@ -357,19 +331,15 @@ public class YandexAdsHelper {
             }
 
             @Override public void onAdDismissed() {
-                handler.post(() -> handleRewardedAdDismissed(ad));
+                handler.post(() -> finishRewardedAd(ad));
             }
 
             @Override public void onAdClicked() { }
             @Override public void onAdImpression(@Nullable ImpressionData data) { }
             @Override public void onRewarded(@NonNull Reward reward) {
-                // Reward and dismissal are separate SDK callbacks. Serialize both
-                // on the main thread and accept either callback order.
-                handler.post(() -> {
-                    if (activeRewardedAd != ad || rewardedAdFinalized) return;
-                    userEarnedReward = true;
-                    if (rewardedAdDismissed) finishRewardedAd(ad);
-                });
+                // Store the reward immediately. The URL is only dispatched from
+                // finishRewardedAd(), after the SDK confirms the ad was dismissed.
+                userEarnedReward = true;
             }
         });
 
@@ -377,46 +347,15 @@ public class YandexAdsHelper {
             ad.show(activity);
         } catch (RuntimeException error) {
             android.util.Log.e("YandexAds", "Rewarded show threw an exception", error);
-            rewardedAdFinalized = true;
-            activeRewardedAd = null;
-            rewardedAdDismissed = false;
-            userEarnedReward = false;
-            cancelRewardDismissGracePeriod();
             clearRewarded(ad);
             isShowingRewardedAd = false;
-            waitingForRewardedAd = false;
             dismissAdLoadingDialog();
             showAdLoadErrorDialog();
             dismissCurrentAdPrompt();
         }
     }
 
-    private void handleRewardedAdDismissed(RewardedAd ad) {
-        if (activeRewardedAd != ad || rewardedAdFinalized) return;
-        rewardedAdDismissed = true;
-        if (userEarnedReward) {
-            finishRewardedAd(ad);
-            return;
-        }
-        // A mediated creative can report the reward just after dismissal. Give
-        // that callback a short window; never dispatch without a recorded reward.
-        cancelRewardDismissGracePeriod();
-        rewardDismissGraceRunnable = () -> finishRewardedAd(ad);
-        handler.postDelayed(rewardDismissGraceRunnable, 5_000L);
-    }
-
-    private void cancelRewardDismissGracePeriod() {
-        if (rewardDismissGraceRunnable != null) {
-            handler.removeCallbacks(rewardDismissGraceRunnable);
-            rewardDismissGraceRunnable = null;
-        }
-    }
-
     private void finishRewardedAd(RewardedAd ad) {
-        if (activeRewardedAd != ad || rewardedAdFinalized || !rewardedAdDismissed) return;
-        rewardedAdFinalized = true;
-        cancelRewardDismissGracePeriod();
-        activeRewardedAd = null;
         clearRewarded(ad);
         isShowingRewardedAd = false;
         dismissAdLoadingDialog();
@@ -424,7 +363,6 @@ public class YandexAdsHelper {
 
         boolean earned = userEarnedReward;
         userEarnedReward = false;
-        rewardedAdDismissed = false;
         OnRewardEarnedListener listener = pendingRewardListener;
         String url = pendingUrlAfterAd;
         pendingRewardListener = null;
@@ -440,9 +378,7 @@ public class YandexAdsHelper {
             android.util.Log.e("YandexAds", "Rewarded action failed", error);
         }
 
-        // Only a successfully completed rewarded ad triggers the next preload.
-        // A failed/no-fill request is never retried in the background.
-        startRewardedAdLoad();
+        // Do not preload another rewarded ad after the user finishes watching.
     }
 
     private void clearRewarded(RewardedAd ad) {
@@ -466,12 +402,6 @@ public class YandexAdsHelper {
         if (mRewardedAd != null) mRewardedAd.setAdEventListener(null);
         mRewardedAd = null; isRewardLoaded = false; isRewardedLoading = false;
         rewardedAdLoader = null;
-        if (activeRewardedAd != null) activeRewardedAd.setAdEventListener(null);
-        activeRewardedAd = null;
-        cancelRewardDismissGracePeriod();
-        rewardedAdDismissed = false;
-        rewardedAdFinalized = true;
-        userEarnedReward = false;
         pendingRewardListener = null;
         waitingForRewardedAd = false;
         isShowingRewardedAd = false;
@@ -595,21 +525,7 @@ public class YandexAdsHelper {
     public void showAdDialog(final String url, final OnRewardEarnedListener rewardListener) {
         Activity activity = getActivity();
         if (activity == null || !isActivityValid()) return;
-        if (url == null || url.trim().isEmpty()) {
-            Toast.makeText(activity, tr("رابط التحميل غير متوفر. حاول لاحقاً.", "Download link is unavailable. Please try again later."), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (isShowingAdDialog) {
-            boolean promptStillVisible = false;
-            try {
-                promptStillVisible = currentAdDialog != null && currentAdDialog.isShowing();
-            } catch (RuntimeException ignored) { }
-            if (promptStillVisible || isShowingRewardedAd || isDialogLoading) return;
-            // Recover the global lock if a dialog was dismissed by Android while
-            // its lifecycle callback was missed (for example during navigation).
-            dismissCurrentAdPrompt();
-        }
-        if (isShowingRewardedAd || isDialogLoading) return;
+        if (isShowingAdDialog || isShowingRewardedAd || isDialogLoading) return;
 
         isShowingAdDialog = true;
         pendingUrlAfterAd = url;
@@ -665,22 +581,16 @@ public class YandexAdsHelper {
 
         watchBtnView.setOnClickListener(v -> showRewardedAd(rewardListener));
 
-        if (!safeShowDialog(adDialog)) {
-            isShowingAdDialog = false;
-            pendingUrlAfterAd = "";
-            pendingRewardListener = null;
-            currentAdDialog = null;
-            Toast.makeText(activity, tr("تعذر عرض نافذة التحميل. حاول مرة أخرى.", "Could not show the download window. Please try again."), Toast.LENGTH_SHORT).show();
-        }
+        safeShowDialog(adDialog);
     }
 
     // ============================================================
     // 5. نافذة انتظار الإعلان المكافئ
     // ============================================================
-    private boolean showAdLoadingDialog() {
+    private void showAdLoadingDialog() {
         Activity activity = getActivity();
-        if (activity == null || !isActivityValid()) return false;
-        if (adLoadingDialog != null && adLoadingDialog.isShowing()) return true;
+        if (activity == null || !isActivityValid()) return;
+        if (adLoadingDialog != null && adLoadingDialog.isShowing()) return;
 
         adLoadingDialog = createBaseGlassDialog(activity, null,
                 tr("جاري تـحـميل الإعـــلان...", "Loading ad..."));
@@ -692,7 +602,7 @@ public class YandexAdsHelper {
             adLoadingDialog = null;
             waitingForRewardedAd = false;
             showAdLoadErrorDialog();
-            return false;
+            return;
         }
         ProgressBar progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleLarge);
         LinearLayout.LayoutParams pbParams = new LinearLayout.LayoutParams((int) (50 * density), (int) (50 * density));
@@ -704,14 +614,9 @@ public class YandexAdsHelper {
         }
         dynamicContainer.addView(progressBar);
 
-        boolean shown = safeShowDialog(adLoadingDialog);
+        safeShowDialog(adLoadingDialog);
         isDialogTimedOut = false;
-        isDialogLoading = shown;
-        if (!shown) {
-            adLoadingDialog = null;
-            return false;
-        }
-        return true;
+        isDialogLoading = adLoadingDialog.isShowing();
     }
 
     private void scheduleRewardedWaitTimeout() {
@@ -781,16 +686,7 @@ public class YandexAdsHelper {
             isDialogTimedOut = false;
         });
 
-        if (!safeShowDialog(errorDialog)) {
-            if (adErrorDialog == errorDialog) adErrorDialog = null;
-            isShowingAdDialog = false;
-            currentAdDialog = null;
-            pendingUrlAfterAd = "";
-            pendingRewardListener = null;
-            waitingForRewardedAd = false;
-            isDialogLoading = false;
-            Toast.makeText(activity, tr("تعذر عرض رسالة الخطأ.", "Could not show the error message."), Toast.LENGTH_SHORT).show();
-        }
+        safeShowDialog(errorDialog);
     }
 
     // Retained as no-op compatibility methods for existing Activity call sites.
@@ -900,14 +796,13 @@ public class YandexAdsHelper {
         return activity != null && !activity.isFinishing() && !activity.isDestroyed();
     }
 
-    private boolean safeShowDialog(Dialog dialog) {
+    private void safeShowDialog(Dialog dialog) {
         try {
-            if (!isActivityValid() || dialog == null) return false;
-            if (!dialog.isShowing()) dialog.show();
-            return dialog.isShowing();
+            if (isActivityValid() && dialog != null && !dialog.isShowing()) {
+                dialog.show();
+            }
         } catch (Exception e) {
-            android.util.Log.e("YandexAds", "Unable to show dialog", e);
-            return false;
+            e.printStackTrace();
         }
     }
 
